@@ -2,7 +2,7 @@
 from ROOT import TCanvas,TH1F
 import ROOT
 #opens the root file
-f = ROOT.TFile("tthh_ntuple.343469.MadGraphPythia8EvtGen_A14NNPDF23_tthh_bbbb.root")
+f = ROOT.TFile("delphes.Bj-4p-0-500_100TEV.NoPileUp.root")
 #loads TTree into the memory
 MyTree = f.Get("OutputTree")
 #create a empty histogram
