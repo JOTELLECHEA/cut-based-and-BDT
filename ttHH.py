@@ -19,8 +19,8 @@ for event in MyTree:
    lepvec[1] = ROOT.TLorentzVector()
    lepvec[2] = ROOT.TLorentzVector()
    if event.flavLep[0]*event.flavLep[1]== -4:
-       lepvec[0].SetPtEtaPhiM(event.pTLep[0],event.etaLep[0],event.phiLep[0],0.105)
-       lepvec[1].SetPtEtaPhiM(event.pTLep[1],event.etaLep[1],event.phiLep[1],0.105)
+       lepvec[0].SetPtEtaPhiM(event.jetpT[0],event.jeteta[0],event.jetpphi[0],126)
+       lepvec[1].SetPtEtaPhiM(event.jetpT[1],event.jeteta[1],event.jetpphi[1],126)
        h.Fill((lepvec[0]+lepvec[1]).M())
 
 
