@@ -27,4 +27,5 @@ for event in MyTree:
         # Fill Lorentz vector with pt , eta , and phi values.
         h1.Fill(lepvec[i].Pt()/1000.)
 
-h1.Draw()
+h1.Draw()   # Draws Histogram.
+h1.SaveAs("lepvec_Pt-Histogram.pdf") # Saves Histogram as *.pdf.
