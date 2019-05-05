@@ -1,29 +1,34 @@
-#Program that outputs a histogram of the muon invariant mass
+# Written By : Jonathan O. Tellechea
+# Research   : ttHH
+# Description: Histogram of number of jets > 30GeV.
+################################################################################
+################################################################################
 from ROOT import TCanvas,TH1F
 import ROOT
-#opens the root file
+################################################################################
+# Assign *.root file as f.
 f = ROOT.TFile("tthh_ntuple.343469.MadGraphPythia8EvtGen_A14NNPDF23_tthh_bbbb.root")
-#loads TTree into the memory
+################################################################################
+# Assign OutputTree as MyTree and get number of entries in tree.
 MyTree = f.Get("OutputTree")
-#create a empty histogram
-h = ROOT.TH1D("mass","mass;#mu^{+}#mu^{-} Invariant Mass[GeV];Events/Bin",250,0,250)
-#loop through the entries of the leaf and fill the histogram with data
-#then draw histogram
-#declared variable of number of events from pTLep
 entries = MyTree.GetEntries()
-#declare variables
-#int flavLep
+################################################################################
+# Create empty Histogram h.x
+h1 = ROOT.TH1D("njet","njet",10,0,20)
+################################################################################
+# Loop through the entries of MyTree. Fill histogram with transverse momentum.
+################################################################################
 for event in MyTree:
-    num = event.njet
-    lepvec = {}
-    for i in num:
-        lepvec[i] = ROOT.TLorentzVector()
-        if event.nlep == 1 :
-           lepvec[i].SetPtEtaPhiE(event.jetpT[i],event.jeteta[i],event.jetphi[i],126)
-           h.Fill((lepvec[0]+lepvec[1]).E())
+    num = event.njet[0]     # Store number of jets in each event as num.
+    jetvec = {}             # Initialize empty jet vector.
+    ngoodjets = 0           # Initialize variable for jets of interest.
+    for i in xrange(num):
+        jetvec[i] = ROOT.TLorentzVector()   # Cast vectors as Lorentz vectors.
+        jetvec[i].SetPtEtaPhiM(event.jetpT[i],event.jeteta[i],event.jetphi[i],0)
+        if jetvec[i].Pt() > 30000: # Only selecting jets > 30GeV.
+            ngoodjets += 1
+    # Fill Lorentz vector with pt , eta , and phi values.
+    h1.Fill(ngoodjets)
 
-
-
-
-
-h.Draw()
+h1.Draw()   # Draws Histogram.
+h1.SaveAs("ttHH-Histogram.pdf") # Saves Histogram as *.pdf.
