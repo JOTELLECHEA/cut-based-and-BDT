@@ -31,4 +31,3 @@ for event in MyTree:
     h1.Fill(ngoodjets)
 
 h1.Draw()   # Draws Histogram.
-h1.SaveAs("ttHH-Histogram.pdf") # Saves Histogram as *.pdf.

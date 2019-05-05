@@ -28,4 +28,3 @@ for event in MyTree:
         h1.Fill(lepvec[i].Pt()/1000.)
 
 h1.Draw()   # Draws Histogram.
-h1.SaveAs("lepvec_Pt-Histogram.pdf") # Saves Histogram as *.pdf.
