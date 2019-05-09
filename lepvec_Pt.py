@@ -24,6 +24,14 @@ for event in MyTree:
     for i in xrange(num):
         lepvec[i] = ROOT.TLorentzVector() # Cast vectors as Lorentz vectors.
         lepvec[i].SetPtEtaPhiM(event.leppT[i],event.lepeta[i],event.lepphi[i],0)
+#------------------------------Cuts Start--------------------------------------#
+        if lepvec[i].Pt() > 25000: continue
+        # Only selecting leptons > 30GeV.
+        if event.lepflav[0] == 11 and abs(event.lepeta[i]) <= 4.0: continue
+        # Only selecting electrons with |eta| <= 4.0.
+        if event.lepflav[i] == 13 and abs(event.lepeta[i]) <= 2.5: continue
+        # Only selecting muons with |eta| <= 2.5.
+#------------------------------Cuts End----------------------------------------#
         # Fill Lorentz vector with pt , eta , and phi values.
         h1.Fill(lepvec[i].Pt()/1000.)
 
