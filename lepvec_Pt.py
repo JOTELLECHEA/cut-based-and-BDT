@@ -14,24 +14,33 @@ MyTree = f.Get("OutputTree")
 entries = MyTree.GetEntries()
 ################################################################################
 # Create empty Histogram h.
-h1 = ROOT.TH1D("pt","pt;leptons transverse momentum;Events/Bin",250,0,250)
+h1 = ROOT.TH1D("pt","pt;leptons transverse momentum;Events/Bin",600,0,600)
 ################################################################################
 # Loop through the entries of MyTree. Fill histogram with transverse momentum.
 ################################################################################
 for event in MyTree:
-    num = event.nlep[0]   # Store number of leptons in each event as num.
+    numlep = event.nlep[0]   # Store number of leptons in each event as num.
     lepvec = {}           # Initialize empty lepton vector.
-    for i in xrange(num):
+    numjet = event.njet[0]   # Store number of jets in each event as num.
+    jetvec = {}           # Initialize empty jet vector.
+    for i in xrange(numlep):
         lepvec[i] = ROOT.TLorentzVector() # Cast vectors as Lorentz vectors.
         lepvec[i].SetPtEtaPhiM(event.leppT[i],event.lepeta[i],event.lepphi[i],0)
-#------------------------------Cuts Start--------------------------------------#
-        if lepvec[i].Pt() > 25000: continue
-        # Only selecting leptons > 30GeV.
-        if event.lepflav[0] == 11 and abs(event.lepeta[i]) <= 4.0: continue
+#------------------------------Cuts No.1 Start---------------------------------#
+        if lepvec[i].Pt() < 25000: continue
+        # Only selecting leptons > 25GeV.
+        if event.lepflav[i] == 11 and abs(event.lepeta[i]) >= 4.0: continue
         # Only selecting electrons with |eta| <= 4.0.
-        if event.lepflav[i] == 13 and abs(event.lepeta[i]) <= 2.5: continue
+        if event.lepflav[i] == 13 and abs(event.lepeta[i]) >= 2.5: continue
         # Only selecting muons with |eta| <= 2.5.
-#------------------------------Cuts End----------------------------------------#
+#------------------------------Cuts No.1 End-----------------------------------#
+#------------------------------Cuts No.3 Start---------------------------------#
+        for k in xrange(numjet):
+            jetvec[k] = ROOT.TLorentzVector()   # Cast vectors as Lorentz vectors.
+            jetvec[k].SetPtEtaPhiM(event.jetpT[k],event.jeteta[k],event.jetphi[k],0)
+            if jetvec[k].Pt() < 30000: continue # Only selecting jets > 30GeV.
+
+#------------------------------Cuts No.3 End-----------------------------------#
         # Fill Lorentz vector with pt , eta , and phi values.
         h1.Fill(lepvec[i].Pt()/1000.)
 
