@@ -20,9 +20,7 @@ h1 = ROOT.TH1D("pt","pt;leptons transverse momentum;Events/Bin",600,0,600)
 ################################################################################
 for event in MyTree:
     numlep = event.nlep[0]   # Store number of leptons in each event as num.
-    lepvec = {}           # Initialize empty lepton vector.
-    numjet = event.njet[0]   # Store number of jets in each event as num.
-    jetvec = {}           # Initialize empty jet vector.
+    lepvec = {}              # Initialize empty lepton vector.
     for i in xrange(numlep):
         lepvec[i] = ROOT.TLorentzVector() # Cast vectors as Lorentz vectors.
         lepvec[i].SetPtEtaPhiM(event.leppT[i],event.lepeta[i],event.lepphi[i],0)
@@ -34,13 +32,6 @@ for event in MyTree:
         if event.lepflav[i] == 13 and abs(event.lepeta[i]) >= 2.5: continue
         # Only selecting muons with |eta| <= 2.5.
 #------------------------------Cuts No.1 End-----------------------------------#
-#------------------------------Cuts No.3 Start---------------------------------#
-        for k in xrange(numjet):
-            jetvec[k] = ROOT.TLorentzVector()   # Cast vectors as Lorentz vectors.
-            jetvec[k].SetPtEtaPhiM(event.jetpT[k],event.jeteta[k],event.jetphi[k],0)
-            if jetvec[k].Pt() < 30000: continue # Only selecting jets > 30GeV.
-
-#------------------------------Cuts No.3 End-----------------------------------#
         # Fill Lorentz vector with pt , eta , and phi values.
         h1.Fill(lepvec[i].Pt()/1000.)
 
