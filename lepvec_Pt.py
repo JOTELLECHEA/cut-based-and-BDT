@@ -15,10 +15,15 @@ entries = MyTree.GetEntries()
 #------------------------------------------------------------------------------#
 # Create empty Histogram h.
 h1 = ROOT.TH1D("pt","pt;leptons transverse momentum;Events/Bin",600,0,600)
+h2 = ROOT.TH1D("eta","eta;eta seperation;Events/Bin",600,0,600)
 #------------------------------------------------------------------------------#
-# Loop through the entries of MyTree. Fill histogram with transverse momentum.
+#Functions:average separation in pseudorapidity between two b-tagged jets
+def etabi_j(x,y):
+    distance = abs(jetvec[x].Eta()-jetvec[y].Eta())
+    return distance
 #------------------------------------------------------------------------------#
-start_time = time.time()         # Timer starts.
+# Loop through the entries of MyTree.
+start_time = time.time()        # Timer starts.
 elist = []                      # Initialize empty event list.
 for event in MyTree:
     numlep = event.nlep[0]      # Store number of leptons in each event as num.
@@ -28,6 +33,7 @@ for event in MyTree:
     goodleptons = 0             # Initialize counter for leptons.
     goodjets = 0                # Initialize counter for jets.
     btagjets = 0                # Initialize counter for b-tag jets.
+    etasum   = 0                # Initialize sum for eta seperation.
 #------------------------------Cuts Start--------------------------------------#
 #Events must have exactly one electron or one muon (as detailed in 3.1.1).
 
@@ -43,7 +49,7 @@ for event in MyTree:
         goodleptons += 1
 #------------------------------------------------------------------------------#
 # Events must have >= 7 jets with pT > 30 GeV and eta <= 4.0.
-
+    y =0
     for i in xrange(numjet):
         jetvec[i] = ROOT.TLorentzVector()   # Cast vectors as Lorentz vectors.
         jetvec[i].SetPtEtaPhiM(event.jetpT[i],event.jeteta[i],event.jetphi[i],0)
@@ -55,6 +61,13 @@ for event in MyTree:
         if event.jetbhadron[i] != 1: continue
         btagjets += 1
         # Count of b-tag jets.
+        
+        for j in xrange(numjet):
+            if i == j: continue
+            etasum += etabi_j(i,j)
+    y = etasum/(2*numjet)
+    h2.Fill(y)
+
 #------------------------------Cuts End----------------------------------------#
     if goodleptons == 1 and goodjets >= 7 and btagjets >= 5:
     # Passing lepton req. min of 7 jets with at least 5 b-tag jets.
@@ -66,3 +79,4 @@ loop_time = '%.3f'%( end_time - start_time)  # Total time.
 print 'Loop Runtime:',loop_time,'seconds'
 #------------------------------------------------------------------------------#
 print(len(elist))
+h2.Draw()
