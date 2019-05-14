@@ -5,6 +5,7 @@
 ################################################################################
 from ROOT import TCanvas,TH1F
 import ROOT
+import time
 ################################################################################
 # Assign *.root file as f.
 f = ROOT.TFile("tthh_ntuple.343469.MadGraphPythia8EvtGen_A14NNPDF23_tthh_bbbb.root")
@@ -18,6 +19,7 @@ h1 = ROOT.TH1D("njet","njet",10,0,20)
 ################################################################################
 # Loop through the entries of MyTree. Fill histogram with transverse momentum.
 ################################################################################
+start_time = time.time()         # Timer starts.
 for event in MyTree:
     num = event.njet[0]     # Store number of jets in each event as num.
     jetvec = {}             # Initialize empty jet vector.
@@ -29,5 +31,9 @@ for event in MyTree:
             ngoodjets += 1
     # Fill Lorentz vector with pt , eta , and phi values.
     h1.Fill(ngoodjets)
+
+end_time = time.time()         # Timer stops
+loop_time = '%.3f'%( end_time - start_time)
+print 'Loop Runtime:',loop_time,'seconds'
 
 h1.Draw()   # Draws Histogram.
