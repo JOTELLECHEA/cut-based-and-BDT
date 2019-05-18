@@ -15,7 +15,7 @@ entries = MyTree.GetEntries()
 #------------------------------------------------------------------------------#
 # Create empty Histogram h.
 h1 = ROOT.TH1D("pt","pt;leptons transverse momentum;Events/Bin",600,0,600)
-h2 = ROOT.TH1D("eta","eta;eta seperation;Events/Bin",20,0,4)
+h2 = ROOT.TH1D("eta","eta;< #eta(b_{i},b_{j}) >;Events normalised to unit area / 0.2",20,0,4)
 #------------------------------------------------------------------------------#
 #Functions:average separation in pseudorapidity between two b-tagged jets
 def etabi_j(x,y):
@@ -67,6 +67,7 @@ for event in MyTree:
             etasum += etabi_j(jetvec[i],jetvec[j])
     y = etasum/(2*numjet)
     h2.Fill(y)
+
 
 #------------------------------Cuts End----------------------------------------#
     if goodleptons == 1 and goodjets >= 7 and btagjets >= 5:
