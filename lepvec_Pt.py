@@ -19,9 +19,9 @@ h1 = ROOT.TH1D('eta','eta;< #eta(b_{i},b_{j}) >;Events normalized to unit area /
 h2 = ROOT.TH1D('pt','pt;M_{bb} [GeV];Events normalized to unit area / 25GeV',250,0,250)
 h3 = ROOT.TH1D('blah','blah;Centrality;Events normalised to unit area / 0.1',10,0,1)
 h4 = ROOT.TH1D('blahh','blahh;H_{B} [GeV];Events normalised to unit area / 150GeV',1400,0,1400)
-
 #------------------------------------------------------------------------------#
-#Functions:average separation in pseudorapidity between two b-tagged jets
+#Functions:
+# Average separation in pseudorapidity between two b-tagged jets.
 def etabi_j(x,y):
     distance = abs(x.Eta() - y.Eta())
     return distance
@@ -35,12 +35,12 @@ for event in MyTree:
     lepvec = {}                 # Initialize empty lepton vector.
     jetvec = {}                 # Initialize empty jet vector.
     goodleptons = 0             # Initialize counter for leptons.
-    goodjets = 0                # Initialize counter for jets.
-    btagjets = 0                # Initialize counter for b-tag jets.
-    etasum   = 0                # Initialize sum for eta seperation.
+    goodjets    = 0             # Initialize counter for jets.
+    btagjets    = 0             # Initialize counter for b-tag jets.
+    etasum      = 0             # Initialize sum for eta seperation.
+    etasum_N    = 0             # Initialize sum for eta separation average.
 #------------------------------Cuts Start--------------------------------------#
 #Events must have exactly one electron or one muon (as detailed in 3.1.1).
-
     for i in xrange(numlep):
         lepvec[i] = ROOT.TLorentzVector() # Cast vectors as Lorentz vectors.
         lepvec[i].SetPtEtaPhiM(event.leppT[i],event.lepeta[i],event.lepphi[i],0)
@@ -53,7 +53,6 @@ for event in MyTree:
         goodleptons += 1
 #------------------------------------------------------------------------------#
 # Events must have >= 7 jets with pT > 30 GeV and eta <= 4.0.
-    y =0
     for i in xrange(numjet):
         jetvec[i] = ROOT.TLorentzVector()   # Cast vectors as Lorentz vectors.
         jetvec[i].SetPtEtaPhiM(event.jetpT[i],event.jeteta[i],event.jetphi[i],0)
@@ -65,13 +64,11 @@ for event in MyTree:
         if event.jetbhadron[i] != 1: continue
         btagjets += 1
         # Count of b-tag jets.
-        for j in xrange(len(jetvec)):
+        for j in xrange(len(jetvec)):   # Finding separation between all b_jets.
             if i == j: continue
             etasum += etabi_j(jetvec[i],jetvec[j])
-    y = etasum/(2*numjet)
-    h1.Fill(y)
-
-
+    etasum_N = etasum/(2*numjet)       # Getting avg. and removing double count.
+    h1.Fill(etasum_N)
 #------------------------------Cuts End----------------------------------------#
     if goodleptons == 1 and goodjets >= 7 and btagjets >= 5:
     # Passing lepton req. min of 7 jets with at least 5 b-tag jets.
@@ -81,11 +78,11 @@ for event in MyTree:
 end_time = time.time()                       # Timer stops.
 loop_time = '%.3f'%( end_time - start_time)  # Total time.
 print 'Loop Runtime:',loop_time,'seconds'
-#------------------------------------------------------------------------------#
+#-----------------------------Histograms Display-------------------------------#
 print(len(elist))
 c1.cd(1)
-h1.Scale(2/(h1.Integral()))
-h1.Draw('HIST')
+h1.Scale(2/(h1.Integral())) # Normalized by uinit area / 0.2.
+h1.Draw('HIST') # Added 'HIST' which fixes only displaying errorbars.
 c1.cd(2)
 h2.Draw()
 c1.cd(3)
