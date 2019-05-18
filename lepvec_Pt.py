@@ -15,11 +15,11 @@ entries = MyTree.GetEntries()
 #------------------------------------------------------------------------------#
 # Create empty Histogram h.
 h1 = ROOT.TH1D("pt","pt;leptons transverse momentum;Events/Bin",600,0,600)
-h2 = ROOT.TH1D("eta","eta;eta seperation;Events/Bin",600,0,600)
+h2 = ROOT.TH1D("eta","eta;eta seperation;Events/Bin",20,0,4)
 #------------------------------------------------------------------------------#
 #Functions:average separation in pseudorapidity between two b-tagged jets
 def etabi_j(x,y):
-    distance = abs(jetvec[x].Eta()-jetvec[y].Eta())
+    distance = abs(x.Eta() - y.Eta())
     return distance
 #------------------------------------------------------------------------------#
 # Loop through the entries of MyTree.
@@ -61,10 +61,10 @@ for event in MyTree:
         if event.jetbhadron[i] != 1: continue
         btagjets += 1
         # Count of b-tag jets.
-        
-        for j in xrange(numjet):
+
+        for j in xrange(len(jetvec)):
             if i == j: continue
-            etasum += etabi_j(i,j)
+            etasum += etabi_j(jetvec[i],jetvec[j])
     y = etasum/(2*numjet)
     h2.Fill(y)
 
