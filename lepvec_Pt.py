@@ -1,21 +1,25 @@
 # Written By : Jonathan O. Tellechea
 # Research   : ttHH
-# Description: Histogram of leptons transverse momentum.
+# Description: Histogram of ttHH from pg.8 in http://cdsweb.cern.ch/record/2220969/files/ATL-PHYS-PUB-2016-023.pdf
 #------------------------------------------------------------------------------#
-from ROOT import TCanvas,TH1F
 import ROOT
 import time
 #------------------------------------------------------------------------------#
 # Assign *.root file as f.
-f = ROOT.TFile("tthh_ntuple.343469.MadGraphPythia8EvtGen_A14NNPDF23_tthh_bbbb.root")
+f = ROOT.TFile('tthh_ntuple.343469.MadGraphPythia8EvtGen_A14NNPDF23_tthh_bbbb.root')
 #------------------------------------------------------------------------------#
 # Assign OutputTree as MyTree and get number of entries in tree.
-MyTree = f.Get("OutputTree")
+MyTree = f.Get('OutputTree')
 entries = MyTree.GetEntries()
 #------------------------------------------------------------------------------#
-# Create empty Histogram h.
-h1 = ROOT.TH1D("pt","pt;leptons transverse momentum;Events/Bin",600,0,600)
-h2 = ROOT.TH1D("eta","eta;< #eta(b_{i},b_{j}) >;Events normalised to unit area / 0.2",20,0,4)
+# Create Canvas and empty Histograms hx.
+c1 = ROOT.TCanvas('c1','bin Size',500,600,1000,800)
+c1.Divide(2,2)
+h1 = ROOT.TH1D('eta','eta;< #eta(b_{i},b_{j}) >;Events normalized to unit area / 0.2',20,0,4)
+h2 = ROOT.TH1D('pt','pt;M_{bb} [GeV];Events normalized to unit area / 25GeV',250,0,250)
+h3 = ROOT.TH1D('blah','blah;Centrality;Events normalised to unit area / 0.1',10,0,1)
+h4 = ROOT.TH1D('blahh','blahh;H_{B} [GeV];Events normalised to unit area / 150GeV',1400,0,1400)
+
 #------------------------------------------------------------------------------#
 #Functions:average separation in pseudorapidity between two b-tagged jets
 def etabi_j(x,y):
@@ -65,7 +69,7 @@ for event in MyTree:
             if i == j: continue
             etasum += etabi_j(jetvec[i],jetvec[j])
     y = etasum/(2*numjet)
-    h2.Fill(y)
+    h1.Fill(y)
 
 
 #------------------------------Cuts End----------------------------------------#
@@ -79,5 +83,13 @@ loop_time = '%.3f'%( end_time - start_time)  # Total time.
 print 'Loop Runtime:',loop_time,'seconds'
 #------------------------------------------------------------------------------#
 print(len(elist))
-h2.Scale(2/(h2.Integral()))
-h2.Draw('HIST')
+c1.cd(1)
+h1.Scale(2/(h1.Integral()))
+h1.Draw('HIST')
+c1.cd(2)
+h2.Draw()
+c1.cd(3)
+h3.Draw()
+c1.cd(4)
+h4.Draw()
+c1.Update()
