@@ -61,7 +61,6 @@ for event in MyTree:
         if event.jetbhadron[i] != 1: continue
         btagjets += 1
         # Count of b-tag jets.
-
         for j in xrange(len(jetvec)):
             if i == j: continue
             etasum += etabi_j(jetvec[i],jetvec[j])
@@ -80,4 +79,5 @@ loop_time = '%.3f'%( end_time - start_time)  # Total time.
 print 'Loop Runtime:',loop_time,'seconds'
 #------------------------------------------------------------------------------#
 print(len(elist))
-h2.Draw()
+h2.Scale(2/(h2.Integral()))
+h2.Draw('HIST')
