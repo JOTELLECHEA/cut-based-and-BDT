@@ -13,7 +13,7 @@ MyTree = f.Get('OutputTree')
 entries = MyTree.GetEntries()
 #------------------------------------------------------------------------------#
 # Create Canvas and empty Histograms hx.
-c1 = ROOT.TCanvas('c1','bin Size',500,600,1000,800)
+c1 = ROOT.TCanvas('c1','Histograms',500,600,1000,800)
 c1.Divide(2,2)
 h1 = ROOT.TH1D('eta','eta;< #eta(b_{i},b_{j}) >;Events normalized to unit area / 0.2',20,0,4)
 h2 = ROOT.TH1D('pt','pt;M_{bb} [GeV];Events normalized to unit area / 25GeV',250,0,250)
@@ -81,7 +81,7 @@ print 'Loop Runtime:',loop_time,'seconds'
 #-----------------------------Histograms Display-------------------------------#
 print(len(elist))
 c1.cd(1)
-h1.Scale(2/(h1.Integral())) # Normalized by uinit area / 0.2.
+h1.Scale(2/(h1.Integral())) # Normalized by uinit area / 0.2
 h1.Draw('HIST') # Added 'HIST' which fixes only displaying errorbars.
 c1.cd(2)
 h2.Draw()
