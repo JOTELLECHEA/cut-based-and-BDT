@@ -67,7 +67,7 @@ for event in MyTree:
         for j in xrange(len(jetvec)):   # Finding separation between all b_jets.
             if i == j: continue
             etasum += etabi_j(jetvec[i],jetvec[j])
-    etasum_N = etasum/(2*numjet)       # Getting avg. and removing double count.
+    etasum_N = etasum/(btagjets)       # Getting avg. and removing double count.
     h1.Fill(etasum_N)
 #------------------------------Cuts End----------------------------------------#
     if goodleptons == 1 and goodjets >= 7 and btagjets >= 5:
@@ -81,7 +81,7 @@ print 'Loop Runtime:',loop_time,'seconds'
 #-----------------------------Histograms Display-------------------------------#
 print(len(elist))
 c1.cd(1)
-h1.Scale(2/(h1.Integral())) # Normalized by uinit area / 0.2
+h1.Scale(1/(h1.Integral())) # Normalized by unit area / 0.2
 h1.Draw('HIST') # Added 'HIST' which fixes only displaying errorbars.
 c1.cd(2)
 h2.Draw()
