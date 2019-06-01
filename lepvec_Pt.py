@@ -7,6 +7,7 @@ import ROOT
 #------------------------------------------------------------------------------#
 # Assign *.root file as f.
 f = ROOT.TFile('tthh_ntuple.343469.MadGraphPythia8EvtGen_A14NNPDF23_tthh_bbbb.root')
+# f = ROOT.TFile('tthh_ntuple.344436.Sherpa_NNPDF30NNLO_ttH_Htobb.root')
 #------------------------------------------------------------------------------#
 # Assign OutputTree as MyTree and get number of entries in tree.
 MyTree = f.Get('OutputTree')
@@ -93,14 +94,16 @@ for event in MyTree:
             btjmaxPt = vec_sum_Pt
             btjmaxM  = vec_sum_M
     h2.Fill(btjmaxM/1000)                    # Fill h2 histogram with M_bb.
-    etasum_N = etasum/(2*btagjets)           # Getting distance avg.
+    if btagjets != 0:
+        etasum_N = etasum/(2*btagjets)       # Getting distance avg.
     h1.Fill(etasum_N)                        # Fill h1 w/ btagjets speration avg.
     h4.Fill(HB_sum_Pt/1000)                  # Fill h4 w/ scalar sum of pT.
 #------------------------------------------------------------------------------#
     for i in xrange(numjet):
         cen_sum_E  += jetvec[i].E()          # Scalar sum of E.
         cen_sum_Pt += jetvec[i].Pt()         # Scalar sum of Pt.
-    h3.Fill(cen_sum_Pt/cen_sum_E)            # Fill h3 w/ scalar sum of Pt/E.
+    if cen_sum_E != 0:
+        h3.Fill(cen_sum_Pt/cen_sum_E)        # Fill h3 w/ scalar sum of Pt/E.
 #-----------------------------Histograms Display-------------------------------#
 c1.cd(1)
 h1.SetLineColor(2)
