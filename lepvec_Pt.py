@@ -5,9 +5,34 @@
 #------------------------------------------------------------------------------#
 import ROOT
 #------------------------------------------------------------------------------#
-# Assign *.root file as f.
-f = ROOT.TFile('tthh_ntuple.343469.MadGraphPythia8EvtGen_A14NNPDF23_tthh_bbbb.root')
-# f = ROOT.TFile('tthh_ntuple.344436.Sherpa_NNPDF30NNLO_ttH_Htobb.root')
+print '               __________________________________________'
+print '              |                                          |'
+print '              |Welcome to the ttHH Histogram Script 2019 |'
+print '              |__________________________________________| \n\n'
+print '_______________________________________\n'
+print '# Enter for 1 -',u'tt\u0304HH (HH -> 'u'bb\u0304',u'bb\u0304)    #'
+print '# Enter for 2 -',u'tt\u0304bb\u0304 + jets           #'
+print '# Enter for 3 -',u'tt\u0304H (H -> 'u'bb\u0304) + jets  #'
+print '# Enter for 4 -',u'tt\u0304Z (Z -> 'u'bb\u0304) + jets  #'
+print '_______________________________________\n'
+x = int(input('Which sample would you like to use: '))
+a = 'tthh_ntuple.343469.MadGraphPythia8EvtGen_A14NNPDF23_tthh_bbbb.root'
+b = 'tthh_ntuple.410246.Sherpa_NNPDF30NNLO_ttbb.root'
+c = 'tthh_ntuple.344436.Sherpa_NNPDF30NNLO_ttH_Htobb.root'
+d = 'tthh_ntuple.410247.Sherpa_NNPDF30NNLO_ttZ_Ztobb.root'
+print '\n'
+if x == 1:
+    f = ROOT.TFile(a)
+    print 'You selected option:\n\n', a
+elif x == 2:
+    f = ROOT.TFile(b)
+    print 'You selected option:\n\n', b
+elif x == 3:
+    f = ROOT.TFile(c)
+    print 'You selected option:\n\n', c
+elif x == 4:
+    f = ROOT.TFile(d)
+    print 'You selected option:\n\n', d
 #------------------------------------------------------------------------------#
 # Assign OutputTree as MyTree and get number of entries in tree.
 MyTree = f.Get('OutputTree')
