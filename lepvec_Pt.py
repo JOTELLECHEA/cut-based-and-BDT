@@ -29,25 +29,25 @@ while flag:
     print '\n'
     if int(x) == 1:
         print 'You selected option:\n\n', a
-        f = ROOT.TFile(a,'recreate')
+        f = ROOT.TFile(a)
         sleep(3)
         system('clear')
         flag = False
     elif int(x) == 2:
         print 'You selected option:\n\n', b
-        f = ROOT.TFile(b,'recreate')
+        f = ROOT.TFile(b)
         sleep(3)
         system('clear')
         flag = False
     elif int(x) == 3:
         print 'You selected option:\n\n', c
-        f = ROOT.TFile(c,'recreate')
+        f = ROOT.TFile(c)
         sleep(3)
         system('clear')
         flag = False
     elif int(x) == 4:
         print 'You selected option:\n\n', d
-        f = ROOT.TFile(d,'recreate')
+        f = ROOT.TFile(d)
         sleep(3)
         system('clear')
         flag = False
@@ -63,8 +63,6 @@ MyTree = f.Get('OutputTree')
 entries = MyTree.GetEntries()
 #------------------------------------------------------------------------------#
 # Create Canvas and empty Histograms hx.
-c1 = ROOT.TCanvas('c1','Histograms',500,600,1000,800)
-c1.Divide(2,2)
 h1 = ROOT.TH1D('#eta','#eta;< #eta(b_{i},b_{j}) >;Events normalized to unit area / 0.2',20,0,4)
 h2 = ROOT.TH1D('M_{bb}','M_{bb};M_{bb} [GeV];Events normalized to unit area / 25GeV',10,0,250)
 h3 = ROOT.TH1D('Centrality','Centrality;Centrality;Events normalised to unit area / 0.1',10,0,1)
@@ -154,18 +152,41 @@ for event in MyTree:
     if cen_sum_E != 0:
         h3.Fill(cen_sum_Pt/cen_sum_E)        # Fill h3 w/ scalar sum of Pt/E.
 #-----------------------------Histograms Display-------------------------------#
-
-c1.cd(1)
-h1.SetLineColor(2)
-h1.Scale(1/(h1.Integral())) # Normalized by unit area.
-h1.Draw('HIST')
-c1.cd(2)
-h2.Scale(1/(h2.Integral())) # Normalized by unit area.
-h2.Draw('HIST')
-c1.cd(3)
-h3.Scale(1/(h3.Integral())) # Normalized by unit area.
-h3.Draw('HIST')
-c1.cd(4)
-h4.Scale(1/(h4.Integral())) # Normalized by unit area.
-h4.Draw('HIST')
-c1.Update()
+g = ROOT.TFile('all_hist.root','update')
+if int(x) == 1:
+    ttHH1 = h1.Clone('ttHH1')
+    ttHH1.Write()
+    ttHH2 = h2.Clone('ttHH2')
+    ttHH2.Write()
+    ttHH3 = h3.Clone('ttHH3')
+    ttHH3.Write()
+    ttHH4 = h4.Clone('ttHH4')
+    ttHH4.Write()
+elif int(x) == 2:
+    ttbb1 = h1.Clone('ttbb1')
+    ttbb1.Write()
+    ttbb2 = h2.Clone('ttbb2')
+    ttbb2.Write()
+    ttbb3 = h3.Clone('ttbb3')
+    ttbb3.Write()
+    ttbb4 = h4.Clone('ttbb4')
+    ttbb4.Write()
+elif int(x) == 3:
+    ttH1 = h1.Clone('ttH1')
+    ttH1.Write()
+    ttH2 = h2.Clone('ttH2')
+    ttH2.Write()
+    ttH3 = h3.Clone('ttH3')
+    ttH3.Write()
+    ttH4 = h4.Clone('ttH4')
+    ttH4.Write()
+elif int(x) == 4:
+    ttZ1 = h1.Clone('ttZ1')
+    ttZ1.Write()
+    ttZ2 = h2.Clone('ttZ2')
+    ttZ2.Write()
+    ttZ3 = h3.Clone('ttZ3')
+    ttZ3.Write()
+    ttZ4 = h4.Clone('ttZ4')
+    ttZ4.Write()
+print 'Finished'
