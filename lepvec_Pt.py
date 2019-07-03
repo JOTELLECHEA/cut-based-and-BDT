@@ -3,9 +3,11 @@
 # Research   : ttHH
 # Description: Histogram of ttHH from pg.8 in http://cdsweb.cern.ch/record/2220969/files/ATL-PHYS-PUB-2016-023.pdf
 #------------------------------------------------------------------------------#
-import ROOT
+import ROOT,sys
+import numpy as np
 from os import system
 from time import sleep
+def prRed(prt): print("\033[91m {}\033[00m" .format(prt))
 #------------------------------------------------------------------------------#
 def menu():
     print '               __________________________________________'
@@ -17,46 +19,54 @@ def menu():
     print '# [2] -',u'tt\u0304bb\u0304 + jets           #'
     print '# [3] -',u'tt\u0304H (H -> 'u'bb\u0304) + jets  #'
     print '# [4] -',u'tt\u0304Z (Z -> 'u'bb\u0304) + jets  #'
+    print '# [5] - Quit                  #'
     print '_______________________________\n'
-flag = True
 menu()
-while flag:
-    x =  input(' Which sample would you like to use: ')
-    a = 'tthh_ntuple.343469.MadGraphPythia8EvtGen_A14NNPDF23_tthh_bbbb.root'
-    b = 'tthh_ntuple.410246.Sherpa_NNPDF30NNLO_ttbb.root'
-    c = 'tthh_ntuple.344436.Sherpa_NNPDF30NNLO_ttH_Htobb.root'
-    d = 'tthh_ntuple.410247.Sherpa_NNPDF30NNLO_ttZ_Ztobb.root'
-    print '\n'
-    if int(x) == 1:
-        print 'You selected option:\n\n', a
-        f = ROOT.TFile(a)
-        sleep(3)
-        system('clear')
-        flag = False
-    elif int(x) == 2:
-        print 'You selected option:\n\n', b
-        f = ROOT.TFile(b)
-        sleep(3)
-        system('clear')
-        flag = False
-    elif int(x) == 3:
-        print 'You selected option:\n\n', c
-        f = ROOT.TFile(c)
-        sleep(3)
-        system('clear')
-        flag = False
-    elif int(x) == 4:
-        print 'You selected option:\n\n', d
-        f = ROOT.TFile(d)
-        sleep(3)
-        system('clear')
-        flag = False
-    else :
-        print 'Invalid option try again.\n\n',
+while True:
+    try:
+        x =  int(input('Which sample would you like to use: '))
+        a = 'tthh_ntuple.343469.MadGraphPythia8EvtGen_A14NNPDF23_tthh_bbbb.root'
+        b = 'tthh_ntuple.410246.Sherpa_NNPDF30NNLO_ttbb.root'
+        c = 'tthh_ntuple.344436.Sherpa_NNPDF30NNLO_ttH_Htobb.root'
+        d = 'tthh_ntuple.410247.Sherpa_NNPDF30NNLO_ttZ_Ztobb.root'
+        print '\n'
+        if x == 1:
+            print 'You selected option:\n\n', a
+            f = ROOT.TFile(a)
+            sleep(3)
+            system('clear')
+            break
+        elif x == 2:
+            print 'You selected option:\n\n', b
+            f = ROOT.TFile(b)
+            sleep(3)
+            system('clear')
+            break
+        elif x == 3:
+            print 'You selected option:\n\n', c
+            f = ROOT.TFile(c)
+            sleep(3)
+            system('clear')
+            break
+        elif x == 4:
+            print 'You selected option:\n\n', d
+            f = ROOT.TFile(d)
+            sleep(3)
+            system('clear')
+            break
+        elif x == 5:
+            system('clear')
+            sys.exit('Bye')
+        else :
+            sleep(1)
+            system('clear')
+            menu()
+            prRed('****************** Invalid option, Enter 1-5 **************\n')
+    except NameError:
         sleep(1)
         system('clear')
         menu()
-        flag = True
+        prRed('*******************Invalid option, Enter 1-5**************\n')
 #------------------------------------------------------------------------------#
 # Assign OutputTree as MyTree and get number of entries in tree.
 MyTree = f.Get('OutputTree')
@@ -67,6 +77,9 @@ h1 = ROOT.TH1D('#eta','#eta;< #eta(b_{i},b_{j}) >;Events normalized to unit area
 h2 = ROOT.TH1D('M_{bb}','M_{bb};M_{bb} [GeV];Events normalized to unit area / 25GeV',10,0,250)
 h3 = ROOT.TH1D('Centrality','Centrality;Centrality;Events normalised to unit area / 0.1',10,0,1)
 h4 = ROOT.TH1D('H_{B}','H_{B};H_{B} [GeV];Events normalised to unit area / 150GeV',10,0,1500)
+h5 = ROOT.TH1D('jet','jet;H_{B} [GeV];Events normalised to unit area / 150GeV',13,0,13)
+h6 = ROOT.TH1D('btag','btag;sfsfjknkjls',7,0,7)
+h0 = ROOT.TH1D('counter','counter;sfsfs',7,0,7)
 #------------------------------------------------------------------------------#
 # Functions:
 # Average separation in pseudorapidity between two b-tagged jets.
@@ -102,6 +115,7 @@ for event in MyTree:
     cen_sum_Pt  = 0             # Initialize sum of Pt for all jets.
     cen_sum_E   = 0             # Initialize sum of E for all jets.
     HB_sum_Pt   = 0             # Initialize sum of Pt for all b-tag jets.
+    h0.Fill(1,1)
 #------------------------------Cuts Start--------------------------------------#
 # Events must have exactly one electron or one muon (as detailed in 3.1.1).
     for i in xrange(numlep):
@@ -114,6 +128,7 @@ for event in MyTree:
         if event.lepflav[i] == 13 and abs(event.lepeta[i]) >= 2.5: continue
         # Only selecting muons with |eta| <= 2.5.
         goodleptons += 1
+    h0.Fill(2,1)
 # Events must have >= 7 jets with pT > 30 GeV and eta <= 4.0.
     for i in xrange(numjet):
         jetvec[i] = ROOT.TLorentzVector()    # Cast vectors as Lorentz vectors.
@@ -125,8 +140,11 @@ for event in MyTree:
         if event.jetbhadron[i] != 1: continue
         tracker_btj.append(i)                # B-tag jets into a list.
     btagjets = len(tracker_btj)              # Count of b-tagged jets.
-    if goodleptons == 1 and goodjets >= 7 and btagjets >= 5:continue
+    h0.Fill(3,1)
+    if not (goodleptons == 1 and goodjets >= 7 and btagjets >= 5):continue
     # Passing lepton req. min of 7 jets with at least 5 b-tag jets.
+    h0.Fill(4,1)
+    h5.Fill(goodjets)
 #---------------------------------Cuts-End-------------------------------------#
     for i in xrange(btagjets):
         HB_sum_Pt += jetvec[tracker_btj[i]].Pt()
@@ -145,12 +163,18 @@ for event in MyTree:
         etasum_N = etasum/(2*btagjets)       # Getting distance avg.
     h1.Fill(etasum_N)                        # Fill h1 w/ btagjets speration avg.
     h4.Fill(HB_sum_Pt/1000)                  # Fill h4 w/ scalar sum of pT.
+    if etasum_N < 1.25 :
+        h0.Fill(5,1)
+        if btagjets >= 6:
+            h0.Fill(6,1)
+
 #------------------------------------------------------------------------------#
     for i in xrange(numjet):
         cen_sum_E  += jetvec[i].E()          # Scalar sum of E.
         cen_sum_Pt += jetvec[i].Pt()         # Scalar sum of Pt.
     if cen_sum_E != 0:
         h3.Fill(cen_sum_Pt/cen_sum_E)        # Fill h3 w/ scalar sum of Pt/E.
+    h6.Fill(1)
 #-----------------------------Histograms Display-------------------------------#
 g = ROOT.TFile('all_hist.root','update')
 if int(x) == 1:
@@ -162,6 +186,12 @@ if int(x) == 1:
     ttHH3.Write()
     ttHH4 = h4.Clone('ttHH4')
     ttHH4.Write()
+    ttHH5 = h5.Clone('ttHH5')
+    ttHH5.Write()
+    ttHH6 = h6.Clone('ttHH6')
+    ttHH6.Write()
+    ttHH0 = h0.Clone('ttHH0')
+    ttHH0.Write()
 elif int(x) == 2:
     ttbb1 = h1.Clone('ttbb1')
     ttbb1.Write()
@@ -171,6 +201,12 @@ elif int(x) == 2:
     ttbb3.Write()
     ttbb4 = h4.Clone('ttbb4')
     ttbb4.Write()
+    ttbb5 = h5.Clone('ttbb5')
+    ttbb5.Write()
+    ttbb6 = h6.Clone('ttbb6')
+    ttbb6.Write()
+    ttbb0 = h0.Clone('ttbb0')
+    ttbb0.Write()
 elif int(x) == 3:
     ttH1 = h1.Clone('ttH1')
     ttH1.Write()
@@ -180,6 +216,12 @@ elif int(x) == 3:
     ttH3.Write()
     ttH4 = h4.Clone('ttH4')
     ttH4.Write()
+    ttH5 = h5.Clone('ttH5')
+    ttH5.Write()
+    ttH6 = h6.Clone('ttH6')
+    ttH6.Write()
+    ttH0 = h0.Clone('ttH0')
+    ttH0.Write()
 elif int(x) == 4:
     ttZ1 = h1.Clone('ttZ1')
     ttZ1.Write()
@@ -189,4 +231,10 @@ elif int(x) == 4:
     ttZ3.Write()
     ttZ4 = h4.Clone('ttZ4')
     ttZ4.Write()
-print 'Finished'
+    ttZ5 = h5.Clone('ttZ5')
+    ttZ5.Write()
+    ttZ6 = h6.Clone('ttZ6')
+    ttZ6.Write()
+    ttZ0 = h0.Clone('ttZ0')
+    ttZ0.Write()
+print 'done'
