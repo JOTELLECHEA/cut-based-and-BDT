@@ -115,7 +115,7 @@ for event in MyTree:
     cen_sum_Pt  = 0             # Initialize sum of Pt for all jets.
     cen_sum_E   = 0             # Initialize sum of E for all jets.
     HB_sum_Pt   = 0             # Initialize sum of Pt for all b-tag jets.
-    h0.Fill(1,1)
+    h0.Fill(0,1)
 #------------------------------Cuts Start--------------------------------------#
 # Events must have exactly one electron or one muon (as detailed in 3.1.1).
     for i in xrange(numlep):
@@ -128,7 +128,7 @@ for event in MyTree:
         if event.lepflav[i] == 13 and abs(event.lepeta[i]) >= 2.5: continue
         # Only selecting muons with |eta| <= 2.5.
         goodleptons += 1
-    h0.Fill(2,1)
+    h0.Fill(1,1)
 # Events must have >= 7 jets with pT > 30 GeV and eta <= 4.0.
     for i in xrange(numjet):
         jetvec[i] = ROOT.TLorentzVector()    # Cast vectors as Lorentz vectors.
@@ -140,11 +140,11 @@ for event in MyTree:
         if event.jetbhadron[i] != 1: continue
         tracker_btj.append(i)                # B-tag jets into a list.
     btagjets = len(tracker_btj)              # Count of b-tagged jets.
-    h0.Fill(3,1)
+    h0.Fill(2,1)
     if not (goodleptons == 1 and goodjets >= 7 and btagjets >= 5):continue
     # Passing lepton req. min of 7 jets with at least 5 b-tag jets.
-    h0.Fill(4,1)
-    h5.Fill(goodjets)
+    h0.Fill(3,1)
+    h5.Fill(numjet)
 #---------------------------------Cuts-End-------------------------------------#
     for i in xrange(btagjets):
         HB_sum_Pt += jetvec[tracker_btj[i]].Pt()
@@ -164,9 +164,9 @@ for event in MyTree:
     h1.Fill(etasum_N)                        # Fill h1 w/ btagjets speration avg.
     h4.Fill(HB_sum_Pt/1000)                  # Fill h4 w/ scalar sum of pT.
     if etasum_N < 1.25 :
-        h0.Fill(5,1)
+        h0.Fill(4,1)
         if btagjets >= 6:
-            h0.Fill(6,1)
+            h0.Fill(5,1)
 
 #------------------------------------------------------------------------------#
     for i in xrange(numjet):
