@@ -33,26 +33,18 @@ while True:
         if x == 1:
             print 'You selected option:\n\n', a
             f = ROOT.TFile(a)
-            sleep(3)
-            system('clear')
             break
         elif x == 2:
             print 'You selected option:\n\n', b
             f = ROOT.TFile(b)
-            sleep(3)
-            system('clear')
             break
         elif x == 3:
             print 'You selected option:\n\n', c
             f = ROOT.TFile(c)
-            sleep(3)
-            system('clear')
             break
         elif x == 4:
             print 'You selected option:\n\n', d
             f = ROOT.TFile(d)
-            sleep(3)
-            system('clear')
             break
         elif x == 5:
             system('clear')
@@ -78,7 +70,7 @@ h2 = ROOT.TH1D('M_{bb}','M_{bb};M_{bb} [GeV];Events normalized to unit area / 25
 h3 = ROOT.TH1D('Centrality','Centrality;Centrality;Events normalised to unit area / 0.1',10,0,1)
 h4 = ROOT.TH1D('H_{B}','H_{B};H_{B} [GeV];Events normalised to unit area / 150GeV',10,0,1500)
 h5 = ROOT.TH1D('jet','jet;H_{B} [GeV];Events normalised to unit area / 150GeV',13,0,13)
-h6 = ROOT.TH1D('btag','btag;sfsfjknkjls',7,0,7)
+h6 = ROOT.TH1D('btag','btag;sfsfjknkjls',10,-.5,9.5)
 h0 = ROOT.TH1D('counter','counter;sfsfs',7,0,7)
 #------------------------------------------------------------------------------#
 # Functions:
@@ -98,6 +90,7 @@ def vectorsum(x,y,c):
 # Loop through the entries of MyTree.
 for event in MyTree:
     # Variables.
+    w    = event.mcweight[0]
     numlep = event.nlep[0]      # Store number of leptons in each event as num.
     numjet = event.njet[0]      # Store number of jets in each event as num.
     lepvec      = {}            # Initialize empty lepton vector.
@@ -115,7 +108,7 @@ for event in MyTree:
     cen_sum_Pt  = 0             # Initialize sum of Pt for all jets.
     cen_sum_E   = 0             # Initialize sum of E for all jets.
     HB_sum_Pt   = 0             # Initialize sum of Pt for all b-tag jets.
-    h0.Fill(0,1)
+    h0.Fill(0,w)
 #------------------------------Cuts Start--------------------------------------#
 # Events must have exactly one electron or one muon (as detailed in 3.1.1).
     for i in xrange(numlep):
@@ -128,7 +121,8 @@ for event in MyTree:
         if event.lepflav[i] == 13 and abs(event.lepeta[i]) >= 2.5: continue
         # Only selecting muons with |eta| <= 2.5.
         goodleptons += 1
-    h0.Fill(1,1)
+    h0.Fill(1,w) ### not a cut ####
+    h5.Fill(numjet,w)
 # Events must have >= 7 jets with pT > 30 GeV and eta <= 4.0.
     for i in xrange(numjet):
         jetvec[i] = ROOT.TLorentzVector()    # Cast vectors as Lorentz vectors.
@@ -140,11 +134,15 @@ for event in MyTree:
         if event.jetbhadron[i] != 1: continue
         tracker_btj.append(i)                # B-tag jets into a list.
     btagjets = len(tracker_btj)              # Count of b-tagged jets.
-    h0.Fill(2,1)
-    if not (goodleptons == 1 and goodjets >= 7 and btagjets >= 5):continue
+    if not goodleptons == 1:continue
+    h0.Fill(2,w)
+    if not goodjets  >= 7 : continue
+    h0.Fill(3,w)
+    h6.Fill(btagjets,w)
+    if not btagjets  >= 5 : continue
+    h0.Fill(4,w)
+    # if not (goodleptons == 1 and goodjets >= 7 and btagjets >= 5):continue
     # Passing lepton req. min of 7 jets with at least 5 b-tag jets.
-    h0.Fill(3,1)
-    h5.Fill(numjet)
 #---------------------------------Cuts-End-------------------------------------#
     for i in xrange(btagjets):
         HB_sum_Pt += jetvec[tracker_btj[i]].Pt()
@@ -158,23 +156,23 @@ for event in MyTree:
             # Finds max Pt and M for two btagjets.
             btjmaxPt = vec_sum_Pt
             btjmaxM  = vec_sum_M
-    h2.Fill(btjmaxM/1000)                    # Fill h2 histogram with M_bb.
+    h2.Fill(btjmaxM/1000,w)                    # Fill h2 histogram with M_bb.
     if btagjets != 0:
         etasum_N = etasum/(2*btagjets)       # Getting distance avg.
-    h1.Fill(etasum_N)                        # Fill h1 w/ btagjets speration avg.
-    h4.Fill(HB_sum_Pt/1000)                  # Fill h4 w/ scalar sum of pT.
+    h1.Fill(etasum_N,w)                        # Fill h1 w/ btagjets speration avg.
+    h4.Fill(HB_sum_Pt/1000,w)                  # Fill h4 w/ scalar sum of pT.
     if etasum_N < 1.25 :
-        h0.Fill(4,1)
+        h0.Fill(5,w)
         if btagjets >= 6:
-            h0.Fill(5,1)
+            h0.Fill(6,w)
 
 #------------------------------------------------------------------------------#
     for i in xrange(numjet):
         cen_sum_E  += jetvec[i].E()          # Scalar sum of E.
         cen_sum_Pt += jetvec[i].Pt()         # Scalar sum of Pt.
     if cen_sum_E != 0:
-        h3.Fill(cen_sum_Pt/cen_sum_E)        # Fill h3 w/ scalar sum of Pt/E.
-    h6.Fill(1)
+        h3.Fill(cen_sum_Pt/cen_sum_E,w)        # Fill h3 w/ scalar sum of Pt/E.
+
 #-----------------------------Histograms Display-------------------------------#
 g = ROOT.TFile('all_hist.root','update')
 if int(x) == 1:
@@ -237,4 +235,4 @@ elif int(x) == 4:
     ttZ6.Write()
     ttZ0 = h0.Clone('ttZ0')
     ttZ0.Write()
-print 'done'
+prRed('****************** Finished **************\n')
