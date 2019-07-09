@@ -7,24 +7,20 @@ import ROOT,sys
 import numpy as np
 from os import system
 from time import sleep
+from tabulate import tabulate
 def prRed(prt): print("\033[91m {}\033[00m" .format(prt))
 #------------------------------------------------------------------------------#
 def menu():
-    print '               __________________________________________'
-    print '              |                                          |'
-    print '              |Welcome to the ttHH Histogram Script 2019 |'
-    print '              |__________________________________________| \n\n'
-    print '_______________________________\n'
-    print '# [1] -',u'tt\u0304HH (HH -> 'u'bb\u0304',u'bb\u0304)    #'
-    print '# [2] -',u'tt\u0304bb\u0304 + jets           #'
-    print '# [3] -',u'tt\u0304H (H -> 'u'bb\u0304) + jets  #'
-    print '# [4] -',u'tt\u0304Z (Z -> 'u'bb\u0304) + jets  #'
-    print '# [5] - Quit                  #'
-    print '_______________________________\n'
+    print ' __________________________________________'
+    print '|                                          |'
+    print '|Welcome to the ttHH Histogram Script 2019 |'
+    print '|__________________________________________| \n'
+    print tabulate([['[1] -','ttHH'],['[2] -','ttH'],['[3] -','ttZ'],['[4] -','ttbb'],['[5] -','Quit']],headers=['No.','Sample'], tablefmt='psql')
+
 menu()
 while True:
     try:
-        x =  int(input('Which sample would you like to use: '))
+        x =  int(input('\n Which sample would you like to use: '))
         a = 'tthh_ntuple.343469.MadGraphPythia8EvtGen_A14NNPDF23_tthh_bbbb.root'
         b = 'tthh_ntuple.410246.Sherpa_NNPDF30NNLO_ttbb.root'
         c = 'tthh_ntuple.344436.Sherpa_NNPDF30NNLO_ttH_Htobb.root'
@@ -69,8 +65,8 @@ h1 = ROOT.TH1D('#eta','#eta;< #eta(b_{i},b_{j}) >;Events normalized to unit area
 h2 = ROOT.TH1D('M_{bb}','M_{bb};M_{bb} [GeV];Events normalized to unit area / 25GeV',10,0,250)
 h3 = ROOT.TH1D('Centrality','Centrality;Centrality;Events normalised to unit area / 0.1',10,0,1)
 h4 = ROOT.TH1D('H_{B}','H_{B};H_{B} [GeV];Events normalised to unit area / 150GeV',10,0,1500)
-h5 = ROOT.TH1D('jet','jet;H_{B} [GeV];Events normalised to unit area / 150GeV',13,0,13)
-h6 = ROOT.TH1D('btag','btag;sfsfjknkjls',10,-.5,9.5)
+h5 = ROOT.TH1D('jet','jet;Jet muliplicity;Events normalised to unit area',13,0,13)
+h6 = ROOT.TH1D('btag','btag;N b-tagged jets',10,-.5,9.5)
 h0 = ROOT.TH1D('counter','counter;sfsfs',7,0,7)
 #------------------------------------------------------------------------------#
 # Functions:
