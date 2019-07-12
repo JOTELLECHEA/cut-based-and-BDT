@@ -45,11 +45,22 @@ xxHH = ['ttHH', HH0(1),HH0(2),HH0(3),HH0(4),HH0(5),HH0(6),HH0(7)]
 xxH  = ['ttH',  H0(1),H0(2),H0(3),H0(4),H0(5),H0(6),H0(7)]
 xxZ  = ['ttZ',  Z0(1),Z0(2),Z0(3),Z0(4),Z0(5),Z0(6),Z0(7)]
 xxbb = ['ttbb', bb0(1),bb0(2),bb0(3),bb0(4),bb0(5),bb0(6),bb0(7)]
-headers=['Sample','No cuts','Trigger','One lepton',' >= 7 jets','>= 5 b-tags',' eta(b_{i},b_{j})','>=6b-tags']
+t1 = HH0(1) + H0(1) + Z0(1) + bb0(1)
+t2 = HH0(2) + H0(2) + Z0(2) + bb0(2)
+t3 = HH0(3) + H0(3) + Z0(3) + bb0(3)
+t4 = HH0(4) + H0(4) + Z0(4) + bb0(4)
+t5 = HH0(5) + H0(5) + Z0(5) + bb0(5)
+t6 = HH0(6) + H0(6) + Z0(6) + bb0(6)
+t7 = HH0(7) + H0(7) + Z0(7) + bb0(7)
+total = ['Total background',t1,t2,t3,t4,t5,t6,t7]
 
-print(tabulate([xxHH,xxH,xxZ,xxbb],headers, tablefmt='pipe'))
+headers1=['Sample          ','No cuts','Trigger','One lepton',' >= 7 jets','>= 5 b-tags',' n(bi,bj)','>=6b-tags']
+headerst=['                ','       ','       ','          ','          ','           ','         ','         ']
+
+print(tabulate([xxHH,xxH,xxZ,xxbb],headers1, tablefmt='pipe'))
+print(tabulate([total],headerst, tablefmt='pipe'))
+
 cf = ROOT.THStack('cf','cf')
-
 c1 = ROOT.TCanvas('c1','Histograms',150,10,1000,700)
 
 c1.Divide(3,3,0.01,0.01,0)
@@ -59,7 +70,7 @@ ttHH1.SetLineColor(ROOT.kRed)
 ttHH1.SetStats(0)
 ttHH1.Scale(1/(ttHH1.Integral()))
 ttHH1.Draw('HIST SAME')
-ttHH1.SetAxisRange(0.,.15,'Y')
+ttHH1.SetAxisRange(0.,.35,'Y')
 ttH1.SetLineColor(ROOT.kBlue)
 ttH1.Scale(1/(ttH1.Integral()))
 ttH1.Draw('HIST SAME')
@@ -76,7 +87,7 @@ ttHH2.SetLineColor(ROOT.kRed)
 ttHH2.SetStats(0)
 ttHH2.Scale(1/(ttHH2.Integral()))
 ttHH2.Draw('HIST SAME')
-ttHH2.SetAxisRange(0.,.25,'Y')
+ttHH2.SetAxisRange(0.,.3,'Y')
 ttH2.SetLineColor(ROOT.kBlue)
 ttH2.Scale(1/(ttH2.Integral()))
 ttH2.Draw('HIST SAME')
@@ -91,6 +102,7 @@ c1.cd(3)
 ttHH3.SetLineColor(ROOT.kRed)
 ttHH3.SetStats(0)
 ttHH3.Scale(1/(ttHH3.Integral()))
+ttHH3.SetAxisRange(0.,.28,'Y')
 ttHH3.Draw('HIST SAME')
 ttH3.SetLineColor(ROOT.kBlue)
 ttH3.Scale(1/(ttH3.Integral()))
@@ -122,6 +134,7 @@ c1.cd(5)
 ttHH5.SetLineColor(ROOT.kRed)
 ttHH5.SetStats(0)
 ttHH5.Scale(1/(ttHH5.Integral()))
+ttHH5.SetAxisRange(0.,.3,'Y')
 ttHH5.Draw('HIST SAME')
 ttH5.SetLineColor(ROOT.kBlue)
 ttH5.Scale(1/(ttH5.Integral()))
@@ -137,6 +150,7 @@ c1.cd(6)
 ttHH6.SetLineColor(ROOT.kRed)
 ttHH6.SetStats(0)
 ttHH6.Scale(1/(ttHH6.Integral()))
+ttHH6.SetAxisRange(0.,.55,'Y')
 ttHH6.Draw('HIST SAME')
 ttH6.SetLineColor(ROOT.kBlue)
 ttH6.Scale(1/(ttH6.Integral()))
@@ -161,5 +175,15 @@ cf.Draw()
 ttbb0.SetFillColor(ROOT.kGreen+2)
 cf.Add(ttbb0)
 cf.Draw('HIST SAME')
+
+c1.cd(9)
+leg = ROOT.TLegend(0.1397049,0.3232212,0.9679572,0.8298819)
+leg.AddEntry(ttHH0,'ttHH')
+leg.AddEntry(ttH0,'ttH')
+leg.AddEntry(ttZ0,'ttZ')
+leg.AddEntry(ttbb0,'ttbb')
+leg.Draw()
+
+
 
 c1.Update()

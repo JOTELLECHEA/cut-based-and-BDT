@@ -5,8 +5,10 @@
 #------------------------------------------------------------------------------#
 import ROOT,sys
 import numpy as np
+import random,os
 from os import system
 from time import sleep
+import time
 from tabulate import tabulate
 def prRed(prt): print("\033[91m {}\033[00m" .format(prt))
 #------------------------------------------------------------------------------#
@@ -15,8 +17,11 @@ def menu():
     print '|                                          |'
     print '|Welcome to the ttHH Histogram Script 2019 |'
     print '|__________________________________________| \n'
-    print tabulate([['[1] -','ttHH'],['[2] -','ttH'],['[3] -','ttZ'],['[4] -','ttbb'],['[5] -','Quit']],headers=['No.','Sample'], tablefmt='psql')
-
+    print tabulate([['[1] -','ttHH(HH -> bbbb)', '--4 Mb'],
+    ['[2] -','ttbb','906 Mb'],
+    ['[3] -','ttH(H -> bb)','-95 Mb'],
+    ['[4] -','ttZ(Z -> bb)','-47 Mb'],
+    ['[5] -','Quit','XXXXXX']],headers=['No.','Sample','Size'], tablefmt='psql')
 menu()
 while True:
     try:
@@ -84,9 +89,10 @@ def vectorsum(x,y,c):
     return sum
 #------------------------------------------------------------------------------#
 # Loop through the entries of MyTree.
+t0 = time.time()
 for event in MyTree:
-    # Variables.
-    w    = event.mcweight[0]
+        # Variables.
+    w    = event.mcweight[0]    # Histogram weights.
     numlep = event.nlep[0]      # Store number of leptons in each event as num.
     numjet = event.njet[0]      # Store number of jets in each event as num.
     lepvec      = {}            # Initialize empty lepton vector.
@@ -104,32 +110,40 @@ for event in MyTree:
     cen_sum_Pt  = 0             # Initialize sum of Pt for all jets.
     cen_sum_E   = 0             # Initialize sum of E for all jets.
     HB_sum_Pt   = 0             # Initialize sum of Pt for all b-tag jets.
+    rand        = 0     # Initialize random variable with value (0,1).
     h0.Fill(0,w)
 #------------------------------Cuts Start--------------------------------------#
 # Events must have exactly one electron or one muon (as detailed in 3.1.1).
     for i in xrange(numlep):
         lepvec[i] = ROOT.TLorentzVector() # Cast vectors as Lorentz vectors.
         lepvec[i].SetPtEtaPhiM(event.leppT[i],event.lepeta[i],event.lepphi[i],0)
-        if lepvec[i].Pt() < 25000: continue
+        if lepvec[i].Pt() <= 25000: continue
         # Only selecting leptons > 25GeV.
-        if event.lepflav[i] == 11 and abs(event.lepeta[i]) >= 4.0: continue
+        if event.lepflav[i] == 11 and abs(event.lepeta[i]) <= 4.0:
+            goodleptons += 1
         # Only selecting electrons with |eta| <= 4.0.
-        if event.lepflav[i] == 13 and abs(event.lepeta[i]) >= 2.5: continue
+        elif event.lepflav[i] == 13 and abs(event.lepeta[i]) > 2.5: continue
         # Only selecting muons with |eta| <= 2.5.
         goodleptons += 1
-    h0.Fill(1,w) ### not a cut ####
+    if goodleptons == 0: continue #Trigger cut#
+    h0.Fill(1,w)
     h5.Fill(numjet,w)
 # Events must have >= 7 jets with pT > 30 GeV and eta <= 4.0.
     for i in xrange(numjet):
         jetvec[i] = ROOT.TLorentzVector()    # Cast vectors as Lorentz vectors.
         jetvec[i].SetPtEtaPhiM(event.jetpT[i],event.jeteta[i],event.jetphi[i],0)
-        if jetvec[i].Pt() < 30000: continue  # Only selecting jets > 30GeV.
-        if abs(event.jeteta[i]) >= 4.0: continue
+        if jetvec[i].Pt() <= 30000: continue  # Only selecting jets > 30GeV.
+        if abs(event.jeteta[i]) > 4.0: continue
         # Only selecting jets with |eta| <= 4.0.
         goodjets += 1                        # Count of jets.
-        if event.jetbhadron[i] != 1: continue
-        tracker_btj.append(i)                # B-tag jets into a list.
-    btagjets = len(tracker_btj)              # Count of b-tagged jets.
+        rand = random.random()
+        if event.jetbhadron[i] == 1 and rand < 0.7:
+            tracker_btj.append(i)              # B-tag jets into a list.
+        elif event.jetchadron[i] == 1 and rand < 0.2:
+            tracker_btj.append(i)
+        elif rand < 0.02:
+            tracker_btj.append(i)
+    btagjets = len(tracker_btj)
     if not goodleptons == 1:continue
     h0.Fill(2,w)
     if not goodjets  >= 7 : continue
@@ -145,7 +159,7 @@ for event in MyTree:
         # scalar sum of pT for b-tagged jets, HB.
         for j in xrange(btagjets):
             if i == j: continue
-            etasum += etabi_j(i,j)      # Finding separation between all b_jets.
+            etasum += etabi_j(i,j)           # Finding separation between all b_jets.
             vec_sum_Pt = vectorsum(i,j,'Pt') # Sum of btagjets Pt.
             vec_sum_M  = vectorsum(i,j,'M')  # Sum of btagjets M.
             if vec_sum_Pt < btjmaxPt:continue
@@ -153,22 +167,24 @@ for event in MyTree:
             btjmaxPt = vec_sum_Pt
             btjmaxM  = vec_sum_M
     h2.Fill(btjmaxM/1000,w)                    # Fill h2 histogram with M_bb.
-    if btagjets != 0:
-        etasum_N = etasum/(2*btagjets)       # Getting distance avg.
+    if btagjets > 0:
+        etasum_N = etasum/btagjets/4           # Getting distance avg.????
     h1.Fill(etasum_N,w)                        # Fill h1 w/ btagjets speration avg.
     h4.Fill(HB_sum_Pt/1000,w)                  # Fill h4 w/ scalar sum of pT.
     if etasum_N < 1.25 :
         h0.Fill(5,w)
         if btagjets >= 6:
             h0.Fill(6,w)
-
 #------------------------------------------------------------------------------#
     for i in xrange(numjet):
         cen_sum_E  += jetvec[i].E()          # Scalar sum of E.
         cen_sum_Pt += jetvec[i].Pt()         # Scalar sum of Pt.
     if cen_sum_E != 0:
-        h3.Fill(cen_sum_Pt/cen_sum_E,w)        # Fill h3 w/ scalar sum of Pt/E.
-
+        h3.Fill(cen_sum_Pt/cen_sum_E,w)      # Fill h3 w/ scalar sum of Pt/E.
+#------------------------------------------------------------------------------#
+    system('clear')
+    e = time.time() - t0
+    print '  Elapsed time is : %5.3f (s)' % e
 #-----------------------------Histograms Display-------------------------------#
 g = ROOT.TFile('all_hist.root','update')
 if int(x) == 1:
