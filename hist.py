@@ -4,6 +4,7 @@
 # Description: Histogram of ttHH from pg.8 in http://cdsweb.cern.ch/record/2220969/files/ATL-PHYS-PUB-2016-023.pdf
 #------------------------------------------------------------------------------#
 import ROOT
+import array as arr
 from tabulate import tabulate
 g = ROOT.TFile('all_hist.root')
 
@@ -60,10 +61,24 @@ headerst=['                ','       ','       ','          ','          ','    
 print(tabulate([xxHH,xxH,xxZ,xxbb],headers1, tablefmt='pipe'))
 print(tabulate([total],headerst, tablefmt='pipe'))
 
-cf = ROOT.THStack('cf','cf')
-c1 = ROOT.TCanvas('c1','Histograms',150,10,1000,700)
+c1 = ROOT.TCanvas('c1','Canvas 1',710,0,1000,500)
+c2 = ROOT.TCanvas('c2','Canvas 2',0,0,700,500)
+cf = ROOT.THStack('cf','CutFlow')
 
-c1.Divide(3,3,0.01,0.01,0)
+leg = ROOT.TLegend(0.75,.75,.95,.95)
+leg.AddEntry(ttHH0,'ttHH')
+leg.AddEntry(ttH0,'ttH')
+leg.AddEntry(ttZ0,'ttZ')
+leg.AddEntry(ttbb0,'ttbb')
+
+
+for i in xrange(1,8):
+    ttHH0.GetXaxis().SetBinLabel(i,headers1[i])
+    ttH0.GetXaxis().SetBinLabel(i,headers1[i])
+    ttZ0.GetXaxis().SetBinLabel(i,headers1[i])
+    ttbb0.GetXaxis().SetBinLabel(i,headers1[i])
+
+c1.Divide(3,2,0.01,0.01,0)
 
 c1.cd(1)
 ttHH1.SetLineColor(ROOT.kRed)
@@ -80,6 +95,7 @@ ttZ1.Draw('HIST SAME')
 ttbb1.SetLineColor(ROOT.kGreen+2)
 ttbb1.Scale(1/(ttbb1.Integral()))
 ttbb1.Draw('HIST SAME')
+leg.Draw()
 
 
 c1.cd(2)
@@ -97,6 +113,7 @@ ttZ2.Draw('HIST SAME')
 ttbb2.SetLineColor(ROOT.kGreen+2)
 ttbb2.Scale(1/(ttbb2.Integral()))
 ttbb2.Draw('HIST SAME')
+leg.Draw()
 
 c1.cd(3)
 ttHH3.SetLineColor(ROOT.kRed)
@@ -113,6 +130,7 @@ ttZ3.Draw('HIST SAME')
 ttbb3.SetLineColor(ROOT.kGreen+2)
 ttbb3.Scale(1/(ttbb3.Integral()))
 ttbb3.Draw('HIST SAME')
+leg.Draw()
 
 c1.cd(4)
 ttHH4.SetLineColor(ROOT.kRed)
@@ -129,6 +147,7 @@ ttZ4.Draw('HIST SAME')
 ttbb4.SetLineColor(ROOT.kGreen+2)
 ttbb4.Scale(1/(ttbb4.Integral()))
 ttbb4.Draw('HIST SAME')
+leg.Draw()
 
 c1.cd(5)
 ttHH5.SetLineColor(ROOT.kRed)
@@ -145,6 +164,7 @@ ttZ5.Draw('HIST SAME')
 ttbb5.SetLineColor(ROOT.kGreen+2)
 ttbb5.Scale(1/(ttbb5.Integral()))
 ttbb5.Draw('HIST SAME')
+leg.Draw()
 
 c1.cd(6)
 ttHH6.SetLineColor(ROOT.kRed)
@@ -161,8 +181,11 @@ ttZ6.Draw('HIST SAME')
 ttbb6.SetLineColor(ROOT.kGreen+2)
 ttbb6.Scale(1/(ttbb6.Integral()))
 ttbb6.Draw('HIST SAME')
+leg.Draw()
 
-c1.cd(8).SetLogy()
+c2.cd().SetLogy()
+ttHH0.SetStats(0)
+
 ttHH0.SetFillColor(ROOT.kRed)
 cf.Add(ttHH0)
 cf.Draw()
@@ -174,16 +197,5 @@ cf.Add(ttH0)
 cf.Draw()
 ttbb0.SetFillColor(ROOT.kGreen+2)
 cf.Add(ttbb0)
-cf.Draw('HIST SAME')
-
-c1.cd(9)
-leg = ROOT.TLegend(0.1397049,0.3232212,0.9679572,0.8298819)
-leg.AddEntry(ttHH0,'ttHH')
-leg.AddEntry(ttH0,'ttH')
-leg.AddEntry(ttZ0,'ttZ')
-leg.AddEntry(ttbb0,'ttbb')
+cf.Draw('HIST')
 leg.Draw()
-
-
-
-c1.Update()
