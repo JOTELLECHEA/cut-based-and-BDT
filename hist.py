@@ -6,7 +6,9 @@
 import ROOT
 import array as arr
 from tabulate import tabulate
+#------------------------------ root file -------------------------------------#
 g = ROOT.TFile('all_hist.root')
+#---------------------------- load Histogram ----------------------------------#
 
 ttHH0 = g.Get('ttHH0')
 ttHH1 = g.Get('ttHH1')
@@ -36,12 +38,12 @@ ttZ3  = g.Get('ttZ3')
 ttZ4  = g.Get('ttZ4')
 ttZ5  = g.Get('ttZ5')
 ttZ6  = g.Get('ttZ6')
-
-def HH0(x):return int(99 * ttHH0.GetBinContent(x)/2000)
-def H0(x):return int(612 * ttH0.GetBinContent(x)/600)
-def Z0(x):return int(269 * ttZ0.GetBinContent(x)/300)
-def bb0(x):return int(585 * ttbb0.GetBinContent(x)/600)
-
+#---------------------------Functions------------------------------------------#
+def HH0(x):return int(ttHH0.GetBinContent(x))
+def H0(x):return int(ttH0.GetBinContent(x))
+def Z0(x):return int(ttZ0.GetBinContent(x))
+def bb0(x):return int(ttbb0.GetBinContent(x))
+#---------------------------table/values --------------------------------------#
 xxHH = ['ttHH', HH0(1),HH0(2),HH0(3),HH0(4),HH0(5),HH0(6),HH0(7)]
 xxH  = ['ttH',  H0(1),H0(2),H0(3),H0(4),H0(5),H0(6),H0(7)]
 xxZ  = ['ttZ',  Z0(1),Z0(2),Z0(3),Z0(4),Z0(5),Z0(6),Z0(7)]
@@ -54,38 +56,36 @@ t5 = HH0(5) + H0(5) + Z0(5) + bb0(5)
 t6 = HH0(6) + H0(6) + Z0(6) + bb0(6)
 t7 = HH0(7) + H0(7) + Z0(7) + bb0(7)
 total = ['Total background',t1,t2,t3,t4,t5,t6,t7]
-
 headers1=['Sample          ','No cuts','Trigger','One lepton',' >= 7 jets','>= 5 b-tags',' n(bi,bj)','>=6b-tags']
 headerst=['                ','       ','       ','          ','          ','           ','         ','         ']
-
 print(tabulate([xxHH,xxH,xxZ,xxbb],headers1, tablefmt='pipe'))
 print(tabulate([total],headerst, tablefmt='pipe'))
-
+#---------------------------Canvas and THStack---------------------------------#
 c1 = ROOT.TCanvas('c1','Canvas 1',710,0,1000,500)
 c2 = ROOT.TCanvas('c2','Canvas 2',0,0,700,500)
-cf = ROOT.THStack('cf','CutFlow')
-
-leg = ROOT.TLegend(0.75,.75,.95,.95)
-leg.AddEntry(ttHH0,'ttHH')
-leg.AddEntry(ttH0,'ttH')
-leg.AddEntry(ttZ0,'ttZ')
-leg.AddEntry(ttbb0,'ttbb')
-
-
+cf = ROOT.THStack('cf','CutFlow;Cuts;Events')
+#-----------------------------TLegend------------------------------------------#
+leg = ROOT.TLegend(0.69,0.69,0.89,0.89)
+leg.SetLineColor(ROOT.kWhite)
+leg.AddEntry(ttHH1,'ttHH')
+leg.AddEntry(ttH1,'ttH')
+leg.AddEntry(ttZ1,'ttZ')
+leg.AddEntry(ttbb1,'ttbb')
+#-----------------------------bin labels---------------------------------------#
 for i in xrange(1,8):
     ttHH0.GetXaxis().SetBinLabel(i,headers1[i])
     ttH0.GetXaxis().SetBinLabel(i,headers1[i])
     ttZ0.GetXaxis().SetBinLabel(i,headers1[i])
     ttbb0.GetXaxis().SetBinLabel(i,headers1[i])
-
+#------------------------------------------------------------------------------#
 c1.Divide(3,2,0.01,0.01,0)
 
-c1.cd(1)
+c1.cd(1)##################################### Seperation between two b-tag jets.
 ttHH1.SetLineColor(ROOT.kRed)
 ttHH1.SetStats(0)
 ttHH1.Scale(1/(ttHH1.Integral()))
 ttHH1.Draw('HIST SAME')
-ttHH1.SetAxisRange(0.,.35,'Y')
+ttHH1.SetAxisRange(0.,.36,'Y')
 ttH1.SetLineColor(ROOT.kBlue)
 ttH1.Scale(1/(ttH1.Integral()))
 ttH1.Draw('HIST SAME')
@@ -98,12 +98,12 @@ ttbb1.Draw('HIST SAME')
 leg.Draw()
 
 
-c1.cd(2)
+c1.cd(2)################################################### Higgs canidate mass.
 ttHH2.SetLineColor(ROOT.kRed)
 ttHH2.SetStats(0)
 ttHH2.Scale(1/(ttHH2.Integral()))
 ttHH2.Draw('HIST SAME')
-ttHH2.SetAxisRange(0.,.3,'Y')
+ttHH2.SetAxisRange(0.,.405,'Y')
 ttH2.SetLineColor(ROOT.kBlue)
 ttH2.Scale(1/(ttH2.Integral()))
 ttH2.Draw('HIST SAME')
@@ -115,11 +115,11 @@ ttbb2.Scale(1/(ttbb2.Integral()))
 ttbb2.Draw('HIST SAME')
 leg.Draw()
 
-c1.cd(3)
+c1.cd(3)############################################################ Centrality.
 ttHH3.SetLineColor(ROOT.kRed)
 ttHH3.SetStats(0)
 ttHH3.Scale(1/(ttHH3.Integral()))
-ttHH3.SetAxisRange(0.,.28,'Y')
+ttHH3.SetAxisRange(0.,.27,'Y')
 ttHH3.Draw('HIST SAME')
 ttH3.SetLineColor(ROOT.kBlue)
 ttH3.Scale(1/(ttH3.Integral()))
@@ -132,12 +132,12 @@ ttbb3.Scale(1/(ttbb3.Integral()))
 ttbb3.Draw('HIST SAME')
 leg.Draw()
 
-c1.cd(4)
+c1.cd(4)################################################################### H_B.
 ttHH4.SetLineColor(ROOT.kRed)
 ttHH4.SetStats(0)
 ttHH4.Scale(1/(ttHH4.Integral()))
 ttHH4.Draw('HIST SAME')
-ttHH4.SetAxisRange(0.,.55,'Y')
+ttHH4.SetAxisRange(0.,.51,'Y')
 ttH4.SetLineColor(ROOT.kBlue)
 ttH4.Scale(1/(ttH4.Integral()))
 ttH4.Draw('HIST SAME')
@@ -149,7 +149,7 @@ ttbb4.Scale(1/(ttbb4.Integral()))
 ttbb4.Draw('HIST SAME')
 leg.Draw()
 
-c1.cd(5)
+c1.cd(5)####################################################### Jet muliplicity.
 ttHH5.SetLineColor(ROOT.kRed)
 ttHH5.SetStats(0)
 ttHH5.Scale(1/(ttHH5.Integral()))
@@ -166,11 +166,11 @@ ttbb5.Scale(1/(ttbb5.Integral()))
 ttbb5.Draw('HIST SAME')
 leg.Draw()
 
-c1.cd(6)
+c1.cd(6)############################################### Number of b-tagged jets.
 ttHH6.SetLineColor(ROOT.kRed)
 ttHH6.SetStats(0)
 ttHH6.Scale(1/(ttHH6.Integral()))
-ttHH6.SetAxisRange(0.,.55,'Y')
+ttHH6.SetAxisRange(0.,.40,'Y')
 ttHH6.Draw('HIST SAME')
 ttH6.SetLineColor(ROOT.kBlue)
 ttH6.Scale(1/(ttH6.Integral()))
@@ -183,9 +183,8 @@ ttbb6.Scale(1/(ttbb6.Integral()))
 ttbb6.Draw('HIST SAME')
 leg.Draw()
 
-c2.cd().SetLogy()
+c2.cd().SetLogy() #################################################### Cut Flow.
 ttHH0.SetStats(0)
-
 ttHH0.SetFillColor(ROOT.kRed)
 cf.Add(ttHH0)
 cf.Draw()

@@ -89,7 +89,7 @@ def vectorsum(x,y,c):
     return sum
 #------------------------------------------------------------------------------#
 # Loop through the entries of MyTree.
-t0 = time.time()
+print 'Started @:', time.asctime()
 for event in MyTree:
         # Variables.
     w    = event.mcweight[0]    # Histogram weights.
@@ -119,13 +119,13 @@ for event in MyTree:
         lepvec[i].SetPtEtaPhiM(event.leppT[i],event.lepeta[i],event.lepphi[i],0)
         if lepvec[i].Pt() <= 25000: continue
         # Only selecting leptons > 25GeV.
-        if event.lepflav[i] == 11 and abs(event.lepeta[i]) <= 4.0:
+        if abs(event.lepflav[i]) == 11 and abs(event.lepeta[i]) <= 4.0:
             goodleptons += 1
         # Only selecting electrons with |eta| <= 4.0.
-        elif event.lepflav[i] == 13 and abs(event.lepeta[i]) > 2.5: continue
+        elif abs(event.lepflav[i]) == 13 and abs(event.lepeta[i]) <= 2.5:
         # Only selecting muons with |eta| <= 2.5.
-        goodleptons += 1
-    if goodleptons == 0: continue #Trigger cut#
+            goodleptons += 1
+    if not goodleptons >= 1: continue #Trigger cut#
     h0.Fill(1,w)
     h5.Fill(numjet,w)
 # Events must have >= 7 jets with pT > 30 GeV and eta <= 4.0.
@@ -135,13 +135,13 @@ for event in MyTree:
         if jetvec[i].Pt() <= 30000: continue  # Only selecting jets > 30GeV.
         if abs(event.jeteta[i]) > 4.0: continue
         # Only selecting jets with |eta| <= 4.0.
-        goodjets += 1                        # Count of jets.
+        goodjets += 1                                           # Count of jets.
         rand = random.random()
         if event.jetbhadron[i] == 1 and rand < 0.7:
             tracker_btj.append(i)              # B-tag jets into a list.
         elif event.jetchadron[i] == 1 and rand < 0.2:
             tracker_btj.append(i)
-        elif rand < 0.02:
+        elif rand < 0.002:
             tracker_btj.append(i)
     btagjets = len(tracker_btj)
     if not goodleptons == 1:continue
@@ -151,7 +151,6 @@ for event in MyTree:
     h6.Fill(btagjets,w)
     if not btagjets  >= 5 : continue
     h0.Fill(4,w)
-    # if not (goodleptons == 1 and goodjets >= 7 and btagjets >= 5):continue
     # Passing lepton req. min of 7 jets with at least 5 b-tag jets.
 #---------------------------------Cuts-End-------------------------------------#
     for i in xrange(btagjets):
@@ -167,8 +166,8 @@ for event in MyTree:
             btjmaxPt = vec_sum_Pt
             btjmaxM  = vec_sum_M
     h2.Fill(btjmaxM/1000,w)                    # Fill h2 histogram with M_bb.
-    if btagjets > 0:
-        etasum_N = etasum/btagjets/4           # Getting distance avg.????
+    if btagjets > 0:###################### should it be btagjets > 1
+        etasum_N = etasum/(btagjets**2 - btagjets)  # Getting distance avg.????
     h1.Fill(etasum_N,w)                        # Fill h1 w/ btagjets speration avg.
     h4.Fill(HB_sum_Pt/1000,w)                  # Fill h4 w/ scalar sum of pT.
     if etasum_N < 1.25 :
@@ -181,13 +180,12 @@ for event in MyTree:
         cen_sum_Pt += jetvec[i].Pt()         # Scalar sum of Pt.
     if cen_sum_E != 0:
         h3.Fill(cen_sum_Pt/cen_sum_E,w)      # Fill h3 w/ scalar sum of Pt/E.
-#------------------------------------------------------------------------------#
-    system('clear')
-    e = time.time() - t0
-    print '  Elapsed time is : %5.3f (s)' % e
 #-----------------------------Histograms Display-------------------------------#
 g = ROOT.TFile('all_hist.root','update')
 if int(x) == 1:
+    ttHH0 = h0.Clone('ttHH0')
+    ttHH0.Scale(990/ttHH0.GetBinContent(1))
+    ttHH0.Write()
     ttHH1 = h1.Clone('ttHH1')
     ttHH1.Write()
     ttHH2 = h2.Clone('ttHH2')
@@ -200,9 +198,10 @@ if int(x) == 1:
     ttHH5.Write()
     ttHH6 = h6.Clone('ttHH6')
     ttHH6.Write()
-    ttHH0 = h0.Clone('ttHH0')
-    ttHH0.Write()
 elif int(x) == 2:
+    ttbb0 = h0.Clone('ttbb0')
+    ttbb0.Scale(5850000/ttbb0.GetBinContent(1))
+    ttbb0.Write()
     ttbb1 = h1.Clone('ttbb1')
     ttbb1.Write()
     ttbb2 = h2.Clone('ttbb2')
@@ -215,9 +214,10 @@ elif int(x) == 2:
     ttbb5.Write()
     ttbb6 = h6.Clone('ttbb6')
     ttbb6.Write()
-    ttbb0 = h0.Clone('ttbb0')
-    ttbb0.Write()
 elif int(x) == 3:
+    ttH0 = h0.Clone('ttH0')
+    ttH0.Scale(612000/ttH0.GetBinContent(1))
+    ttH0.Write()
     ttH1 = h1.Clone('ttH1')
     ttH1.Write()
     ttH2 = h2.Clone('ttH2')
@@ -230,9 +230,10 @@ elif int(x) == 3:
     ttH5.Write()
     ttH6 = h6.Clone('ttH6')
     ttH6.Write()
-    ttH0 = h0.Clone('ttH0')
-    ttH0.Write()
 elif int(x) == 4:
+    ttZ0 = h0.Clone('ttZ0')
+    ttZ0.Scale(269000/ttZ0.GetBinContent(1))
+    ttZ0.Write()
     ttZ1 = h1.Clone('ttZ1')
     ttZ1.Write()
     ttZ2 = h2.Clone('ttZ2')
@@ -245,6 +246,4 @@ elif int(x) == 4:
     ttZ5.Write()
     ttZ6 = h6.Clone('ttZ6')
     ttZ6.Write()
-    ttZ0 = h0.Clone('ttZ0')
-    ttZ0.Write()
 prRed('****************** Finished **************\n')
