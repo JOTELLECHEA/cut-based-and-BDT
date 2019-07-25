@@ -66,13 +66,14 @@ MyTree = f.Get('OutputTree')
 entries = MyTree.GetEntries()
 #------------------------------------------------------------------------------#
 # Create Canvas and empty Histograms hx.
+h0 = ROOT.TH1D('counter','counter',7,0,7)
 h1 = ROOT.TH1D('#eta','#eta;< #eta(b_{i},b_{j}) >;Events normalized to unit area / 0.2',20,0,4)
 h2 = ROOT.TH1D('M_{bb}','M_{bb};M_{bb} [GeV];Events normalized to unit area / 25GeV',10,0,250)
 h3 = ROOT.TH1D('Centrality','Centrality;Centrality;Events normalised to unit area / 0.1',10,0,1)
 h4 = ROOT.TH1D('H_{B}','H_{B};H_{B} [GeV];Events normalised to unit area / 150GeV',10,0,1500)
 h5 = ROOT.TH1D('jet','jet;Jet muliplicity;Events normalised to unit area',13,0,13)
 h6 = ROOT.TH1D('btag','btag;N b-tagged jets',10,-.5,9.5)
-h0 = ROOT.TH1D('counter','counter;sfsfs',7,0,7)
+h7 = ROOT.TH1D('met','met;Transverse mass (GeV);Events',100,0,500)
 #------------------------------------------------------------------------------#
 # Functions:
 # Average separation in pseudorapidity between two b-tagged jets.
@@ -85,7 +86,6 @@ def vectorsum(x,y,c):
         sum = (jetvec[tracker_btj[x]] + jetvec[tracker_btj[y]]).Pt()
     elif c == 'M':
         sum = (jetvec[tracker_btj[x]] + jetvec[tracker_btj[y]]).M()
-
     return sum
 #------------------------------------------------------------------------------#
 # Loop through the entries of MyTree.
@@ -111,22 +111,37 @@ for event in MyTree:
     cen_sum_E   = 0             # Initialize sum of E for all jets.
     HB_sum_Pt   = 0             # Initialize sum of Pt for all b-tag jets.
     rand        = 0     # Initialize random variable with value (0,1).
+    onelep      = False
+    mt          = 0
     h0.Fill(0,w)
 #------------------------------Cuts Start--------------------------------------#
 # Events must have exactly one electron or one muon (as detailed in 3.1.1).
     for i in xrange(numlep):
         lepvec[i] = ROOT.TLorentzVector() # Cast vectors as Lorentz vectors.
         lepvec[i].SetPtEtaPhiM(event.leppT[i],event.lepeta[i],event.lepphi[i],0)
+        mt = ROOT.TMath.Sqrt(2 * event.met[0] * lepvec[i].Pt()/(10**6) * ( 1 - ROOT.TMath.Cos((lepvec[i].Phi() - event.met_phi[0]))))
+        h7.Fill(mt,w)
+        if event.lepflav[i] == 11 and abs(event.lepeta[i]) < 2.5 and (22000 < event.leppT[i] < 35000) and rand <= .95:
+            goodleptons += 1
+            h0.Fill(1,w)
+        elif event.lepflav[i] == 11 and abs(event.lepeta[i]) < 2.5 and event.leppT[i] > 35000 and rand <= 1.00:
+            goodleptons += 1
+            h0.Fill(1,w)
+        elif event.lepflav[i] == 11 and (2.5 < abs(event.lepeta[i]) < 4.9) and event.leppT[i] > 35000 and rand <= 0.90:
+            goodleptons += 1
+            h0.Fill(1,w)
+        elif event.lepflav[i] == 13 and abs(event.lepeta[i]) < 2.4 and event.leppT[i] > 20000 and rand <= 0.96:
+            goodleptons +=1
+            h0.Fill(1,w)
         if lepvec[i].Pt() <= 25000: continue
         # Only selecting leptons > 25GeV.
         if abs(event.lepflav[i]) == 11 and abs(event.lepeta[i]) <= 4.0:
-            goodleptons += 1
+            onelep = True
         # Only selecting electrons with |eta| <= 4.0.
         elif abs(event.lepflav[i]) == 13 and abs(event.lepeta[i]) <= 2.5:
         # Only selecting muons with |eta| <= 2.5.
-            goodleptons += 1
-    if not goodleptons >= 1: continue #Trigger cut#
-    h0.Fill(1,w)
+            onelep = True
+    if onelep == False: continue #Trigger cut#
     h5.Fill(numjet,w)
 # Events must have >= 7 jets with pT > 30 GeV and eta <= 4.0.
     for i in xrange(numjet):
@@ -137,11 +152,11 @@ for event in MyTree:
         # Only selecting jets with |eta| <= 4.0.
         goodjets += 1                                           # Count of jets.
         rand = random.random()
-        if event.jetbhadron[i] == 1 and rand < 0.7:
+        if event.jetbhadron[i] == 1 and rand <= 0.7:
             tracker_btj.append(i)              # B-tag jets into a list.
-        elif event.jetchadron[i] == 1 and rand < 0.2:
+        elif event.jetchadron[i] == 1 and rand <= 0.2:
             tracker_btj.append(i)
-        elif rand < 0.002:
+        elif rand <= 0.002:
             tracker_btj.append(i)
     btagjets = len(tracker_btj)
     if not goodleptons == 1:continue
@@ -166,7 +181,7 @@ for event in MyTree:
             btjmaxPt = vec_sum_Pt
             btjmaxM  = vec_sum_M
     h2.Fill(btjmaxM/1000,w)                    # Fill h2 histogram with M_bb.
-    if btagjets > 0:###################### should it be btagjets > 1
+    if btagjets > 1:
         etasum_N = etasum/(btagjets**2 - btagjets)  # Getting distance avg.????
     h1.Fill(etasum_N,w)                        # Fill h1 w/ btagjets speration avg.
     h4.Fill(HB_sum_Pt/1000,w)                  # Fill h4 w/ scalar sum of pT.
@@ -198,6 +213,8 @@ if int(x) == 1:
     ttHH5.Write()
     ttHH6 = h6.Clone('ttHH6')
     ttHH6.Write()
+    ttHH7 = h7.Clone('ttHH7')
+    ttHH7.Write()
 elif int(x) == 2:
     ttbb0 = h0.Clone('ttbb0')
     ttbb0.Scale(5850000/ttbb0.GetBinContent(1))
@@ -214,6 +231,8 @@ elif int(x) == 2:
     ttbb5.Write()
     ttbb6 = h6.Clone('ttbb6')
     ttbb6.Write()
+    ttbb7 = h7.Clone('ttbb7')
+    ttbb7.Write()
 elif int(x) == 3:
     ttH0 = h0.Clone('ttH0')
     ttH0.Scale(612000/ttH0.GetBinContent(1))
@@ -230,6 +249,8 @@ elif int(x) == 3:
     ttH5.Write()
     ttH6 = h6.Clone('ttH6')
     ttH6.Write()
+    ttH7 = h7.Clone('ttH7')
+    ttH7.Write()
 elif int(x) == 4:
     ttZ0 = h0.Clone('ttZ0')
     ttZ0.Scale(269000/ttZ0.GetBinContent(1))
@@ -246,4 +267,6 @@ elif int(x) == 4:
     ttZ5.Write()
     ttZ6 = h6.Clone('ttZ6')
     ttZ6.Write()
+    ttZ7 = h7.Clone('ttZ7')
+    ttZ7.Write()
 prRed('****************** Finished **************\n')
