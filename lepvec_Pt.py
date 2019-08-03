@@ -74,6 +74,7 @@ h4 = ROOT.TH1D('H_{B}','H_{B};H_{B} [GeV];Events normalised to unit area / 150Ge
 h5 = ROOT.TH1D('jet','jet;Jet muliplicity;Events normalised to unit area',13,0,13)
 h6 = ROOT.TH1D('btag','btag;N b-tagged jets',10,-.5,9.5)
 h7 = ROOT.TH1D('met','met;Transverse mass (GeV);Events',100,0,500)
+h8 = ROOT.TH1D('pT-r','pT-r;pT of remaining non btag jets (GeV);Events',100,0,500)
 #------------------------------------------------------------------------------#
 # Functions:
 # Average separation in pseudorapidity between two b-tagged jets.
@@ -98,6 +99,7 @@ for event in MyTree:
     lepvec      = {}            # Initialize empty lepton vector.
     jetvec      = {}            # Initialize empty jet vector.
     tracker_btj = []            # Initialize empty tracking btagjets.
+    tracker_non = []            # Initialize empty tracking non btagjets.
     btjmaxPt    = 0             # Initialize empty b-tag vecto for max .Pt().
     btjmaxM     = 0             # Initialize empty b-tag vecto for max .M().
     vec_sum_Pt  = 0             # Initialize empty b-tag vector for summing Pt().
@@ -105,6 +107,7 @@ for event in MyTree:
     goodleptons = 0             # Initialize counter for leptons.
     goodjets    = 0             # Initialize counter for jets.
     btagjets    = 0             # Initialize counter for b-tag jets.
+    ntagjets    = 0             # Initialize counter for non b-tag jets.
     etasum      = 0             # Initialize sum for eta seperation.
     etasum_N    = 0             # Initialize sum for eta separation average.
     cen_sum_Pt  = 0             # Initialize sum of Pt for all jets.
@@ -158,15 +161,20 @@ for event in MyTree:
             tracker_btj.append(i)
         elif rand <= 0.002:
             tracker_btj.append(i)
+        else:
+        	tracker_non.append(i)
     btagjets = len(tracker_btj)
+    ntagjets = len(tracker_non)
     if not goodleptons == 1:continue
     h0.Fill(2,w)
     if not goodjets  >= 7 : continue
     h0.Fill(3,w)
     h6.Fill(btagjets,w)
+    for l in xrange(ntagjets):
+    	h8.Fill(jetvec[l].Pt()/1000,w)
     if not btagjets  >= 5 : continue
     h0.Fill(4,w)
-    # Passing lepton req. min of 7 jets with at least 5 b-tag jets.
+    # Passing lepton req. and min of 7 jets with at least 5 b-tag jets.
 #---------------------------------Cuts-End-------------------------------------#
     for i in xrange(btagjets):
         HB_sum_Pt += jetvec[tracker_btj[i]].Pt()
@@ -215,6 +223,8 @@ if int(x) == 1:
     ttHH6.Write()
     ttHH7 = h7.Clone('ttHH7')
     ttHH7.Write()
+    ttHH8 = h8.Clone('ttHH8')
+    ttHH8.Write()
 elif int(x) == 2:
     ttbb0 = h0.Clone('ttbb0')
     ttbb0.Scale(5850000/ttbb0.GetBinContent(1))
@@ -233,6 +243,8 @@ elif int(x) == 2:
     ttbb6.Write()
     ttbb7 = h7.Clone('ttbb7')
     ttbb7.Write()
+    ttbb8 = h8.Clone('ttbb8')
+    ttbb8.Write()
 elif int(x) == 3:
     ttH0 = h0.Clone('ttH0')
     ttH0.Scale(612000/ttH0.GetBinContent(1))
@@ -251,6 +263,8 @@ elif int(x) == 3:
     ttH6.Write()
     ttH7 = h7.Clone('ttH7')
     ttH7.Write()
+    ttH8 = h8.Clone('ttH8')
+    ttH8.Write()
 elif int(x) == 4:
     ttZ0 = h0.Clone('ttZ0')
     ttZ0.Scale(269000/ttZ0.GetBinContent(1))
@@ -269,4 +283,6 @@ elif int(x) == 4:
     ttZ6.Write()
     ttZ7 = h7.Clone('ttZ7')
     ttZ7.Write()
+    ttZ8 = h8.Clone('ttZ8')
+    ttZ8.Write()
 prRed('****************** Finished **************\n')
