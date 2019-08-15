@@ -90,9 +90,8 @@ def vectorsum(x,y,c):
     return sum
 #------------------------------------------------------------------------------#
 # Loop through the entries of MyTree.
-print 'Started @:', time.asctime()
 for event in MyTree:
-        # Variables.
+    # Variables.
     w    = event.mcweight[0]    # Histogram weights.
     numlep = event.nlep[0]      # Store number of leptons in each event as num.
     numjet = event.njet[0]      # Store number of jets in each event as num.
@@ -286,3 +285,4 @@ elif int(x) == 4:
     ttZ8 = h8.Clone('ttZ8')
     ttZ8.Write()
 prRed('****************** Finished **************\n')
+print 'Finished @:', time.asctime()
