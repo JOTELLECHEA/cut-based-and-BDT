@@ -75,6 +75,10 @@ h5 = ROOT.TH1D('jet','jet;Jet muliplicity;Events normalised to unit area',13,0,1
 h6 = ROOT.TH1D('btag','btag;N b-tagged jets',10,-.5,9.5)
 h7 = ROOT.TH1D('met','met;Transverse mass (GeV);Events',100,0,500)
 h8 = ROOT.TH1D('pT-r','pT-r;pT of remaining non btag jets (GeV);Events',100,0,500)
+h9 = ROOT.TH1D('dRl','dRl;dRl cone;Events',100,0,450)
+h10 = ROOT.TH1D('massb','massb;h10;Events',100,0,450)
+h11 = ROOT.TH1D('1stpT','1stpT;h11;Events',100,0,450)
+h12 = ROOT.TH1D('2ndpT','2ndpT;h12;Events',100,0,450)
 #------------------------------------------------------------------------------#
 # Functions:
 # Average separation in pseudorapidity between two b-tagged jets.
@@ -115,6 +119,16 @@ for event in MyTree:
     rand        = 0     # Initialize random variable with value (0,1).
     onelep      = False
     mt          = 0
+    pT1			= 0
+    pT2			= 0
+    pTmax		= 0
+    cone_l_Pt	= 0
+    cone_j_Pt	= 0
+    m1 = 0
+    m2 = 0
+    mv = 0
+    l1          = []
+    l2          = []
     h0.Fill(0,w)
 #------------------------------Cuts Start--------------------------------------#
 # Events must have exactly one electron or one muon (as detailed in 3.1.1).
@@ -143,6 +157,10 @@ for event in MyTree:
         elif abs(event.lepflav[i]) == 13 and abs(event.lepeta[i]) <= 2.5:
         # Only selecting muons with |eta| <= 2.5.
             onelep = True
+        # if 0.2 < np.sqrt(event.lepeta[i]**2 + event.lepphi[i]**2): continue
+        # cone_l_Pt = event.leppT[i]
+        # h9.Fill(cone_l_Pt/1000,w)
+        # h10.Fill(event.met[0]/1000,w)
     if onelep == False: continue #Trigger cut#
     h5.Fill(numjet,w)
 # Events must have >= 7 jets with pT > 30 GeV and eta <= 4.0.
@@ -171,10 +189,19 @@ for event in MyTree:
     h6.Fill(btagjets,w)
     for l in xrange(ntagjets):
     	h8.Fill(jetvec[l].Pt()/1000,w)
-    if not btagjets  >= 5 : continue
-    h0.Fill(4,w)
-    # Passing lepton req. and min of 7 jets with at least 5 b-tag jets.
-#---------------------------------Cuts-End-------------------------------------#
+    if btagjets  >= 5: 
+    	h0.Fill(4,w)
+    if not btagjets  >= 6: 
+    	continue
+	for i in xrange(btagjets):
+		l1[i] = jetvec[tracker_btj[i]].Pt()
+        l2[i] = jetvec[tracker_btj[i]].Pt()
+    mv = max(l1)
+    m1 = l2.index(mv)
+    l1.remove(mv)
+    mv = max(l1)
+    m2 = l2.index(mv) 
+    h10.Fill((jetvec[tracker_btj[m1]]+jetvec[tracker_btj[m2]]).M(),w)
     for i in xrange(btagjets):
         HB_sum_Pt += jetvec[tracker_btj[i]].Pt()
         # scalar sum of pT for b-tagged jets, HB.
@@ -189,7 +216,7 @@ for event in MyTree:
             btjmaxM  = vec_sum_M
     h2.Fill(btjmaxM/1000,w)                    # Fill h2 histogram with M_bb.
     if btagjets > 1:
-        etasum_N = etasum/(btagjets**2 - btagjets)  # Getting distance avg.????
+        etasum_N = etasum/(btagjets**2 - btagjets)  # Getting distance avg.
     h1.Fill(etasum_N,w)                        # Fill h1 w/ btagjets speration avg.
     h4.Fill(HB_sum_Pt/1000,w)                  # Fill h4 w/ scalar sum of pT.
     if etasum_N < 1.25 :
@@ -197,12 +224,15 @@ for event in MyTree:
         if btagjets >= 6:
             h0.Fill(6,w)
 #------------------------------------------------------------------------------#
+# chi square code here
+#------------------------------------------------------------------------------#
     for i in xrange(numjet):
         cen_sum_E  += jetvec[i].E()          # Scalar sum of E.
         cen_sum_Pt += jetvec[i].Pt()         # Scalar sum of Pt.
     if cen_sum_E != 0:
         h3.Fill(cen_sum_Pt/cen_sum_E,w)      # Fill h3 w/ scalar sum of Pt/E.
-#-----------------------------Histograms Display-------------------------------#
+#------------------------------------------------------------------------------#
+#------------Histograms Display-------------------------------#
 g = ROOT.TFile('all_hist.root','update')
 if int(x) == 1:
     ttHH0 = h0.Clone('ttHH0')
@@ -224,6 +254,10 @@ if int(x) == 1:
     ttHH7.Write()
     ttHH8 = h8.Clone('ttHH8')
     ttHH8.Write()
+    ttHH9 = h9.Clone('ttHH9')
+    ttHH9.Write()
+    ttHH10 = h10.Clone('ttHH10')
+    ttHH10.Write()
 elif int(x) == 2:
     ttbb0 = h0.Clone('ttbb0')
     ttbb0.Scale(5850000/ttbb0.GetBinContent(1))
