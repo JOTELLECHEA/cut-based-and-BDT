@@ -189,10 +189,10 @@ for event in MyTree:
     h6.Fill(btagjets,w)
     for l in xrange(ntagjets):
     	h8.Fill(jetvec[l].Pt()/1000,w)
-    if btagjets  >= 5: 
-    	h0.Fill(4,w)
-    if not btagjets  >= 6: 
-    	continue
+    if 5 <= btagjets < 6: 
+        h0.Fill(4,w)
+    # elif btagjets  >= 6:
+    #     print btagjets
 	for i in xrange(btagjets):
 		l1[i] = jetvec[tracker_btj[i]].Pt()
         l2[i] = jetvec[tracker_btj[i]].Pt()
