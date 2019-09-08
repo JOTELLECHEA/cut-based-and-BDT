@@ -76,7 +76,7 @@ h6 = ROOT.TH1D('btag','btag;N b-tagged jets',10,-.5,9.5)
 h7 = ROOT.TH1D('met','met;Transverse mass (GeV);Events',100,0,500)
 h8 = ROOT.TH1D('pT of top 2 btag','pT of top 2 btag;invariant mass of two highest btag pT (GeV);Events',100,0,1000)
 h9 = ROOT.TH1D('#DeltaR','#DeltaR;#DeltaR ;Events',100,0,5)
-# h10 = ROOT.TH1D('massb','massb;h10;Events',100,0,450)
+h10 = ROOT.TH1D('chi square','chi square;chi;Events',100,14395,14405)
 # h11 = ROOT.TH1D('1stpT','1stpT;h11;Events',100,0,450)
 # h12 = ROOT.TH1D('2ndpT','2ndpT;h12;Events',100,0,450)
 # #------------------------------------------------------------------------------#
@@ -127,6 +127,7 @@ for event in MyTree:
     m1          = 0
     m2          = 0
     mv          = 0
+    chi_b_120	= 0
     l1          = []
     l2          = []
     h0.Fill(0,w)
@@ -203,6 +204,8 @@ for event in MyTree:
         # scalar sum of pT for b-tagged jets, HB.
         for j in xrange(btagjets):
             if i == j: continue
+            chi_b_120 = jetvec[tracker_btj[i]].M() + jetvec[tracker_btj[j]].M()
+            h10.Fill((chi_b_120 - 120)**2,w)
             etasum += etabi_j(i,j)           # Finding separation between all b_jets.
             vec_sum_Pt = vectorsum(i,j,'Pt') # Sum of btagjets Pt.
             vec_sum_M  = vectorsum(i,j,'M')  # Sum of btagjets M.
@@ -219,8 +222,6 @@ for event in MyTree:
         h0.Fill(5,w)
         if btagjets >= 6:
             h0.Fill(6,w)
-#------------------------------------------------------------------------------#
-# chi square code here
 #------------------------------------------------------------------------------#
     for i in xrange(numjet):
         cen_sum_E  += jetvec[i].E()          # Scalar sum of E.
@@ -252,8 +253,8 @@ if int(x) == 1:
     ttHH8.Write()
     ttHH9 = h9.Clone('ttHH9')
     ttHH9.Write()
-    # ttHH10 = h10.Clone('ttHH10')
-    # ttHH10.Write()
+    ttHH10 = h10.Clone('ttHH10')
+    ttHH10.Write()
 elif int(x) == 2:
     ttbb0 = h0.Clone('ttbb0')
     ttbb0.Scale(5850000/ttbb0.GetBinContent(1))
@@ -274,6 +275,10 @@ elif int(x) == 2:
     ttbb7.Write()
     ttbb8 = h8.Clone('ttbb8')
     ttbb8.Write()
+    ttbb9 = h9.Clone('ttbb9')
+    ttbb9.Write()
+    ttbb10 = h10.Clone('ttbb10')
+    ttbb10.Write()
 elif int(x) == 3:
     ttH0 = h0.Clone('ttH0')
     ttH0.Scale(612000/ttH0.GetBinContent(1))
@@ -294,6 +299,10 @@ elif int(x) == 3:
     ttH7.Write()
     ttH8 = h8.Clone('ttH8')
     ttH8.Write()
+    ttH9 = h9.Clone('ttH9')
+    ttH9.Write()
+    ttH10 = h10.Clone('ttH10')
+    ttH10.Write()
 elif int(x) == 4:
     ttZ0 = h0.Clone('ttZ0')
     ttZ0.Scale(269000/ttZ0.GetBinContent(1))
@@ -314,5 +323,9 @@ elif int(x) == 4:
     ttZ7.Write()
     ttZ8 = h8.Clone('ttZ8')
     ttZ8.Write()
+    ttZ9 = h9.Clone('ttZ9')
+    ttZ9.Write()
+    ttZ10 = h10.Clone('ttZ10')
+    ttZ10.Write()
 prRed('****************** Finished **************\n')
 print 'Finished @:', time.asctime()
