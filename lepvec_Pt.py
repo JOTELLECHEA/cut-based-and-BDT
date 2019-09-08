@@ -74,12 +74,12 @@ h4 = ROOT.TH1D('H_{B}','H_{B};H_{B} [GeV];Events normalised to unit area / 150Ge
 h5 = ROOT.TH1D('jet','jet;Jet muliplicity;Events normalised to unit area',13,0,13)
 h6 = ROOT.TH1D('btag','btag;N b-tagged jets',10,-.5,9.5)
 h7 = ROOT.TH1D('met','met;Transverse mass (GeV);Events',100,0,500)
-h8 = ROOT.TH1D('pT-r','pT-r;pT of remaining non btag jets (GeV);Events',100,0,500)
-h9 = ROOT.TH1D('dRl','dRl;dRl cone;Events',100,0,450)
-h10 = ROOT.TH1D('massb','massb;h10;Events',100,0,450)
-h11 = ROOT.TH1D('1stpT','1stpT;h11;Events',100,0,450)
-h12 = ROOT.TH1D('2ndpT','2ndpT;h12;Events',100,0,450)
-#------------------------------------------------------------------------------#
+h8 = ROOT.TH1D('pT of top 2 btag','pT of top 2 btag;invariant mass of two highest btag pT (GeV);Events',100,0,1000)
+h9 = ROOT.TH1D('#DeltaR','#DeltaR;#DeltaR ;Events',100,0,5)
+# h10 = ROOT.TH1D('massb','massb;h10;Events',100,0,450)
+# h11 = ROOT.TH1D('1stpT','1stpT;h11;Events',100,0,450)
+# h12 = ROOT.TH1D('2ndpT','2ndpT;h12;Events',100,0,450)
+# #------------------------------------------------------------------------------#
 # Functions:
 # Average separation in pseudorapidity between two b-tagged jets.
 def etabi_j(x,y):
@@ -96,7 +96,7 @@ def vectorsum(x,y,c):
 # Loop through the entries of MyTree.
 for event in MyTree:
     # Variables.
-    w    = event.mcweight[0]    # Histogram weights.
+    w      = event.mcweight[0]  # Histogram weights.
     numlep = event.nlep[0]      # Store number of leptons in each event as num.
     numjet = event.njet[0]      # Store number of jets in each event as num.
     lepvec      = {}            # Initialize empty lepton vector.
@@ -116,7 +116,7 @@ for event in MyTree:
     cen_sum_Pt  = 0             # Initialize sum of Pt for all jets.
     cen_sum_E   = 0             # Initialize sum of E for all jets.
     HB_sum_Pt   = 0             # Initialize sum of Pt for all b-tag jets.
-    rand        = 0     # Initialize random variable with value (0,1).
+    rand        = 0             # Initialize random variable with value (0,1).
     onelep      = False
     mt          = 0
     pT1			= 0
@@ -124,9 +124,9 @@ for event in MyTree:
     pTmax		= 0
     cone_l_Pt	= 0
     cone_j_Pt	= 0
-    m1 = 0
-    m2 = 0
-    mv = 0
+    m1          = 0
+    m2          = 0
+    mv          = 0
     l1          = []
     l2          = []
     h0.Fill(0,w)
@@ -157,10 +157,7 @@ for event in MyTree:
         elif abs(event.lepflav[i]) == 13 and abs(event.lepeta[i]) <= 2.5:
         # Only selecting muons with |eta| <= 2.5.
             onelep = True
-        # if 0.2 < np.sqrt(event.lepeta[i]**2 + event.lepphi[i]**2): continue
-        # cone_l_Pt = event.leppT[i]
-        # h9.Fill(cone_l_Pt/1000,w)
-        # h10.Fill(event.met[0]/1000,w)
+        h9.Fill(np.sqrt(event.lepeta[i]**2 + event.lepphi[i]**2),w)
     if onelep == False: continue #Trigger cut#
     h5.Fill(numjet,w)
 # Events must have >= 7 jets with pT > 30 GeV and eta <= 4.0.
@@ -184,24 +181,23 @@ for event in MyTree:
     ntagjets = len(tracker_non)
     if not goodleptons == 1:continue
     h0.Fill(2,w)
-    if not goodjets  >= 7 : continue
+    if not goodjets  >= 7 :continue
     h0.Fill(3,w)
     h6.Fill(btagjets,w)
     for l in xrange(ntagjets):
     	h8.Fill(jetvec[l].Pt()/1000,w)
     if 5 <= btagjets < 6: 
         h0.Fill(4,w)
-    # elif btagjets  >= 6:
-    #     print btagjets
-	for i in xrange(btagjets):
-		l1[i] = jetvec[tracker_btj[i]].Pt()
-        l2[i] = jetvec[tracker_btj[i]].Pt()
+    if not btagjets >= 6:continue
+    for i in xrange(btagjets):
+        l1.append(jetvec[tracker_btj[i]].Pt())
+        l2.append(jetvec[tracker_btj[i]].Pt())
     mv = max(l1)
     m1 = l2.index(mv)
     l1.remove(mv)
     mv = max(l1)
     m2 = l2.index(mv) 
-    h10.Fill((jetvec[tracker_btj[m1]]+jetvec[tracker_btj[m2]]).M(),w)
+    h8.Fill((jetvec[tracker_btj[m1]]+jetvec[tracker_btj[m2]]).M()/1000,w)
     for i in xrange(btagjets):
         HB_sum_Pt += jetvec[tracker_btj[i]].Pt()
         # scalar sum of pT for b-tagged jets, HB.
@@ -256,8 +252,8 @@ if int(x) == 1:
     ttHH8.Write()
     ttHH9 = h9.Clone('ttHH9')
     ttHH9.Write()
-    ttHH10 = h10.Clone('ttHH10')
-    ttHH10.Write()
+    # ttHH10 = h10.Clone('ttHH10')
+    # ttHH10.Write()
 elif int(x) == 2:
     ttbb0 = h0.Clone('ttbb0')
     ttbb0.Scale(5850000/ttbb0.GetBinContent(1))
