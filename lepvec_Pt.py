@@ -75,9 +75,9 @@ h5 = ROOT.TH1D('jet','jet;Jet muliplicity;Events normalised to unit area',13,0,1
 h6 = ROOT.TH1D('btag','btag;N b-tagged jets',10,-.5,9.5)
 h7 = ROOT.TH1D('met','met;Transverse mass (GeV);Events',100,0,500)
 h8 = ROOT.TH1D('pT of top 2 btag','pT of top 2 btag;invariant mass of two highest btag pT (GeV);Events',100,0,1000)
-h9 = ROOT.TH1D('#DeltaR','#DeltaR;#DeltaR ;Events',100,0,5)
+h9 = ROOT.TH1D('#DeltaR','#DeltaR;#DeltaR ;Events',100,-2,15)
 h10 = ROOT.TH1D('chi square','chi square;chi;Events',100,14395,14405)
-# h11 = ROOT.TH1D('1stpT','1stpT;h11;Events',100,0,450)
+h11 = ROOT.TH1D('remaining pT','remaining pT;remaining pT;Events',100,0,1000)
 # h12 = ROOT.TH1D('2ndpT','2ndpT;h12;Events',100,0,450)
 # #------------------------------------------------------------------------------#
 # Functions:
@@ -198,7 +198,10 @@ for event in MyTree:
     l1.remove(mv)
     mv = max(l1)
     m2 = l2.index(mv) 
+    l1.remove(mv)
     h8.Fill((jetvec[tracker_btj[m1]]+jetvec[tracker_btj[m2]]).M()/1000,w)
+    for i in xrange(len(l1)):
+    	h11.Fill(l1[i]/1000,w)
     for i in xrange(btagjets):
         HB_sum_Pt += jetvec[tracker_btj[i]].Pt()
         # scalar sum of pT for b-tagged jets, HB.
@@ -226,6 +229,8 @@ for event in MyTree:
     for i in xrange(numjet):
         cen_sum_E  += jetvec[i].E()          # Scalar sum of E.
         cen_sum_Pt += jetvec[i].Pt()         # Scalar sum of Pt.
+        for j in xrange(numlep):
+        	h9.Fill(np.sqrt((event.lepeta[j] - event.jeteta[i])**2 + (event.lepphi[j] - event.jetphi[i])**2),w)
     if cen_sum_E != 0:
         h3.Fill(cen_sum_Pt/cen_sum_E,w)      # Fill h3 w/ scalar sum of Pt/E.
 #------------------------------------------------------------------------------#
@@ -255,6 +260,8 @@ if int(x) == 1:
     ttHH9.Write()
     ttHH10 = h10.Clone('ttHH10')
     ttHH10.Write()
+    ttHH11 = h11.Clone('ttHH11')
+    ttHH11.Write()
 elif int(x) == 2:
     ttbb0 = h0.Clone('ttbb0')
     ttbb0.Scale(5850000/ttbb0.GetBinContent(1))
