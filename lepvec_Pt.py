@@ -76,9 +76,11 @@ h6 = ROOT.TH1D('btag','btag;N b-tagged jets',10,-.5,9.5)
 h7 = ROOT.TH1D('met','met;Transverse mass (GeV);Events',100,0,500)
 h8 = ROOT.TH1D('pT of top 2 btag','pT of top 2 btag;invariant mass of two highest btag pT (GeV);Events',100,0,1000)
 h9 = ROOT.TH1D('#DeltaR','#DeltaR;#DeltaR ;Events',100,-2,15)
-h10 = ROOT.TH1D('chi square','chi square;chi;Events',100,14395,14405)
+h10 = ROOT.TH1D('chi square','chi square;chi;Events',100,0,15000)
 h11 = ROOT.TH1D('remaining pT','remaining pT;remaining pT;Events',100,0,1000)
-# h12 = ROOT.TH1D('2ndpT','2ndpT;h12;Events',100,0,450)
+h12 = ROOT.TH1D('Lowest #DeltaR','Lowest #DeltaR;h12;Events',100,0,450)
+h13 = ROOT.TH1D('Lowest btag pT','Lowest btag pT;h13;Events',100,0,450)
+h14 = ROOT.TH1D('Lowest non btag pT','Lowest non btag pT;h14;Events',100,0,450)
 # #------------------------------------------------------------------------------#
 # Functions:
 # Average separation in pseudorapidity between two b-tagged jets.
@@ -207,8 +209,8 @@ for event in MyTree:
         # scalar sum of pT for b-tagged jets, HB.
         for j in xrange(btagjets):
             if i == j: continue
-            chi_b_120 = jetvec[tracker_btj[i]].M() + jetvec[tracker_btj[j]].M()
-            h10.Fill((chi_b_120 - 120)**2,w)
+            chi_b_120 = (jetvec[tracker_btj[i]] + jetvec[tracker_btj[j]]).M()
+            h10.Fill((chi_b_120 - 120000)**2,w)
             etasum += etabi_j(i,j)           # Finding separation between all b_jets.
             vec_sum_Pt = vectorsum(i,j,'Pt') # Sum of btagjets Pt.
             vec_sum_M  = vectorsum(i,j,'M')  # Sum of btagjets M.
@@ -262,6 +264,12 @@ if int(x) == 1:
     ttHH10.Write()
     ttHH11 = h11.Clone('ttHH11')
     ttHH11.Write()
+    ttHH12 = h12.Clone('ttHH12')
+    ttHH12.Write()
+    ttHH13 = h13.Clone('ttHH13')
+    ttHH13.Write()
+    ttHH14 = h14.Clone('ttHH14')
+    ttHH14.Write()
 elif int(x) == 2:
     ttbb0 = h0.Clone('ttbb0')
     ttbb0.Scale(5850000/ttbb0.GetBinContent(1))
@@ -286,6 +294,8 @@ elif int(x) == 2:
     ttbb9.Write()
     ttbb10 = h10.Clone('ttbb10')
     ttbb10.Write()
+    ttbb11 = h11.Clone('ttbb11')
+    ttbb11.Write()
 elif int(x) == 3:
     ttH0 = h0.Clone('ttH0')
     ttH0.Scale(612000/ttH0.GetBinContent(1))
@@ -310,6 +320,8 @@ elif int(x) == 3:
     ttH9.Write()
     ttH10 = h10.Clone('ttH10')
     ttH10.Write()
+    ttH11 = h11.Clone('ttH11')
+    ttH11.Write()
 elif int(x) == 4:
     ttZ0 = h0.Clone('ttZ0')
     ttZ0.Scale(269000/ttZ0.GetBinContent(1))
@@ -334,5 +346,7 @@ elif int(x) == 4:
     ttZ9.Write()
     ttZ10 = h10.Clone('ttZ10')
     ttZ10.Write()
+    ttZ11 = h11.Clone('ttZ11')
+    ttZ11.Write()
 prRed('****************** Finished **************\n')
 print 'Finished @:', time.asctime()
