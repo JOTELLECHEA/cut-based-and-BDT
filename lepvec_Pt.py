@@ -78,9 +78,9 @@ h8 = ROOT.TH1D('pT of top 2 btag','pT of top 2 btag;invariant mass of two highes
 h9 = ROOT.TH1D('#DeltaR','#DeltaR;#DeltaR ;Events',100,-2,15)
 h10 = ROOT.TH1D('chi square','chi square;chi;Events',100,0,15000)
 h11 = ROOT.TH1D('remaining pT','remaining pT;remaining pT;Events',100,0,1000)
-h12 = ROOT.TH1D('Lowest #DeltaR','Lowest #DeltaR;h12;Events',100,0,450)
-h13 = ROOT.TH1D('Lowest btag pT','Lowest btag pT;h13;Events',100,0,450)
-h14 = ROOT.TH1D('Lowest non btag pT','Lowest non btag pT;h14;Events',100,0,450)
+h12 = ROOT.TH1D('Lowest #DeltaR','Lowest #DeltaR;h12;Events',100,-2,15)
+h13 = ROOT.TH1D('Lowest btag pT','Lowest btag pT;h13;Events',100,0,1000)
+h14 = ROOT.TH1D('Lowest non btag pT','Lowest non btag pT;h14;Events',100,0,1000)
 # #------------------------------------------------------------------------------#
 # Functions:
 # Average separation in pseudorapidity between two b-tagged jets.
@@ -132,6 +132,8 @@ for event in MyTree:
     chi_b_120	= 0
     l1          = []
     l2          = []
+    l3          = []
+    dR 			= []
     h0.Fill(0,w)
 #------------------------------Cuts Start--------------------------------------#
 # Events must have exactly one electron or one muon (as detailed in 3.1.1).
@@ -202,6 +204,10 @@ for event in MyTree:
     m2 = l2.index(mv) 
     l1.remove(mv)
     h8.Fill((jetvec[tracker_btj[m1]]+jetvec[tracker_btj[m2]]).M()/1000,w)
+    h13.Fill(min(l2)/1000,w)
+    for i in xrange(ntagjets):
+    	l3.append(jetvec[tracker_non[i]].Pt())
+	h14.Fill(min(l3)/1000,w)
     for i in xrange(len(l1)):
     	h11.Fill(l1[i]/1000,w)
     for i in xrange(btagjets):
@@ -232,7 +238,9 @@ for event in MyTree:
         cen_sum_E  += jetvec[i].E()          # Scalar sum of E.
         cen_sum_Pt += jetvec[i].Pt()         # Scalar sum of Pt.
         for j in xrange(numlep):
+        	dR.append(np.sqrt((event.lepeta[j] - event.jeteta[i])**2 + (event.lepphi[j] - event.jetphi[i])**2))
         	h9.Fill(np.sqrt((event.lepeta[j] - event.jeteta[i])**2 + (event.lepphi[j] - event.jetphi[i])**2),w)
+        	h12.Fill(min(dR),w)
     if cen_sum_E != 0:
         h3.Fill(cen_sum_Pt/cen_sum_E,w)      # Fill h3 w/ scalar sum of Pt/E.
 #------------------------------------------------------------------------------#
