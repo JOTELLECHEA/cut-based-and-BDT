@@ -330,10 +330,10 @@ ttbb11.Scale(1/(ttbb11.Integral()))
 ttbb11.Draw('HIST SAME')
 leg.Draw()
 
-c3.cd(1) ################################################### 
+c3.cd(1) ################################################### lowest delta R 
 ttHH12.SetLineColor(ROOT.kRed)
-# ttHH12.SetStats(0)
-# ttHH12.Scale(1/(ttHH12.Integral()))
+ttHH12.SetStats(0)
+ttHH12.Scale(1/(ttHH12.Integral()))
 # ttHH12.SetAxisRange(0.,.1,'Y')
 ttHH12.Draw('HIST SAME')
 # ttH12.SetLineColor(ROOT.kBlue)
@@ -347,7 +347,7 @@ ttHH12.Draw('HIST SAME')
 # ttbb12.Draw('HIST SAME')
 leg.Draw()
 
-c3.cd(2) ############################################################# 
+c3.cd(2) ############################################################# lowest btag jets pT 
 ttHH13.SetLineColor(ROOT.kRed)
 # ttHH13.SetStats(0)
 # ttHH13.Scale(1/(ttHH13.Integral()))
@@ -364,7 +364,7 @@ ttHH13.Draw('HIST SAME')
 # ttbb13.Draw('HIST SAME')
 leg.Draw()
 
-c3.cd(3) ############################################################# 
+c3.cd(3) ############################################################# lowest non btag jet pT
 ttHH14.SetLineColor(ROOT.kRed)
 # ttHH14.SetStats(0)
 # ttHH14.Scale(1/(ttHH14.Integral()))
@@ -381,7 +381,7 @@ ttHH14.Draw('HIST SAME')
 # ttbb14.Draw('HIST SAME')
 leg.Draw()
 
-c3.cd(4) ############################################################# 
+c3.cd(4) ############################################################# N/A
 # ttHH15.SetLineColor(ROOT.kRed)
 # ttHH15.SetStats(0)
 # ttHH15.Scale(1/(ttHH15.Integral()))
@@ -398,7 +398,7 @@ c3.cd(4) #############################################################
 # ttbb15.Draw('HIST SAME')
 leg.Draw()
 
-c3.cd(5) ############################################################# 
+c3.cd(5) ############################################################# N/A
 # ttHH16.SetLineColor(ROOT.kRed)
 # ttHH16.SetStats(0)
 # ttHH16.Scale(1/(ttHH16.Integral()))
@@ -415,7 +415,7 @@ c3.cd(5) #############################################################
 # ttbb16.Draw('HIST SAME')
 leg.Draw()
 
-c3.cd(6) ############################################################# 
+c3.cd(6) ############################################################# N/A
 # ttHH17.SetLineColor(ROOT.kRed)
 # ttHH17.SetStats(0)
 # ttHH17.Scale(1/(ttHH17.Integral()))
