@@ -189,8 +189,6 @@ for event in MyTree:
     if not goodjets  >= 7 :continue
     h0.Fill(3,w)
     h6.Fill(btagjets,w)
-    for l in xrange(ntagjets):
-    	h8.Fill(jetvec[l].Pt()/1000,w)
     if 5 <= btagjets < 6: 
         h0.Fill(4,w)
     if not btagjets >= 6:continue
@@ -215,8 +213,6 @@ for event in MyTree:
         # scalar sum of pT for b-tagged jets, HB.
         for j in xrange(btagjets):
             if i == j: continue
-            chi_b_120 = (jetvec[tracker_btj[i]] + jetvec[tracker_btj[j]]).M()
-            h10.Fill((chi_b_120 - 120000)**2,w)
             etasum += etabi_j(i,j)           # Finding separation between all b_jets.
             vec_sum_Pt = vectorsum(i,j,'Pt') # Sum of btagjets Pt.
             vec_sum_M  = vectorsum(i,j,'M')  # Sum of btagjets M.
