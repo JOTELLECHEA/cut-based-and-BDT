@@ -80,7 +80,8 @@ h10 = ROOT.TH1D('chi square','chi square;chi;Events',100,0,15000)
 h11 = ROOT.TH1D('remaining pT','remaining pT;remaining pT;Events',100,0,250)
 h12 = ROOT.TH1D('Lowest #DeltaR','Lowest #DeltaR;h12;Events',100,-.5,6.5)
 h13 = ROOT.TH1D('Lowest btag pT','Lowest btag pT;h13;Events',100,0,180)
-h14 = ROOT.TH1D('Lowest non btag pT','Lowest non btag pT;h14;Events',100,0,450)
+h14 = ROOT.TH1D('h14','h14;Lowest pT of charm jet;Events',100,0,1000)
+h15 = ROOT.TH1D('h15','h15;2nd Lowest pT of charm jet;Events',100,0,1000)
 # #------------------------------------------------------------------------------#
 # Functions:
 # Average separation in pseudorapidity between two b-tagged jets.
@@ -104,7 +105,8 @@ for event in MyTree:
     lepvec      = {}            # Initialize empty lepton vector.
     jetvec      = {}            # Initialize empty jet vector.
     tracker_btj = []            # Initialize empty tracking btagjets.
-    tracker_non = []            # Initialize empty tracking non btagjets.
+    tracker_non = []            # Initialize empty tracking lightjets.
+    jetprime    = []            # Initialize empty tracking ctagjets.
     btjmaxPt    = 0             # Initialize empty b-tag vecto for max .Pt().
     btjmaxM     = 0             # Initialize empty b-tag vecto for max .M().
     vec_sum_Pt  = 0             # Initialize empty b-tag vector for summing Pt().
@@ -167,6 +169,7 @@ for event in MyTree:
     h5.Fill(numjet,w)
 # Events must have >= 7 jets with pT > 30 GeV and eta <= 4.0.
     for i in xrange(numjet):
+        jetprime.append(i) 
         jetvec[i] = ROOT.TLorentzVector()    # Cast vectors as Lorentz vectors.
         jetvec[i].SetPtEtaPhiM(event.jetpT[i],event.jeteta[i],event.jetphi[i],0)
         if jetvec[i].Pt() <= 30000: continue  # Only selecting jets > 30GeV.
@@ -184,6 +187,11 @@ for event in MyTree:
         	tracker_non.append(i)
     btagjets = len(tracker_btj)
     ntagjets = len(tracker_non)
+    for i in xrange(btagjets):
+        jetprime.remove(tracker_btj[i])
+    for i in xrange(ntagjets):
+        jetprime.remove(tracker_non[i])
+    ctagjets = len(jetprime)
     if not goodleptons == 1:continue
     h0.Fill(2,w)
     if not goodjets  >= 7 :continue
@@ -203,9 +211,12 @@ for event in MyTree:
     l1.remove(mv)
     h8.Fill((jetvec[tracker_btj[m1]]+jetvec[tracker_btj[m2]]).M()/1000,w)
     h13.Fill(min(l2)/1000,w)
-    for i in xrange(ntagjets):
-    	l3.append(jetvec[tracker_non[i]].Pt())
-	h14.Fill(min(l3)/1000,w)
+    for i in xrange(ctagjets):
+        l3.append(jetvec[jetprime[i]].Pt())
+    if ctagjets > 0:
+        h14.Fill(l3.pop(l3.index(min(l3)))/1000,w)
+    if len(l3) > 0:
+        h15.Fill(min(l3)/1000,w)
     for i in xrange(len(l1)):
     	h11.Fill(l1[i]/1000,w)
     for i in xrange(btagjets):
@@ -239,7 +250,6 @@ for event in MyTree:
         	h12.Fill(min(dR),w)
     if cen_sum_E != 0:
         h3.Fill(cen_sum_Pt/cen_sum_E,w)      # Fill h3 w/ scalar sum of Pt/E.
-#------------------------------------------------------------------------------#
 #------------Histograms Display-------------------------------#
 g = ROOT.TFile('all_hist.root','update')
 if int(x) == 1:
@@ -274,6 +284,8 @@ if int(x) == 1:
     ttHH13.Write()
     ttHH14 = h14.Clone('ttHH14')
     ttHH14.Write()
+    ttHH15 = h15.Clone('ttHH15')
+    ttHH15.Write()
 elif int(x) == 2:
     ttbb0 = h0.Clone('ttbb0')
     ttbb0.Scale(5850000/ttbb0.GetBinContent(1))
@@ -306,6 +318,8 @@ elif int(x) == 2:
     ttbb13.Write()
     ttbb14 = h14.Clone('ttbb14')
     ttbb14.Write()
+    ttbb15 = h15.Clone('ttbb15')
+    ttbb15.Write()
 elif int(x) == 3:
     ttH0 = h0.Clone('ttH0')
     ttH0.Scale(612000/ttH0.GetBinContent(1))
@@ -338,6 +352,8 @@ elif int(x) == 3:
     ttH13.Write()
     ttH14 = h14.Clone('ttH14')
     ttH14.Write()
+    ttH15 = h15.Clone('ttH15')
+    ttH15.Write()
 elif int(x) == 4:
     ttZ0 = h0.Clone('ttZ0')
     ttZ0.Scale(269000/ttZ0.GetBinContent(1))
@@ -370,5 +386,7 @@ elif int(x) == 4:
     ttZ13.Write()
     ttZ14 = h14.Clone('ttZ14')
     ttZ14.Write()
+    ttZ15 = h15.Clone('ttZ15')
+    ttZ15.Write()
 prRed('****************** Finished **************\n')
 print 'Finished @:', time.asctime()
