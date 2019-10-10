@@ -76,10 +76,10 @@ h6 = ROOT.TH1D('btag','btag;N b-tagged jets',10,-.5,9.5)
 h7 = ROOT.TH1D('met','met;Transverse mass (GeV);Events',100,0,300)
 h8 = ROOT.TH1D('pT of top 2 btag','pT of top 2 btag;invariant mass of two highest btag pT (GeV);Events',100,0,525)
 h9 = ROOT.TH1D('#DeltaR','#DeltaR;#DeltaR ;Events',100,-.5,7)
-h10 = ROOT.TH1D('chi square','chi square;chi;Events',100,0,15000)
+h10 = ROOT.TH1D('Lowest #DeltaR','Lowest #DeltaR;h10;Events',100,-.5,6.5)
 h11 = ROOT.TH1D('remaining pT','remaining pT;remaining pT;Events',100,0,250)
-h12 = ROOT.TH1D('Lowest #DeltaR','Lowest #DeltaR;h12;Events',100,-.5,6.5)
-h13 = ROOT.TH1D('Lowest btag pT','Lowest btag pT;h13;Events',100,0,180)
+h12 = ROOT.TH1D('h12','h12;lowest btagjet pT;Events',100,0,180)
+h13 = ROOT.TH1D('h13','h13;2nd lowest btagjet pT;Events',100,0,180)
 h14 = ROOT.TH1D('h14','h14;Lowest pT of charm jet;Events',100,0,1000)
 h15 = ROOT.TH1D('h15','h15;2nd Lowest pT of charm jet;Events',100,0,1000)
 # #------------------------------------------------------------------------------#
@@ -203,13 +203,10 @@ for event in MyTree:
     for i in xrange(btagjets):
         l1.append(jetvec[tracker_btj[i]].Pt())
         l2.append(jetvec[tracker_btj[i]].Pt())
-    mv = max(l1)
-    m1 = l2.index(mv)
-    l1.remove(mv)
-    mv = max(l1)
-    m2 = l2.index(mv) 
-    l1.remove(mv)
+    m1 = l2.index(l1.pop(l1.index(max(l1))))
+    m2 = l2.index(max(l1))
     h8.Fill((jetvec[tracker_btj[m1]]+jetvec[tracker_btj[m2]]).M()/1000,w)
+    h12.Fill(l2.pop(l2.index(min(l2)))/1000,w)
     h13.Fill(min(l2)/1000,w)
     for i in xrange(ctagjets):
         l3.append(jetvec[jetprime[i]].Pt())
@@ -247,7 +244,7 @@ for event in MyTree:
         for j in xrange(numlep):
         	dR.append(np.sqrt((event.lepeta[j] - event.jeteta[i])**2 + (event.lepphi[j] - event.jetphi[i])**2))
         	h9.Fill(np.sqrt((event.lepeta[j] - event.jeteta[i])**2 + (event.lepphi[j] - event.jetphi[i])**2),w)
-        	h12.Fill(min(dR),w)
+        	h10.Fill(min(dR),w)
     if cen_sum_E != 0:
         h3.Fill(cen_sum_Pt/cen_sum_E,w)      # Fill h3 w/ scalar sum of Pt/E.
 #------------Histograms Display-------------------------------#
