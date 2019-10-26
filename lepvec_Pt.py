@@ -75,13 +75,14 @@ h5 = ROOT.TH1D('jet','jet;Jet muliplicity;Events normalised to unit area',13,0,1
 h6 = ROOT.TH1D('btag','btag;N b-tagged jets',10,-.5,9.5)
 h7 = ROOT.TH1D('met','met;Transverse mass (GeV);Events',100,0,300)
 h8 = ROOT.TH1D('pT of top 2 btag','pT of top 2 btag;invariant mass of two highest btag pT (GeV);Events',100,0,525)
-h9 = ROOT.TH1D('#DeltaR','#DeltaR;#DeltaR ;Events',100,-.5,7)
-h10 = ROOT.TH1D('Lowest #DeltaR','Lowest #DeltaR;h10;Events',100,-.5,6.5)
+h9 = ROOT.TH1D('#DeltaR','#DeltaR;#DeltaR ;Events',100,-.5,9.5)
+h10 = ROOT.TH1D('Lowest #DeltaR','Lowest #DeltaR;h10;Events',100,-.5,9.5)
 h11 = ROOT.TH1D('remaining pT','remaining pT;remaining pT;Events',100,0,250)
 h12 = ROOT.TH1D('h12','h12;lowest btagjet pT;Events',100,0,180)
 h13 = ROOT.TH1D('h13','h13;2nd lowest btagjet pT;Events',100,0,180)
 h14 = ROOT.TH1D('h14','h14;Lowest pT of charm jet;Events',100,0,1000)
 h15 = ROOT.TH1D('h15','h15;2nd Lowest pT of charm jet;Events',100,0,1000)
+h16 = ROOT.TH1D('h16','h16;Chisquare;Events',100,0,20000)
 # #------------------------------------------------------------------------------#
 # Functions:
 # Average separation in pseudorapidity between two b-tagged jets.
@@ -131,7 +132,7 @@ for event in MyTree:
     m1          = 0
     m2          = 0
     mv          = 0
-    chi_b_120	= 0
+    chi 		= 0
     l1          = []
     l2          = []
     l3          = []
@@ -247,6 +248,26 @@ for event in MyTree:
         	h10.Fill(min(dR),w)
     if cen_sum_E != 0:
         h3.Fill(cen_sum_Pt/cen_sum_E,w)      # Fill h3 w/ scalar sum of Pt/E.
+    for i in xrange(0,6):
+	    for j in xrange(1,6):
+			for k in xrange(2,6):
+				for l in xrange(3,6):
+					if i == j == k == l :continue
+					if i > j > k > l :continue
+					if j > k > l :continue
+					if k > l :continue
+					if i > j :continue
+					if j > k  :continue
+					if i == j == k :continue
+					if i == j :continue
+					if i == k :continue
+					if i == l :continue
+					if j == k == l:continue
+					if j == k :continue
+					if j == l :continue
+					if k == l :continue
+					chi = (vectorsum(i,j,'M') - 120000)**2 + (vectorsum(k,l,'M') - 120000)**2
+					h16.Fill(chi/1000,w)
 #------------Histograms Display-------------------------------#
 g = ROOT.TFile('all_hist.root','update')
 if int(x) == 1:
@@ -283,6 +304,8 @@ if int(x) == 1:
     ttHH14.Write()
     ttHH15 = h15.Clone('ttHH15')
     ttHH15.Write()
+    ttHH16 = h16.Clone('ttHH16')
+    ttHH16.Write()
 elif int(x) == 2:
     ttbb0 = h0.Clone('ttbb0')
     ttbb0.Scale(5850000/ttbb0.GetBinContent(1))
@@ -317,6 +340,8 @@ elif int(x) == 2:
     ttbb14.Write()
     ttbb15 = h15.Clone('ttbb15')
     ttbb15.Write()
+    ttbb16 = h16.Clone('ttbb16')
+    ttbb16.Write()
 elif int(x) == 3:
     ttH0 = h0.Clone('ttH0')
     ttH0.Scale(612000/ttH0.GetBinContent(1))
@@ -351,6 +376,8 @@ elif int(x) == 3:
     ttH14.Write()
     ttH15 = h15.Clone('ttH15')
     ttH15.Write()
+    ttH16 = h16.Clone('ttH16')
+    ttH16.Write()
 elif int(x) == 4:
     ttZ0 = h0.Clone('ttZ0')
     ttZ0.Scale(269000/ttZ0.GetBinContent(1))
@@ -385,5 +412,7 @@ elif int(x) == 4:
     ttZ14.Write()
     ttZ15 = h15.Clone('ttZ15')
     ttZ15.Write()
+    ttZ16 = h16.Clone('ttZ16')
+    ttZ16.Write()
 prRed('****************** Finished **************\n')
 print 'Finished @:', time.asctime()
