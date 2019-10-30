@@ -8,7 +8,7 @@ import os, time, sys, argparse, numpy, math
 from array import array
 
 import ROOT
-
+   
 def augment_rootfile(filepath):
     
     # get tree to loop over
@@ -51,29 +51,38 @@ def augment_rootfile(filepath):
     for entry in tree:
         # show some progress
         if i % 1000 == 0: print("   processing event {:8d}/{:d} [{:5.0f} evts/s]".format(i, n_entries, i/(time.clock()-start_time)))
-
-        if  entry.nlep[0] == 0:
-            print entry.nlep[0]# this is just to let the if statement go for now.
-            #                    thinking we might remove this.
-            # lep1pT[0]  = -999
-            # lep1eta[0] = -999
-            # lep1phi[0] = -999
-            # lep1m[0]   = -999
-        elif entry.nlep[0] == 1:
+        num = entry.nlep[0]
+        if num >0:
             lep1m[0]   = 0.0
             lep1pT[0]  = entry.leppT[0]
             lep1eta[0] = entry.lepeta[0]
             lep1phi[0] = entry.lepphi[0]
-        elif entry.nlep[0] == 2:
-            lep2m[0]   = 0.0
-            lep2pT[0]  = entry.leppT[1]
-            lep2eta[0] = entry.lepeta[1]
-            lep2phi[0] = entry.lepphi[1]
-        elif entry.nlep[0] == 3:
-            lep3m[0]   = 0.0
-            lep3pT[0]  = entry.leppT[2]
-            lep3eta[0] = entry.lepeta[2]
-            lep3phi[0] = entry.lepphi[2]
+            if num > 1:
+                lep2m[0]   = 0.0
+                lep2pT[0]  = entry.leppT[1]
+                lep2eta[0] = entry.lepeta[1]
+                lep2phi[0] = entry.lepphi[1]
+                if num > 2:
+                    lep3m[0]   = 0.0
+                    lep3pT[0]  = entry.leppT[2]
+                    lep3eta[0] = entry.lepeta[2]
+                    lep3phi[0] = entry.lepphi[2]
+                else:
+                    lep3pT[0]  = -999
+                    lep3eta[0] = -9
+                    lep3phi[0] = -9
+                    lep3m[0]   = -999
+            else:
+                lep2pT[0]  = -999
+                lep2eta[0] = -9
+                lep2phi[0] = -9
+                lep2m[0]   = -999
+        else:
+            lep1pT[0]  = -999
+            lep1eta[0] = -9
+            lep1phi[0] = -9
+            lep1m[0]   = -999
+
 
 
 
