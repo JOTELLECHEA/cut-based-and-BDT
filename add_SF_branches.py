@@ -33,15 +33,15 @@ def augment_rootfile(filepath):
     br_lep1pT  = tree.Branch( 'lep1pT' , lep1pT , 'lep1pT/F'  )
     br_lep1eta = tree.Branch( 'lep1eta', lep1eta, 'lep1eta/F' )
     br_lep1phi = tree.Branch( 'lep1phi', lep1phi, 'lep1phi/F' )
-    br_lep1m   = tree.Branch( 'lep1m'  , lep1phi, 'lep1m/F'   )
+    br_lep1m   = tree.Branch( 'lep1m'  , lep1m  , 'lep1m/F'   )
     br_lep2pT  = tree.Branch( 'lep2pT' , lep2pT , 'lep2pT/F'  )
     br_lep2eta = tree.Branch( 'lep2eta', lep2eta, 'lep2eta/F' )
     br_lep2phi = tree.Branch( 'lep2phi', lep2phi, 'lep2phi/F' )
-    br_lep2m   = tree.Branch( 'lep2m'  , lep2phi, 'lep2m/F'   )
+    br_lep2m   = tree.Branch( 'lep2m'  , lep2m  , 'lep2m/F'   )
     br_lep3pT  = tree.Branch( 'lep3pT' , lep3pT , 'lep3pT/F'  )
     br_lep3eta = tree.Branch( 'lep3eta', lep3eta, 'lep3eta/F' )
     br_lep3phi = tree.Branch( 'lep3phi', lep3phi, 'lep3phi/F' )
-    br_lep3m   = tree.Branch( 'lep3m'  , lep3phi, 'lep3m/F'   )
+    br_lep3m   = tree.Branch( 'lep3m'  , lep3m  , 'lep3m/F'   )
 
     # track the time
     start_time = time.clock()
@@ -53,10 +53,12 @@ def augment_rootfile(filepath):
         if i % 1000 == 0: print("   processing event {:8d}/{:d} [{:5.0f} evts/s]".format(i, n_entries, i/(time.clock()-start_time)))
 
         if  entry.nlep[0] == 0:
-            lep1pT[0]  = -999
-            lep1eta[0] = -999
-            lep1phi[0] = -999
-            lep1m[0]   = -999
+            print entry.nlep[0]# this is just to let the if statement go for now.
+            #                    thinking we might remove this.
+            # lep1pT[0]  = -999
+            # lep1eta[0] = -999
+            # lep1phi[0] = -999
+            # lep1m[0]   = -999
         elif entry.nlep[0] == 1:
             lep1m[0]   = 0.0
             lep1pT[0]  = entry.leppT[0]
