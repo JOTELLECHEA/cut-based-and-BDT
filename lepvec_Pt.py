@@ -165,7 +165,7 @@ for event in MyTree:
         elif abs(event.lepflav[i]) == 13 and abs(event.lepeta[i]) <= 2.5:
         # Only selecting muons with |eta| <= 2.5.
             onelep = True
-        h9.Fill(np.sqrt(event.lepeta[i]**2 + event.lepphi[i]**2),w)
+        # h9.Fill(np.sqrt(event.lepeta[i]**2 + event.lepphi[i]**2),w)
     if onelep == False: continue #Trigger cut#
     h5.Fill(numjet,w)
 # Events must have >= 7 jets with pT > 30 GeV and eta <= 4.0.

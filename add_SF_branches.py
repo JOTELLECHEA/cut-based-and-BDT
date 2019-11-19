@@ -6,14 +6,17 @@ script to add sfs to ntuples
 
 import os, time, sys, argparse, numpy, math
 from array import array
+import shutil
 
 import ROOT
    
 def augment_rootfile(filepath):
     
+    shutil.copyfile(filepath,"new_"+filepath)
+
     # get tree to loop over
     treename = "OutputTree"
-    t = ROOT.TFile(filepath, "UPDATE")
+    t = ROOT.TFile("new_"+filepath, "UPDATE")
     tree = t.Get(treename)
 
     # define branches
@@ -29,6 +32,11 @@ def augment_rootfile(filepath):
     lep3eta = array( 'f', [ 0 ] )
     lep3phi = array( 'f', [ 0 ] )
     lep3m   = array( 'f', [ 0 ] )
+    mt1     = array( 'f', [ 0 ] )
+    mt2     = array( 'f', [ 0 ] )
+    mt3     = array( 'f', [ 0 ] )
+
+
 
     br_lep1pT  = tree.Branch( 'lep1pT' , lep1pT , 'lep1pT/F'  )
     br_lep1eta = tree.Branch( 'lep1eta', lep1eta, 'lep1eta/F' )
@@ -42,46 +50,56 @@ def augment_rootfile(filepath):
     br_lep3eta = tree.Branch( 'lep3eta', lep3eta, 'lep3eta/F' )
     br_lep3phi = tree.Branch( 'lep3phi', lep3phi, 'lep3phi/F' )
     br_lep3m   = tree.Branch( 'lep3m'  , lep3m  , 'lep3m/F'   )
+    br_mt1     = tree.Branch( 'mt1'    , mt1    , 'mt1/F'     )
+    br_mt2     = tree.Branch( 'mt2'    , mt2    , 'mt2/F'     )
+    br_mt3     = tree.Branch( 'mt3'    , mt3    , 'mt3/F'     )
 
     # track the time
     start_time = time.clock()
 
     n_entries = tree.GetEntries()
     i = 1
-    for entry in tree:
+    for event in tree:
         # show some progress
-        if i % 1000 == 0: print("   processing event {:8d}/{:d} [{:5.0f} evts/s]".format(i, n_entries, i/(time.clock()-start_time)))
-        num = entry.nlep[0]
+        if i % 1000 == 0: print("   processing entry {:8d}/{:d} [{:5.0f} evts/s]".format(i, n_entries, i/(time.clock()-start_time)))
+        num = event.nlep[0]
         if num >0:
             lep1m[0]   = 0.0
-            lep1pT[0]  = entry.leppT[0]
-            lep1eta[0] = entry.lepeta[0]
-            lep1phi[0] = entry.lepphi[0]
+            lep1pT[0]  = event.leppT[0]
+            lep1eta[0] = event.lepeta[0]
+            lep1phi[0] = event.lepphi[0]
+            mt1[0] = ROOT.TMath.Sqrt(2 * event.met[0] * event.leppT[0]/(10**6) * ( 1 - ROOT.TMath.Cos((event.lepphi[0] - event.met_phi[0]))))
             if num > 1:
                 lep2m[0]   = 0.0
-                lep2pT[0]  = entry.leppT[1]
-                lep2eta[0] = entry.lepeta[1]
-                lep2phi[0] = entry.lepphi[1]
+                lep2pT[0]  = event.leppT[1]
+                lep2eta[0] = event.lepeta[1]
+                lep2phi[0] = event.lepphi[1]
+                mt2[0] = ROOT.TMath.Sqrt(2 * event.met[0] * event.leppT[1]/(10**6) * ( 1 - ROOT.TMath.Cos((event.lepphi[1] - event.met_phi[0]))))
                 if num > 2:
                     lep3m[0]   = 0.0
-                    lep3pT[0]  = entry.leppT[2]
-                    lep3eta[0] = entry.lepeta[2]
-                    lep3phi[0] = entry.lepphi[2]
+                    lep3pT[0]  = event.leppT[2]
+                    lep3eta[0] = event.lepeta[2]
+                    lep3phi[0] = event.lepphi[2]
+                    mt3[0] = ROOT.TMath.Sqrt(2 * event.met[0] * event.leppT[2]/(10**6) * ( 1 - ROOT.TMath.Cos((event.lepphi[2] - event.met_phi[0]))))
                 else:
                     lep3pT[0]  = -999
                     lep3eta[0] = -9
                     lep3phi[0] = -9
                     lep3m[0]   = -999
+                    mt3[0]     = -999
             else:
                 lep2pT[0]  = -999
                 lep2eta[0] = -9
                 lep2phi[0] = -9
                 lep2m[0]   = -999
+                mt2[0]     = -999
+                
         else:
             lep1pT[0]  = -999
             lep1eta[0] = -9
             lep1phi[0] = -9
             lep1m[0]   = -999
+            mt1[0]     = -999
 
 
 
@@ -99,6 +117,9 @@ def augment_rootfile(filepath):
         br_lep3eta.Fill()
         br_lep3phi.Fill()
         br_lep3m.Fill()
+        br_mt1.Fill()
+        br_mt2.Fill()
+        br_mt3.Fill() 
         i += 1
 
     # write augmented tree to original file
