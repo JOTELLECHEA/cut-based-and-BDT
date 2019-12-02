@@ -74,35 +74,29 @@ def compare_train_test(clf, X_train, y_train, X_test, y_test, bins=30):
     hist, bins = np.histogram(decisions[2],bins=bins, range=low_high, normed=True)
     scale = len(decisions[2]) / sum(hist)
     err = np.sqrt(hist * scale) / scale
-    
+    r0  = ['hist',hist]
+    r1  = ['bins',bins]
+    r2  = ['scale',scale]
+
     width = (bins[1] - bins[0])
     center = (bins[:-1] + bins[1:]) / 2
     plt.errorbar(center, hist, yerr=err, fmt='o', c='r', label='S (test)')
-    hist1 = hist
-    bins1 = bins
-    scale1 = scale
-    err1 = err
-    
+
     hist, bins = np.histogram(decisions[3],bins=bins, range=low_high, normed=True)
     scale = len(decisions[2]) / sum(hist)
     err = np.sqrt(hist * scale) / scale
+    r3  = ['hist',hist]
+    r4  = ['bins',bins]
+    r5  = ['scale',scale]
 
     plt.errorbar(center, hist, yerr=err, fmt='o', c='b', label='B (test)')
     
-################################################################################################
-    r1  = ['center',center]
-    r2  = ['hist',hist]
-    r3  = ['bins1',bins1]
-    r4  = ['bins',bins]
-    r5  = ['scale1',scale1]
-    r6  = ['scale',scale]
-    r7  = ['err',err]
-    r8  = ['fpr',fpr]
-    r9  = ['tpr',tpr]
-    r10 = ['thresholds',thresholds]
+    r6  = ['fpr',fpr]
+    r7  = ['tpr',tpr]
 
     with open('data_ROC_Curve.csv', 'a') as csvFile:
         writer = csv.writer(csvFile)
+        writer.writerow(r0)
         writer.writerow(r1)
         writer.writerow(r2)
         writer.writerow(r3)
@@ -110,9 +104,6 @@ def compare_train_test(clf, X_train, y_train, X_test, y_test, bins=30):
         writer.writerow(r5)
         writer.writerow(r6)
         writer.writerow(r7)
-        writer.writerow(r8)
-        writer.writerow(r9)
-        writer.writerow(r10)
 
     csvFile.close()
 ################################################################################################

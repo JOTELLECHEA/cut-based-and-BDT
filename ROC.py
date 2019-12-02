@@ -16,47 +16,52 @@ from sklearn.model_selection import GridSearchCV,train_test_split
 from scipy.interpolate import *
 from scipy.stats import *
 #########
-
 file = 'data_ROC_Curve.csv'
-
 df = pd.read_csv(file)
+def data(x):
+	return np.array([float(i) for i in df['var'][x][1:-1].split()])
 
-# fpr   = df['fpr']
-# tpr   = df['tpr']
-fpr = [0.00000000e+00,3.70096225e-05,7.03182828e-04,2.66469282e-03, 7.84603997e-03,2.23908216e-02,2.27239082e-02,5.66617321e-02, 1.27757217e-01,2.50185048e-01,4.37971873e-01,6.57549963e-01,8.44041451e-01,9.51443375e-01,9.90932642e-01,1.00000000e+00]
-tpr = [0.,0.,0.00393258,0.01516854,0.04269663,0.11067416,0.11123596,0.21910112,0.39606742,0.61067416,0.81067416,0.93764045,0.98764045,0.99775281,1.,1.]
+h1  = data(0)
+b1  = data(1)
+s1  = data(2)
+h2  = data(3)
+b2  = data(4)
+s2  = data(5)
+fpr = data(6)
+tpr = data(7)
+
 roc_auc = auc(fpr, tpr)
-# slope,intercept,r_value,p_value,std_err = linregress(fpr,tpr)# method 1 
 p2 = np.polyfit(fpr,tpr,5)
-# c = df['var'][0]
-# c = c.strip('[]')
-# c = [c.replace(" ", ",")]
-# c = c.replace("'", "")
-# c = list(c.strip() for x in c)
-# center = c.replace(" ", ",")
-# center1 = center.strip("'")
-
-# # plt.subplot(211)
-# plt.plot(fpr, tpr, 'ro', label='ROC (area = %0.2f)'%(roc_auc))
-# plt.plot([0, 1], [0, 1], '--', color=(0.6, 0.6, 0.6), label='Luck')
-# plt.xlim([-0.05, 1.05])
-# plt.ylim([-0.05, 1.05])
-# plt.xlabel('False Positive Rate')
-# plt.ylabel('True Positive Rate')
-# plt.title('Receiver operating characteristic')
-# plt.legend(loc="lower right")
-# plt.grid()
-# plt.show()
-
+plt.subplot(211)
 x = np.linspace(-.0001,1,1000)
-# plt.figure()
 plt.title('Receiver operating characteristic')
 plt.plot(fpr, tpr, 'ro', label='ROC (area = %0.2f)'%(roc_auc))
 plt.plot(x,np.polyval(p2,x), label='fit')
 plt.plot([0, 1], [0, 1], '--', color=(0.6, 0.6, 0.6), label='Luck')
+plt.xlim([-0.05, 1.05])
+plt.ylim([-0.05, 1.05])
 plt.xlabel('False Positive Rate')
 plt.ylabel('True Positive Rate')
 plt.grid()
 plt.legend(loc="lower right")
 #plt.savefig('battery.png', format='png', dpi=300)
+plt.subplot(212)
+# plt.hist(h1,color='r', alpha=0.5,  bins=b1,histtype='stepfilled', normed=True,label='S (train)')
+# plt.hist(h2,color='b', alpha=0.5,  bins=b2,histtype='stepfilled', normed=True,label='B (train)')
+
+err1 = np.sqrt(h1 * s1) / s1
+
+width = (b1[1] - b1[0])
+center = (b1[:-1] + b1[1:]) / 2
+plt.errorbar(center, h1, yerr=err1, fmt='o', c='r', label='S (test)')
+
+
+s2 = len(h2) / sum(h2)
+err = np.sqrt(h2 * s2) / s2
+
+plt.errorbar(center, h2, yerr=err, fmt='o', c='b', label='B (test)')
+plt.xlabel("BDT output")
+plt.ylabel("Arbitrary units")
+plt.legend(loc='upper left')
+# plt.yscale('log')
 plt.show()
