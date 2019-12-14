@@ -11,6 +11,7 @@ from sklearn.ensemble import AdaBoostClassifier
 from sklearn.metrics import classification_report, roc_auc_score, roc_curve, auc
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import GridSearchCV,train_test_split
+np.set_printoptions(threshold=np.inf)
 name = 'data_ROC_Curve.csv'
 tree = 'OutputTree'
 
@@ -62,11 +63,14 @@ def compare_train_test(clf, X_train, y_train, X_test, y_test, bins=30):
         d1 = clf.decision_function(X[y>0.5]).ravel()
         d2 = clf.decision_function(X[y<0.5]).ravel()
         decisions += [d1, d2]
-    print decisions[0]   
+    # for i in xrange(len(decisions[0])):
+    #     print decisions[0][i] 
     low = min(np.min(d) for d in decisions)
     high = max(np.max(d) for d in decisions)
     low_high = (low,high)
     
+
+    r6  = ['lh',low_high]
     plt.subplot(212)
     plt.hist(decisions[0],color='r', alpha=0.5, range=low_high, bins=bins,histtype='stepfilled', normed=True,label='S (train)')
     plt.hist(decisions[1],color='b', alpha=0.5, range=low_high, bins=bins,histtype='stepfilled', normed=True,label='B (train)')
@@ -74,9 +78,9 @@ def compare_train_test(clf, X_train, y_train, X_test, y_test, bins=30):
     hist, bins = np.histogram(decisions[2],bins=bins, range=low_high, normed=True)
     scale = len(decisions[2]) / sum(hist)
     err = np.sqrt(hist * scale) / scale
-    r0  = ['hist',hist]
-    r1  = ['bins',bins]
-    r2  = ['scale',scale]
+    r0  = ['d0',decisions[0]]
+    r1  = ['d1',decisions[1]]
+
 
     width = (bins[1] - bins[0])
     center = (bins[:-1] + bins[1:]) / 2
@@ -85,14 +89,12 @@ def compare_train_test(clf, X_train, y_train, X_test, y_test, bins=30):
     hist, bins = np.histogram(decisions[3],bins=bins, range=low_high, normed=True)
     scale = len(decisions[2]) / sum(hist)
     err = np.sqrt(hist * scale) / scale
-    r3  = ['hist',hist]
-    r4  = ['bins',bins]
-    r5  = ['scale',scale]
-
+    r2  = ['d2',decisions[2]]
+    r3  = ['d3',decisions[3]]
     plt.errorbar(center, hist, yerr=err, fmt='o', c='b', label='B (test)')
     
-    r6  = ['fpr',fpr]
-    r7  = ['tpr',tpr]
+    r4  = ['fpr',fpr]
+    r5  = ['tpr',tpr]
 
     with open('data_ROC_Curve.csv', 'a') as csvFile:
         writer = csv.writer(csvFile)
@@ -103,7 +105,6 @@ def compare_train_test(clf, X_train, y_train, X_test, y_test, bins=30):
         writer.writerow(r4)
         writer.writerow(r5)
         writer.writerow(r6)
-        writer.writerow(r7)
 
     csvFile.close()
 ################################################################################################
