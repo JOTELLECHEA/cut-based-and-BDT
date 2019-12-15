@@ -12,44 +12,40 @@ import time
 from tabulate import tabulate
 def prRed(prt): print("\033[91m {}\033[00m" .format(prt))
 #------------------------------------------------------------------------------#
-def menu():
-    print ' __________________________________________'
-    print '|                                          |'
-    print '|Welcome to the ttHH Histogram Script 2019 |'
-    print '|__________________________________________| \n'
-    print tabulate([['[1] -','ttHH(HH -> bbbb)', '--4 Mb'],
-    ['[2] -','ttbb','906 Mb'],
-    ['[3] -','ttH(H -> bb)','-95 Mb'],
-    ['[4] -','ttZ(Z -> bb)','-47 Mb'],
-    ['[5] -','Quit','XXXXXX']],headers=['No.','Sample','Size'], tablefmt='psql')
-menu()
+
+import argparse
+
+parser = argparse.ArgumentParser(description= 'Cut base analysis for ttHH and background')
+parser.add_argument("--x", default=5, type=int, help= "Use '--x=' followed by a number from here:  1:ttHH 2:ttbb 3:ttH 4:ttZ ")
+
+args = parser.parse_args()
+x = int(args.x)
+a = 'tthh_ntuple.343469.MadGraphPythia8EvtGen_A14NNPDF23_tthh_bbbb.root'
+b = 'tthh_ntuple.410246.Sherpa_NNPDF30NNLO_ttbb.root'
+c = 'tthh_ntuple.344436.Sherpa_NNPDF30NNLO_ttH_Htobb.root'
+d = 'tthh_ntuple.410247.Sherpa_NNPDF30NNLO_ttZ_Ztobb.root'
+
 while True:
     try:
-        x =  int(input('\n Which sample would you like to use: '))
-        a = 'tthh_ntuple.343469.MadGraphPythia8EvtGen_A14NNPDF23_tthh_bbbb.root'
-        b = 'tthh_ntuple.410246.Sherpa_NNPDF30NNLO_ttbb.root'
-        c = 'tthh_ntuple.344436.Sherpa_NNPDF30NNLO_ttH_Htobb.root'
-        d = 'tthh_ntuple.410247.Sherpa_NNPDF30NNLO_ttZ_Ztobb.root'
-        print '\n'
         if x == 1:
-            print 'You selected option:\n\n', a
+            print 'You selected option:', 'ttHH'
             f = ROOT.TFile(a)
             break
         elif x == 2:
-            print 'You selected option:\n\n', b
+            print 'You selected option:', 'ttbb'
             f = ROOT.TFile(b)
             break
         elif x == 3:
-            print 'You selected option:\n\n', c
+            print 'You selected option:', 'ttH'
             f = ROOT.TFile(c)
             break
         elif x == 4:
-            print 'You selected option:\n\n', d
+            print 'You selected option:', 'ttZ'
             f = ROOT.TFile(d)
             break
         elif x == 5:
             system('clear')
-            sys.exit('Bye')
+            sys.exit('Need to pass a variable, use --help for options')
         else :
             sleep(1)
             system('clear')
