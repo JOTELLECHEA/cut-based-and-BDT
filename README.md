@@ -18,6 +18,8 @@
    - chisquare.py
      >N/A
    - MVA.py
+     >`--branch=i` where i = njets,lep,...
+     
      >Output file is `data_ROC_Curve.csv`.
    - ROC.py
      >Output is tmp and can be save in format that is needed.

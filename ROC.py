@@ -16,7 +16,8 @@ from sklearn.model_selection import GridSearchCV,train_test_split
 from scipy.interpolate import *
 from scipy.stats import *
 #########
-file = 'data_ROC_Curve.csv'
+file = 'ROC_data_dr.csv'
+# file = 'ROC_data_njets.csv'
 df = pd.read_csv(file)
 def data(x):
 	return np.array([float(i) for i in df['var'][x][1:-1].split()])

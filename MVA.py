@@ -1,6 +1,8 @@
 #!/cvmfs/sft.cern.ch/lcg/releases/LCG_94/Python/2.7.15/x86_64-slc6-gcc62-opt/bin/python
-import csv
+import csv,sys
+import argparse
 import numpy as np
+from os import system
 import pandas as pd 
 import matplotlib.pyplot as plt
 from ROOT import*
@@ -11,13 +13,59 @@ from sklearn.ensemble import AdaBoostClassifier
 from sklearn.metrics import classification_report, roc_auc_score, roc_curve, auc
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import GridSearchCV,train_test_split
+from datetime import datetime
+def prRed(prt): print("\033[91m {}\033[00m" .format(prt))
 np.set_printoptions(threshold=np.inf)
-name = 'data_ROC_Curve.csv'
+file= 'ROC_data'
 tree = 'OutputTree'
 
-branch_names = """njet""".split(",")
-# branch_names = """njet,met,met_phi,nlep,lep1pT,lep1eta,lep1phi,lep1m,lep2pT,lep2eta,lep2phi,lep2m,lep3pT,lep3eta,lep3phi""".split(",")
-# branch_names = """njet,met,met_phi,nlep,lep1pT,lep1eta,lep1phi,lep1m,lep2pT,lep2eta,lep2phi,lep2m,lep3pT,lep3eta,lep3phi,lep3m,mt1,mt2,mt3""".split(",")
+parser = argparse.ArgumentParser(description= 'BDT for ttHH and background')
+parser.add_argument("--branch", default='wrong', type=str, help= "Use '--branch=' followed by a branch_name")
+
+args = parser.parse_args()
+branch = str(args.branch)
+
+bn_njet = """njet""".split(",")
+bn_lep  = """njet,met,met_phi,nlep,lep1pT,lep1eta,lep1phi,lep1m,lep2pT,lep2eta,lep2phi,lep2m,lep3pT,lep3eta,lep3phi""".split(",")
+bn_mt   = """njet,met,met_phi,nlep,lep1pT,lep1eta,lep1phi,lep1m,lep2pT,lep2eta,lep2phi,lep2m,lep3pT,lep3eta,lep3phi,lep3m,mt1,mt2,mt3""".split(",")
+bn_dr   = """njet,met,met_phi,nlep,lep1pT,lep1eta,lep1phi,lep1m,lep2pT,lep2eta,lep2phi,lep2m,lep3pT,lep3eta,lep3phi,lep3m,mt1,mt2,mt3,dr1,dr2,dr3""".split(",")
+# now = datetime.now()
+# time = now.strftime("%H:%M:%S")
+
+while True:
+    try:
+        if branch == 'njets':
+            print 'You selected option:', branch
+            branch_names = bn_njet
+            name = file + '_' + branch + '.csv'
+            break
+        elif branch == 'lep':
+            print 'You selected option:', branch
+            branch_names = bn_lep
+            name = file + '_' + branch + '.csv'
+            break
+        elif branch == 'mt':
+            print 'You selected option:', branch
+            branch_names = bn_mt
+            name = file + '_' + branch + '.csv'
+            break
+        elif branch == 'dr':
+            print 'You selected option:', branch
+            branch_names = bn_dr
+            name = file + '_' + branch  + '.csv'
+            break
+        elif branch == 'wrong':
+            sys.exit('Need to pass a variable, use --h for options')
+        # else :
+        #     system('clear')
+        #     prRed('****************** Invalid option **************\n')
+        #     break
+    except NameError:
+        system('clear')
+        prRed('*******************Invalid option **************\n')
+        break
+
+
 branch_names = [c.strip() for c in branch_names]
 branch_names = (b.replace(" ", "_") for b in branch_names)
 branch_names = list(b.replace("-", "_") for b in branch_names)
@@ -69,7 +117,7 @@ def compare_train_test(clf, X_train, y_train, X_test, y_test, bins=30):
     high = max(np.max(d) for d in decisions)
     low_high = (low,high)
     
-
+    r00  = ['name','var']
     r6  = ['lh',low_high]
     plt.subplot(212)
     plt.hist(decisions[0],color='r', alpha=0.5, range=low_high, bins=bins,histtype='stepfilled', normed=True,label='S (train)')
@@ -96,8 +144,9 @@ def compare_train_test(clf, X_train, y_train, X_test, y_test, bins=30):
     r4  = ['fpr',fpr]
     r5  = ['tpr',tpr]
 
-    with open('data_ROC_Curve.csv', 'a') as csvFile:
+    with open(name, 'a') as csvFile:
         writer = csv.writer(csvFile)
+        writer.writerow(r00)
         writer.writerow(r0)
         writer.writerow(r1)
         writer.writerow(r2)
@@ -110,19 +159,21 @@ def compare_train_test(clf, X_train, y_train, X_test, y_test, bins=30):
 ################################################################################################
 
 
-    plt.xlabel("BDT output")
-    plt.ylabel("Arbitrary units")
+    plt.xlabel('BDT output')
+    plt.ylabel('Arbitrary units')
     plt.legend(loc='upper left')
     plt.yscale('log')
     plt.show()
     
 compare_train_test(bdt, X_train, y_train, X_test, y_test)
 
+bdt = 'BDToutput_test' + '_' + branch  + '.root'
+
 # BDT to TTree
 from root_numpy import array2root
 y_predicted = bdt.decision_function(X)
 y_predicted.dtype = [('y', np.float64)]
-array2root(y_predicted, "BDToutput_test.root", "BDToutput_test")
+array2root(y_predicted, bdt, 'BDT')
 
 plt.show()
 
