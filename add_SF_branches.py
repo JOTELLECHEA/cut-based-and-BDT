@@ -4,7 +4,8 @@
 script to add sfs to ntuples
 '''
 
-import os, time, sys, argparse, numpy, math
+import os, time, sys, argparse,math
+import numpy as np
 from array import array
 import shutil
 
@@ -35,6 +36,9 @@ def augment_rootfile(filepath):
     mt1     = array( 'f', [ 0 ] )
     mt2     = array( 'f', [ 0 ] )
     mt3     = array( 'f', [ 0 ] )
+    dr1     = array( 'f', [ 0 ] )
+    dr2     = array( 'f', [ 0 ] )
+    dr3     = array( 'f', [ 0 ] )
 
 
 
@@ -53,46 +57,66 @@ def augment_rootfile(filepath):
     br_mt1     = tree.Branch( 'mt1'    , mt1    , 'mt1/F'     )
     br_mt2     = tree.Branch( 'mt2'    , mt2    , 'mt2/F'     )
     br_mt3     = tree.Branch( 'mt3'    , mt3    , 'mt3/F'     )
+    br_dr1     = tree.Branch( 'dr1'    , dr1    , 'dr1/F'     )
+    br_dr2     = tree.Branch( 'dr2'    , dr2    , 'dr2/F'     )
+    br_dr3     = tree.Branch( 'dr3'    , dr3    , 'dr3/F'     )
 
     # track the time
     start_time = time.clock()
 
+######################################################################
+    dR1 =[]
+    dR2 =[]
+    dR3 =[]
+#######################################################################
     n_entries = tree.GetEntries()
     i = 1
     for event in tree:
         # show some progress
         if i % 1000 == 0: print("   processing entry {:8d}/{:d} [{:5.0f} evts/s]".format(i, n_entries, i/(time.clock()-start_time)))
-        num = event.nlep[0]
-        if num >0:
+        numlep = event.nlep[0]
+        numjet = event.njet[0]
+        if numlep >0:
             lep1m[0]   = 0.0
             lep1pT[0]  = event.leppT[0]
             lep1eta[0] = event.lepeta[0]
             lep1phi[0] = event.lepphi[0]
             mt1[0] = ROOT.TMath.Sqrt(2 * event.met[0] * event.leppT[0]/(10**6) * ( 1 - ROOT.TMath.Cos((event.lepphi[0] - event.met_phi[0]))))
-            if num > 1:
+            for x in xrange(numjet):
+                dR1.append(np.sqrt((event.lepeta[0] - event.jeteta[x])**2 + (event.lepphi[0] - event.jetphi[x])**2))
+            dr1[0] = min(dR1)
+            if numlep > 1:
                 lep2m[0]   = 0.0
                 lep2pT[0]  = event.leppT[1]
                 lep2eta[0] = event.lepeta[1]
                 lep2phi[0] = event.lepphi[1]
                 mt2[0] = ROOT.TMath.Sqrt(2 * event.met[0] * event.leppT[1]/(10**6) * ( 1 - ROOT.TMath.Cos((event.lepphi[1] - event.met_phi[0]))))
-                if num > 2:
+                for x in xrange(numjet):
+                    dR2.append(np.sqrt((event.lepeta[1] - event.jeteta[x])**2 + (event.lepphi[1] - event.jetphi[x])**2))
+                dr2[0] = min(dR2)
+                if numlep > 2:
                     lep3m[0]   = 0.0
                     lep3pT[0]  = event.leppT[2]
                     lep3eta[0] = event.lepeta[2]
                     lep3phi[0] = event.lepphi[2]
                     mt3[0] = ROOT.TMath.Sqrt(2 * event.met[0] * event.leppT[2]/(10**6) * ( 1 - ROOT.TMath.Cos((event.lepphi[2] - event.met_phi[0]))))
+                    for x in xrange(numjet):
+                        dR3.append(np.sqrt((event.lepeta[2] - event.jeteta[x])**2 + (event.lepphi[2] - event.jetphi[x])**2))
+                    dr3[0] = min(dR3)
                 else:
                     lep3pT[0]  = -999
                     lep3eta[0] = -9
                     lep3phi[0] = -9
                     lep3m[0]   = -999
                     mt3[0]     = -999
+                    dr3[0]     = -999
             else:
                 lep2pT[0]  = -999
                 lep2eta[0] = -9
                 lep2phi[0] = -9
                 lep2m[0]   = -999
                 mt2[0]     = -999
+                dr2[0]     = -999
                 
         else:
             lep1pT[0]  = -999
@@ -100,6 +124,7 @@ def augment_rootfile(filepath):
             lep1phi[0] = -9
             lep1m[0]   = -999
             mt1[0]     = -999
+            dr1[0]     = -999
 
 
 
@@ -119,7 +144,10 @@ def augment_rootfile(filepath):
         br_lep3m.Fill()
         br_mt1.Fill()
         br_mt2.Fill()
-        br_mt3.Fill() 
+        br_mt3.Fill()
+        br_dr1.Fill()
+        br_dr2.Fill()
+        br_dr3.Fill() 
         i += 1
 
     # write augmented tree to original file
