@@ -36,6 +36,7 @@ bn_njet = """njet""".split(",")
 bn_lep  = """njet,met,met_phi,nlep,lep1pT,lep1eta,lep1phi,lep1m,lep2pT,lep2eta,lep2phi,lep2m,lep3pT,lep3eta,lep3phi""".split(",")
 bn_mt   = """njet,met,met_phi,nlep,lep1pT,lep1eta,lep1phi,lep1m,lep2pT,lep2eta,lep2phi,lep2m,lep3pT,lep3eta,lep3phi,lep3m,mt1,mt2,mt3""".split(",")
 bn_dr   = """njet,met,met_phi,nlep,lep1pT,lep1eta,lep1phi,lep1m,lep2pT,lep2eta,lep2phi,lep2m,lep3pT,lep3eta,lep3phi,lep3m,mt1,mt2,mt3,dr1,dr2,dr3""".split(",")
+bn_test   = """njet,mt1,mt2,mt3,dr1,dr2,dr3""".split(",")
 # now = datetime.now()
 # time = now.strftime("%H:%M:%S")
 
@@ -60,6 +61,11 @@ while True:
             print 'You selected option:', branch
             branch_names = bn_dr
             name = file + '_' + branch  + '.csv'
+            break
+	elif branch == 'test':
+            print 'You selected option:', branch
+            branch_names = bn_test
+            name = file + '_' + branch + '.csv'
             break
         elif branch == 'wrong':
             sys.exit('Need to pass a variable, use --h for options')

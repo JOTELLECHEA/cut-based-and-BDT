@@ -21,8 +21,9 @@ from sklearn.preprocessing import StandardScaler
 from scipy.interpolate import *
 from scipy.stats import *
 #########
-#file = 'ROC_data_dr.csv'
-file = 'ROC_data_njets.csv'
+file = 'ROC_data_dr.csv'
+#file = 'ROC_data_njets.csv'
+#file = 'ROC_data_test.csv'
 df = pd.read_csv(file)
 def data(x):
 	return np.array([float(i) for i in df['var'][x][1:-1].split()])
