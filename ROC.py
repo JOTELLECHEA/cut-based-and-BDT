@@ -11,13 +11,14 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import AdaBoostClassifier
 from sklearn.metrics import classification_report, roc_auc_score, roc_curve, auc
 from sklearn.preprocessing import StandardScaler
-from sklearn.model_selection import GridSearchCV,train_test_split
+from sklearn.cross_validation import train_test_split
+#from sklearn.model_selection import GridSearchCV,train_test_split
 #########
 from scipy.interpolate import *
 from scipy.stats import *
 #########
-file = 'ROC_data_dr.csv'
-# file = 'ROC_data_njets.csv'
+#file = 'ROC_data_dr.csv'
+file = 'ROC_data_njets.csv'
 df = pd.read_csv(file)
 def data(x):
 	return np.array([float(i) for i in df['var'][x][1:-1].split()])
