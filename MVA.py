@@ -12,7 +12,7 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import AdaBoostClassifier
 from sklearn.metrics import classification_report, roc_auc_score, roc_curve, auc
 from sklearn.preprocessing import StandardScaler
-from sklearn.model_selection import GridSearchCV,train_test_split
+from sklearn.model_selection import train_test_split
 from datetime import datetime
 def prRed(prt): print("\033[91m {}\033[00m" .format(prt))
 np.set_printoptions(threshold=np.inf)
