@@ -1,4 +1,10 @@
+import sklearn 
 
+if sklearn.__version__ == '0.20.4':
+    from sklearn.model_selection import train_test_split
+else :
+    from sklearn.cross_validation import train_test_split
+    
 import matplotlib.mlab as mlab
 import csv
 import numpy as np
@@ -11,8 +17,6 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import AdaBoostClassifier
 from sklearn.metrics import classification_report, roc_auc_score, roc_curve, auc
 from sklearn.preprocessing import StandardScaler
-from sklearn.cross_validation import train_test_split
-#from sklearn.model_selection import GridSearchCV,train_test_split
 #########
 from scipy.interpolate import *
 from scipy.stats import *

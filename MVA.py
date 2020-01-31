@@ -1,20 +1,26 @@
 #!/cvmfs/sft.cern.ch/lcg/releases/LCG_94/Python/2.7.15/x86_64-slc6-gcc62-opt/bin/python
+import sklearn 
+
+if sklearn.__version__ == '0.20.4':
+    from sklearn.model_selection import train_test_split
+else :
+    from sklearn.cross_validation import train_test_split
+    
 import csv,sys
 import argparse
 import numpy as np
-from os import system
 import pandas as pd 
-import matplotlib.pyplot as plt
 from ROOT import*
+from os import system
+from datetime import datetime
+import matplotlib.pyplot as plt
 from root_numpy import root2array, rec2array
 from sklearn import datasets
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import AdaBoostClassifier
 from sklearn.metrics import classification_report, roc_auc_score, roc_curve, auc
 from sklearn.preprocessing import StandardScaler
-from sklearn.cross_validation import train_test_split
-from sklearn.model_selection import GridSearchCV,train_test_split
-from datetime import datetime
+
 def prRed(prt): print("\033[91m {}\033[00m" .format(prt))
 np.set_printoptions(threshold=np.inf)
 file= 'ROC_data'
