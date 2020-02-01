@@ -68,6 +68,8 @@ def augment_rootfile(filepath):
     dR1 =[]
     dR2 =[]
     dR3 =[]
+    lepvec = {}
+    jetvec = {}
 #######################################################################
     n_entries = tree.GetEntries()
     i = 1
@@ -78,8 +80,8 @@ def augment_rootfile(filepath):
         numjet = event.njet[0]
 ##############################################################################################################################################
         for i in xrange(numlep):
-                    lepvec[i] = ROOT.TLorentzVector()
-                    lepvec[i].SetPtEtaPhiM(event.leppT[i],event.lepeta[i],event.lepphi[i],0)
+            lepvec[i] = ROOT.TLorentzVector()
+            lepvec[i].SetPtEtaPhiM(event.leppT[i],event.lepeta[i],event.lepphi[i],0)
         for i in xrange(numjet):
             jetvec[i] = ROOT.TLorentzVector()  
             jetvec[i].SetPtEtaPhiM(event.jetpT[i],event.jeteta[i],event.jetphi[i],0)
