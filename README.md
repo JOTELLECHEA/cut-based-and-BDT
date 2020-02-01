@@ -6,7 +6,7 @@
      >Script that test gives all permutations of b tag jets for chisquare.
    - MVA.py
      >Script that uses a MutiVariate Algorithm (MVA)/Boosted Decision Tree(BDT).
-   - ROC.py
+   - RocCurve.py
      >Script that recreates ROC curve plots from the BDT.
    - add_SF_branches.py
      >Script that makes a new ROOT file; is used to flatten vectors.
@@ -20,8 +20,10 @@
    - MVA.py
      >`--branch=i` where i = njets,lep,...
      
-     >Output file is `data_ROC_Curve.csv`.
-   - ROC.py
+     >Output file is `ROC_data_file.csv'.
+   - RocCurve.py
+     >`--file=i` where  i = ROC_data_njets.csv...etc.
+
      >Output is tmp and can be save in format that is needed.
    - add_SF_branches.py
      >`--inputfile='****.root'`.
