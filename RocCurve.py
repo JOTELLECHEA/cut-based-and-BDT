@@ -7,6 +7,7 @@ else :
     
 import matplotlib.mlab as mlab
 import csv
+import argparse
 import numpy as np
 import pandas as pd 
 import matplotlib.pyplot as plt
@@ -20,11 +21,13 @@ from sklearn.preprocessing import StandardScaler
 #########
 from scipy.interpolate import *
 from scipy.stats import *
-#########
-file = 'ROC_data_dr.csv'
-#file = 'ROC_data_njets.csv'
-#file = 'ROC_data_test.csv'
+#################################################################################
+parser = argparse.ArgumentParser(description= 'ROC curve plot from BDT')
+parser.add_argument("--file", type=str, help= "Use '--file=' followed by a *.csv file")
+args = parser.parse_args()
+file = str(args.file)
 df = pd.read_csv(file)
+##################################################################################
 def data(x):
 	return np.array([float(i) for i in df['var'][x][1:-1].split()])
 
@@ -49,7 +52,7 @@ t = 0.0000764706
 x = np.linspace(0,1,1000)
 plt.title('Receiver operating characteristic')
 # plt.plot(fpr, tpr, 'k.', label='ROC data(area = %0.2f)'%(roc_auc))
-plt.plot(x,np.polyval(p2,x),label='ROC (area = %0.2f)'%(roc_auc))
+plt.plot(x,np.polyval(p2,x),label='ROC (area = %0.6f)'%(roc_auc))
 plt.plot((b,b),(0,1),'b--', label='ttH')
 plt.plot((m,m),(0,1),'m--', label='ttZ')
 plt.plot((g,g),(0,1),'g--', label='ttbb')
