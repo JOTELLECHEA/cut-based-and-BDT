@@ -85,13 +85,15 @@ def augment_rootfile(filepath):
         for i in xrange(numjet):
             jetvec[i] = ROOT.TLorentzVector()  
             jetvec[i].SetPtEtaPhiM(event.jetpT[i],event.jeteta[i],event.jetphi[i],0)
+        neutrino[0] = ROOT.TLorentzVector()
+        neutrino[0].SetPtEtaPhiM(event.met[0],0,event.met_phi[0],0)
 ############################################################################################################################################### 
         if numlep >0:
             lep1m[0]   = 0.0
             lep1pT[0]  = event.leppT[0]
             lep1eta[0] = event.lepeta[0]
             lep1phi[0] = event.lepphi[0]
-            mt1[0] = ROOT.TMath.Sqrt(2 * event.met[0] * event.leppT[0]/(10**6) * ( 1 - ROOT.TMath.Cos((event.lepphi[0].DeltaPhi(event.met_phi[0])))))
+            mt1[0] = ROOT.TMath.Sqrt(2 * event.met[0] * event.leppT[0]/(10**6) * ( 1 - ROOT.TMath.Cos((lepvec[0].DeltaPhi(neutrino[0]))))
             for x in xrange(numjet):
                 dR1.append(lepvec[0].DeltaR(jetvec[x]))
                 # dR1.append(np.sqrt((event.lepeta[0] - event.jeteta[x])**2 + (event.lepphi[0] - event.jetphi[x])**2))
@@ -101,7 +103,7 @@ def augment_rootfile(filepath):
                 lep2pT[0]  = event.leppT[1]
                 lep2eta[0] = event.lepeta[1]
                 lep2phi[0] = event.lepphi[1]
-                mt2[0] = ROOT.TMath.Sqrt(2 * event.met[0] * event.leppT[1]/(10**6) * ( 1 - ROOT.TMath.Cos((event.lepphi[1].DeltaPhi(event.met_phi[0])))))
+                mt2[0] = ROOT.TMath.Sqrt(2 * event.met[0] * event.leppT[1]/(10**6) * ( 1 - ROOT.TMath.Cos((lepvec[1].DeltaPhi(neutrino[0]))))
                 for x in xrange(numjet):
                     dR2.append(lepvec[1].DeltaR(jetvec[x]))
                     # dR2.append(np.sqrt((event.lepeta[1] - event.jeteta[x])**2 + (event.lepphi[1] - event.jetphi[x])**2))
@@ -111,7 +113,7 @@ def augment_rootfile(filepath):
                     lep3pT[0]  = event.leppT[2]
                     lep3eta[0] = event.lepeta[2]
                     lep3phi[0] = event.lepphi[2]
-                    mt3[0] = ROOT.TMath.Sqrt(2 * event.met[0] * event.leppT[2]/(10**6) * ( 1 - ROOT.TMath.Cos((event.lepphi[2].DeltaPhi(event.met_phi[0])))))
+                    mt3[0] = ROOT.TMath.Sqrt(2 * event.met[0] * event.leppT[2]/(10**6) * ( 1 - ROOT.TMath.Cos((lepvec[2].DeltaPhi(neutrino[0]))))
                     for x in xrange(numjet):
                         dR3.append(lepvec[2].DeltaR(jetvec[x]))
                         # dR3.append(np.sqrt((event.lepeta[2] - event.jeteta[x])**2 + (event.lepphi[2] - event.jetphi[x])**2))
