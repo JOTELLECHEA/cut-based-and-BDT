@@ -73,19 +73,18 @@ def augment_rootfile(filepath):
     neutrino = {}
 #######################################################################
     n_entries = tree.GetEntries()
-    i = 1
     for event in tree:
         # show some progress
         if i % 1000 == 0: print("   processing entry {:8d}/{:d} [{:5.0f} evts/s]".format(i, n_entries, i/(time.clock()-start_time)))
         numlep = event.nlep[0]
         numjet = event.njet[0]
 ##############################################################################################################################################
-        for i in xrange(numlep):
-            lepvec[i] = ROOT.TLorentzVector()
-            lepvec[i].SetPtEtaPhiM(event.leppT[i],event.lepeta[i],event.lepphi[i],0)
-        for i in xrange(numjet):
-            jetvec[i] = ROOT.TLorentzVector()  
-            jetvec[i].SetPtEtaPhiM(event.jetpT[i],event.jeteta[i],event.jetphi[i],0)
+        for j in xrange(numlep):
+            lepvec[j] = ROOT.TLorentzVector()
+            lepvec[j].SetPtEtaPhiM(event.leppT[j],event.lepeta[j],event.lepphi[j],0)
+        for k in xrange(numjet):
+            jetvec[k] = ROOT.TLorentzVector()  
+            jetvec[k].SetPtEtaPhiM(event.jetpT[k],event.jeteta[k],event.jetphi[k],0)
         neutrino[0] = ROOT.TLorentzVector()
         neutrino[0].SetPtEtaPhiM(event.met[0],0,event.met_phi[0],0)
 ############################################################################################################################################### 
