@@ -10,9 +10,8 @@ from array import array
 import shutil
 
 import ROOT
-   
 def augment_rootfile(filepath):
-    
+
     shutil.copyfile(filepath,"new_"+filepath)
 
     # get tree to loop over
@@ -73,6 +72,7 @@ def augment_rootfile(filepath):
     neutrino = {}
 #######################################################################
     n_entries = tree.GetEntries()
+    i = 1
     for event in tree:
         # show some progress
         if i % 1000 == 0: print("   processing entry {:8d}/{:d} [{:5.0f} evts/s]".format(i, n_entries, i/(time.clock()-start_time)))
