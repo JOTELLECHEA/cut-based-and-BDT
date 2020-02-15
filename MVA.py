@@ -32,53 +32,51 @@ parser.add_argument("--branch", default='wrong', type=str, help= "Use '--branch=
 args = parser.parse_args()
 branch = str(args.branch)
 
-bn_njet   = """njet""".split(",")
-bn_lep    = """njet,met,met_phi,nlep,lep1pT,lep1eta,lep1phi,lep1m,lep2pT,lep2eta,lep2phi,lep2m,lep3pT,lep3eta,lep3phi""".split(",")
-bn_mt     = """njet,met,met_phi,nlep,lep1pT,lep1eta,lep1phi,lep1m,lep2pT,lep2eta,lep2phi,lep2m,lep3pT,lep3eta,lep3phi,lep3m,mt1,mt2,mt3""".split(",")
-bn_dr     = """njet,met,met_phi,nlep,lep1pT,lep1eta,lep1phi,lep1m,lep2pT,lep2eta,lep2phi,lep2m,lep3pT,lep3eta,lep3phi,lep3m,mt1,mt2,mt3,dr1,dr2,dr3""".split(",")
-bn_btag   = """njet,met,met_phi,nlep,lep1pT,lep1eta,lep1phi,lep1m,lep2pT,lep2eta,lep2phi,lep2m,lep3pT,lep3eta,lep3phi,lep3m,mt1,mt2,mt3,dr1,dr2,dr3,btag""".split(",")
-bn_pub   = """njet,met,met_phi,nlep,lep1pT,lep1eta,lep1phi,lep1m,lep2pT,lep2eta,lep2phi,lep2m,lep3pT,lep3eta,lep3phi,lep3m,mt1,mt2,mt3,dr1,dr2,dr3,btag,srap,cent""".split(",")
-bn_test   = """njet,mt1,mt2,mt3,dr1,dr2,dr3""".split(",")
+bn_phase1   = """njet""".split(",")
+bn_phase2   = """njet,btag,srap""".split(",")
+bn_phase3   = """njet,btag,srap,cent,mbb,hb,ht""".split(",")
+bn_phase4   = """njet,btag,srap,cent,mbb,hb,ht,lep3m,mt1,mt2,mt3,dr1,dr2,dr3""".split(",")
+
 # now = datetime.now()
 # time = now.strftime("%H:%M:%S")
 
 while True:
     try:
-        if branch == 'njets':
+        if branch == 'phase1':
             print 'You selected option:', branch
-            branch_names = bn_njet
+            branch_names = bn_phase1
             name = file + '_' + branch + '.csv'
             break
-        elif branch == 'lep':
+        elif branch == 'phase2':
             print 'You selected option:', branch
-            branch_names = bn_lep
+            branch_names = bn_phase2
             name = file + '_' + branch + '.csv'
             break
-        elif branch == 'mt':
+        elif branch == 'phase3':
             print 'You selected option:', branch
-            branch_names = bn_mt
+            branch_names = bn_phase3
             name = file + '_' + branch + '.csv'
             break
-        elif branch == 'dr':
+        elif branch == 'phase4':
             print 'You selected option:', branch
-            branch_names = bn_dr
+            branch_names = bn_phase4
             name = file + '_' + branch  + '.csv'
             break
-        elif branch == 'test':
-            print 'You selected option:', branch
-            branch_names = bn_test
-            name = file + '_' + branch + '.csv'
-            break
-        elif branch == 'btag':
-            print 'You selected option:', branch
-            branch_names = bn_btag
-            name = file + '_' + branch + '.csv'
-            break
-        elif branch == 'pub':
-            print 'You selected option:', branch
-            branch_names = bn_pub
-            name = file + '_' + branch + '.csv'
-            break
+        # elif branch == 'test':
+        #     print 'You selected option:', branch
+        #     branch_names = bn_test
+        #     name = file + '_' + branch + '.csv'
+        #     break
+        # elif branch == 'btag':
+        #     print 'You selected option:', branch
+        #     branch_names = bn_btag
+        #     name = file + '_' + branch + '.csv'
+        #     break
+        # elif branch == 'pub':
+        #     print 'You selected option:', branch
+        #     branch_names = bn_pub
+        #     name = file + '_' + branch + '.csv'
+        #     break
         elif branch == 'wrong':
             sys.exit('Need to pass a variable, use --h for options')
         # else :
