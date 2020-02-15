@@ -250,4 +250,4 @@ if __name__ == "__main__":
     parser.add_argument('--file', help='input file to skim')
     args = parser.parse_args()
 
-    augment_rootfile(args.inputfile)
+    augment_rootfile(args.file)
