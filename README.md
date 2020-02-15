@@ -26,7 +26,7 @@
 
      >Output is tmp and can be save in format that is needed.
    - add_SF_branches.py
-     >`--inputfile='****.root'`.
+     >`--file='****.root'`.
      
      >`--help` brings up help.
      
