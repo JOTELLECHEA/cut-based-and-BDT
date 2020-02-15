@@ -419,7 +419,7 @@ ttZ16.Draw('HIST SAME')
 # ttbb16.Draw('HIST SAME')
 leg.Draw()
 
-c3.cd(6) ############################################################# N/A
+# c3.cd(6) ############################################################# N/A
 # ttHH17.SetLineColor(ROOT.kRed)
 # ttHH17.SetStats(0)
 # ttHH17.Scale(1/(ttHH17.Integral()))

@@ -34,8 +34,8 @@ branch = str(args.branch)
 
 bn_phase1   = """njet""".split(",")
 bn_phase2   = """njet,btag,srap""".split(",")
-bn_phase3   = """njet,btag,srap,cent,mbb,hb,ht""".split(",")
-bn_phase4   = """njet,btag,srap,cent,mbb,hb,ht,lep3m,mt1,mt2,mt3,dr1,dr2,dr3""".split(",")
+bn_phase3   = """njet,btag,srap,cent,m_bb,h_b""".split(",")
+bn_phase4   = """njet,btag,srap,cent,m_bb,h_b,lep3m,mt1,mt2,mt3,dr1,dr2,dr3""".split(",")
 
 # now = datetime.now()
 # time = now.strftime("%H:%M:%S")

@@ -38,7 +38,7 @@ d3  = data(3)
 fpr = data(4)
 tpr = data(5)
 # low_high = data(6)
-low_high=(-0.9999999999999999, -0.08751503639915781)
+low_high=(-1, 1)
 bins =30
 
 roc_auc = auc(fpr, tpr)
@@ -51,7 +51,7 @@ m = 0.0001111
 t = 0.0000764706 
 x = np.linspace(0,1,1000)
 plt.title('Receiver operating characteristic')
-plt.plot(fpr, tpr, 'k.', label='ROC data(area = %0.6f)'%(roc_auc))
+plt.plot(fpr, tpr, lw=.5, label='ROC (area = %0.6f)'%(roc_auc))
 # plt.plot(x,np.polyval(p2,x),label='ROC (area = %0.6f)'%(roc_auc))
 plt.plot((b,b),(0,1),'b--', label='ttH')
 plt.plot((m,m),(0,1),'m--', label='ttZ')

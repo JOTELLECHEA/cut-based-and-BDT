@@ -44,6 +44,8 @@ def augment_rootfile(filepath):
     btag    = array( 'f', [ 0 ] )
     srap    = array( 'f', [ 0 ] )
     cent    = array( 'f', [ 0 ] )
+    m_bb    = array( 'f', [ 0 ] )
+    h_b     = array( 'f', [ 0 ] )
 
 
 
@@ -69,6 +71,8 @@ def augment_rootfile(filepath):
     br_btag    = tree.Branch( 'btag'   , btag   , 'btag/F'    )
     br_cent    = tree.Branch( 'cent'   , cent   , 'cent/F'    )
     br_srap    = tree.Branch( 'srap'   , srap   , 'srap/F'    )
+    br_m_bb    = tree.Branch( 'm_bb'   , m_bb   , 'm_bb/F'    )
+    br_h_b     = tree.Branch( 'h_b'    , h_b    , 'h_b/F'     )
 
     # track the time
     start_time = time.clock()
@@ -101,6 +105,7 @@ def augment_rootfile(filepath):
         lepvec      = {}
         jetvec      = {}
         neutrino    = {}
+        HB_sum_Pt   = 0.             # Initialize sum of Pt for all b-tag jets.
         rand        = 0.
         cen_sum_Pt  = 0.             # Initialize sum of Pt for all jets.
         cen_sum_E   = 0.             # Initialize sum of E for all jets.
@@ -151,6 +156,7 @@ def augment_rootfile(filepath):
             else:
                 cent[0] = -9999
             for k in xrange(btagjets):
+                HB_sum_Pt += jetvec[tracker_btj[k]].Pt()
                 for j in xrange(btagjets):
                     if k == j: continue
                     etasum += etabi_j(k,j)           # Finding separation between all b_jets.
@@ -160,6 +166,8 @@ def augment_rootfile(filepath):
                     # Finds max Pt and M for two btagjets.
                     btjmaxPt = vec_sum_Pt
                     btjmaxM  = vec_sum_M
+            m_bb[0] = btjmaxM
+            h_b[0]  = HB_sum_Pt
             if btagjets > 1:
                 etasum_N = etasum/(btagjets**2 - btagjets)  # Getting distance avg.
             else:
@@ -203,7 +211,6 @@ def augment_rootfile(filepath):
                     lep2m[0]   = -999
                     mt2[0]     = -999
                     dr2[0]     = -999
-                    
             else:
                 lep1pT[0]  = -999
                 lep1eta[0] = -9
@@ -237,6 +244,8 @@ def augment_rootfile(filepath):
             br_btag.Fill()
             br_cent.Fill() 
             br_srap.Fill()
+            br_m_bb.Fill()
+            br_h_b.Fill()
             i += 1
 
     # write augmented tree to original file
