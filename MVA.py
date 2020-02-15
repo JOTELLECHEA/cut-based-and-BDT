@@ -32,10 +32,12 @@ parser.add_argument("--branch", default='wrong', type=str, help= "Use '--branch=
 args = parser.parse_args()
 branch = str(args.branch)
 
-bn_njet = """njet""".split(",")
-bn_lep  = """njet,met,met_phi,nlep,lep1pT,lep1eta,lep1phi,lep1m,lep2pT,lep2eta,lep2phi,lep2m,lep3pT,lep3eta,lep3phi""".split(",")
-bn_mt   = """njet,met,met_phi,nlep,lep1pT,lep1eta,lep1phi,lep1m,lep2pT,lep2eta,lep2phi,lep2m,lep3pT,lep3eta,lep3phi,lep3m,mt1,mt2,mt3""".split(",")
-bn_dr   = """njet,met,met_phi,nlep,lep1pT,lep1eta,lep1phi,lep1m,lep2pT,lep2eta,lep2phi,lep2m,lep3pT,lep3eta,lep3phi,lep3m,mt1,mt2,mt3,dr1,dr2,dr3""".split(",")
+bn_njet   = """njet""".split(",")
+bn_lep    = """njet,met,met_phi,nlep,lep1pT,lep1eta,lep1phi,lep1m,lep2pT,lep2eta,lep2phi,lep2m,lep3pT,lep3eta,lep3phi""".split(",")
+bn_mt     = """njet,met,met_phi,nlep,lep1pT,lep1eta,lep1phi,lep1m,lep2pT,lep2eta,lep2phi,lep2m,lep3pT,lep3eta,lep3phi,lep3m,mt1,mt2,mt3""".split(",")
+bn_dr     = """njet,met,met_phi,nlep,lep1pT,lep1eta,lep1phi,lep1m,lep2pT,lep2eta,lep2phi,lep2m,lep3pT,lep3eta,lep3phi,lep3m,mt1,mt2,mt3,dr1,dr2,dr3""".split(",")
+bn_btag   = """njet,met,met_phi,nlep,lep1pT,lep1eta,lep1phi,lep1m,lep2pT,lep2eta,lep2phi,lep2m,lep3pT,lep3eta,lep3phi,lep3m,mt1,mt2,mt3,dr1,dr2,dr3,btag""".split(",")
+bn_pub   = """njet,met,met_phi,nlep,lep1pT,lep1eta,lep1phi,lep1m,lep2pT,lep2eta,lep2phi,lep2m,lep3pT,lep3eta,lep3phi,lep3m,mt1,mt2,mt3,dr1,dr2,dr3,btag,srap,cent""".split(",")
 bn_test   = """njet,mt1,mt2,mt3,dr1,dr2,dr3""".split(",")
 # now = datetime.now()
 # time = now.strftime("%H:%M:%S")
@@ -62,9 +64,19 @@ while True:
             branch_names = bn_dr
             name = file + '_' + branch  + '.csv'
             break
-	elif branch == 'test':
+        elif branch == 'test':
             print 'You selected option:', branch
             branch_names = bn_test
+            name = file + '_' + branch + '.csv'
+            break
+        elif branch == 'btag':
+            print 'You selected option:', branch
+            branch_names = bn_btag
+            name = file + '_' + branch + '.csv'
+            break
+        elif branch == 'pub':
+            print 'You selected option:', branch
+            branch_names = bn_pub
             name = file + '_' + branch + '.csv'
             break
         elif branch == 'wrong':
@@ -107,7 +119,7 @@ decisions = bdt.decision_function(X_test)
 fpr, tpr, thresholds = roc_curve(y_test, decisions)
 roc_auc = auc(fpr, tpr)
 plt.subplot(211)
-plt.plot(fpr, tpr, lw=1, label='ROC (area = %0.2f)'%(roc_auc))
+plt.plot(fpr, tpr, lw=1, label='ROC (area = %0.6f)'%(roc_auc))
 plt.plot([0, 1], [0, 1], '--', color=(0.6, 0.6, 0.6), label='Luck')
 plt.xlim([-0.05, 1.05])
 plt.ylim([-0.05, 1.05])

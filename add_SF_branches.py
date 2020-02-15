@@ -3,11 +3,14 @@
 '''
 script to add sfs to ntuples
 '''
-
+# from __future__ import division
 import os, time, sys, argparse,math
+
 import numpy as np
 from array import array
 import shutil
+import random
+
 
 import ROOT
 def augment_rootfile(filepath):
@@ -38,6 +41,10 @@ def augment_rootfile(filepath):
     dr1     = array( 'f', [ 0 ] )
     dr2     = array( 'f', [ 0 ] )
     dr3     = array( 'f', [ 0 ] )
+    btag    = array( 'f', [ 0 ] )
+    srap    = array( 'f', [ 0 ] )
+    cent    = array( 'f', [ 0 ] )
+
 
 
 
@@ -59,111 +66,178 @@ def augment_rootfile(filepath):
     br_dr1     = tree.Branch( 'dr1'    , dr1    , 'dr1/F'     )
     br_dr2     = tree.Branch( 'dr2'    , dr2    , 'dr2/F'     )
     br_dr3     = tree.Branch( 'dr3'    , dr3    , 'dr3/F'     )
+    br_btag    = tree.Branch( 'btag'   , btag   , 'btag/F'    )
+    br_cent    = tree.Branch( 'cent'   , cent   , 'cent/F'    )
+    br_srap    = tree.Branch( 'srap'   , srap   , 'srap/F'    )
 
     # track the time
     start_time = time.clock()
 
-######################################################################
-    dR1 =[]
-    dR2 =[]
-    dR3 =[]
-    lepvec = {}
-    jetvec = {}
-    neutrino = {}
-#######################################################################
+    def missingPT(x):
+        met_value = ROOT.TMath.Sqrt(2 * event.met[0] * event.leppT[x]/(10**6) * ( 1 - ROOT.TMath.Cos((lepvec[x].DeltaPhi(neutrino[0])))))
+        return met_value
+    # Average separation in pseudorapidity between two b-tagged jets.
+    def etabi_j(x,y):
+        distance = abs(jetvec[tracker_btj[x]].Eta() - jetvec[tracker_btj[y]].Eta())
+        return distance
+    # Vector Pt or M Sum between two b-tagged jets.
+    def vectorsum(x,y,c):
+        if c == 'Pt':
+            sum = (jetvec[tracker_btj[x]] + jetvec[tracker_btj[y]]).Pt()
+        elif c == 'M':
+            sum = (jetvec[tracker_btj[x]] + jetvec[tracker_btj[y]]).M()
+        return sum
+#############################################################################
+
     n_entries = tree.GetEntries()
-    i = 1
+    i= 1
     for event in tree:
+        #####################################################################
+        tracker_btj = []            # Initialize empty tracking btagjets.
+        tracker_non = []            # Initialize empty tracking lightjets.
+        dR1         = []
+        dR2         = []
+        dR3         = []
+        lepvec      = {}
+        jetvec      = {}
+        neutrino    = {}
+        rand        = 0.
+        cen_sum_Pt  = 0.             # Initialize sum of Pt for all jets.
+        cen_sum_E   = 0.             # Initialize sum of E for all jets.
+        etasum      = 0.             # Initialize sum for eta seperation.
+        etasum_N    = 0.             # Initialize sum for eta separation average.
+        btjmaxPt    = 0.             # Initialize empty b-tag vecto for max .Pt().
+        btjmaxM     = 0.             # Initialize empty b-tag vecto for max .M().
+        vec_sum_Pt  = 0.            # Initialize empty b-tag vector for summing Pt().
+        vec_sum_M   = 0.            # Initialize empty b-tag vector for summing M().
+        ####################################################################
         # show some progress
         if i % 1000 == 0: print("   processing entry {:8d}/{:d} [{:5.0f} evts/s]".format(i, n_entries, i/(time.clock()-start_time)))
         numlep = event.nlep[0]
         numjet = event.njet[0]
-##############################################################################################################################################
-        for j in xrange(numlep):
-            lepvec[j] = ROOT.TLorentzVector()
-            lepvec[j].SetPtEtaPhiM(event.leppT[j],event.lepeta[j],event.lepphi[j],0)
-        for k in xrange(numjet):
-            jetvec[k] = ROOT.TLorentzVector()  
-            jetvec[k].SetPtEtaPhiM(event.jetpT[k],event.jeteta[k],event.jetphi[k],0)
-        neutrino[0] = ROOT.TLorentzVector()
-        neutrino[0].SetPtEtaPhiM(event.met[0],0,event.met_phi[0],0)
-############################################################################################################################################### 
-        if numlep >0:
-            lep1m[0]   = 0.0
-            lep1pT[0]  = event.leppT[0]
-            lep1eta[0] = event.lepeta[0]
-            lep1phi[0] = event.lepphi[0]
-            mt1[0] = ROOT.TMath.Sqrt(2 * event.met[0] * event.leppT[0]/(10**6) * ( 1 - ROOT.TMath.Cos((lepvec[0].DeltaPhi(neutrino[0])))))
-            for x in xrange(numjet):
-                dR1.append(lepvec[0].DeltaR(jetvec[x]))
-                # dR1.append(np.sqrt((event.lepeta[0] - event.jeteta[x])**2 + (event.lepphi[0] - event.jetphi[x])**2))
-            dr1[0] = min(dR1)
-            if numlep > 1:
-                lep2m[0]   = 0.0
-                lep2pT[0]  = event.leppT[1]
-                lep2eta[0] = event.lepeta[1]
-                lep2phi[0] = event.lepphi[1]
-                mt2[0] = ROOT.TMath.Sqrt(2 * event.met[0] * event.leppT[1]/(10**6) * ( 1 - ROOT.TMath.Cos((lepvec[1].DeltaPhi(neutrino[0])))))
-                for x in xrange(numjet):
-                    dR2.append(lepvec[1].DeltaR(jetvec[x]))
-                    # dR2.append(np.sqrt((event.lepeta[1] - event.jeteta[x])**2 + (event.lepphi[1] - event.jetphi[x])**2))
-                dr2[0] = min(dR2)
+        if numlep > 0:  
+            neutrino[0] = ROOT.TLorentzVector()
+            neutrino[0].SetPtEtaPhiM(event.met[0],0,event.met_phi[0],0)
+            for j in xrange(numlep):
+                lepvec[j] = ROOT.TLorentzVector()
+                lepvec[j].SetPtEtaPhiM(event.leppT[j],event.lepeta[j],event.lepphi[j],0)
+            for k in xrange(numjet):
+                jetvec[k] = ROOT.TLorentzVector()  
+                jetvec[k].SetPtEtaPhiM(event.jetpT[k],event.jeteta[k],event.jetphi[k],0)
+                if numlep > 0:
+                    dR1.append(lepvec[0].DeltaR(jetvec[k]))
+                if numlep > 1: 
+                    dR2.append(lepvec[1].DeltaR(jetvec[k]))
                 if numlep > 2:
-                    lep3m[0]   = 0.0
-                    lep3pT[0]  = event.leppT[2]
-                    lep3eta[0] = event.lepeta[2]
-                    lep3phi[0] = event.lepphi[2]
-                    mt3[0] = ROOT.TMath.Sqrt(2 * event.met[0] * event.leppT[2]/(10**6) * ( 1 - ROOT.TMath.Cos((lepvec[2].DeltaPhi(neutrino[0])))))
-                    for x in xrange(numjet):
-                        dR3.append(lepvec[2].DeltaR(jetvec[x]))
-                        # dR3.append(np.sqrt((event.lepeta[2] - event.jeteta[x])**2 + (event.lepphi[2] - event.jetphi[x])**2))
-                    dr3[0] = min(dR3)
+                    dR3.append(lepvec[2].DeltaR(jetvec[k]))
+            for x in xrange(numjet):
+                cen_sum_E  += jetvec[x].E()          # Scalar sum of E.
+                cen_sum_Pt += jetvec[x].Pt()         # Scalar sum of Pt.
+                rand = random.random()
+
+                if event.jetbhadron[x] == 1 and rand <= 0.7:
+                    tracker_btj.append(x)              # B-tag jets into a list.
+                elif event.jetchadron[x] == 1 and rand <= 0.2:
+                    tracker_btj.append(x)
+                elif rand <= 0.002:
+                    tracker_btj.append(x)
                 else:
-                    lep3pT[0]  = -999
-                    lep3eta[0] = -9
-                    lep3phi[0] = -9
-                    lep3m[0]   = -999
-                    mt3[0]     = -999
-                    dr3[0]     = -999
+                    tracker_non.append(x)
+            btagjets = len(tracker_btj)
+            ntagjets = len(tracker_non)
+            btag[0]  = btagjets 
+            if cen_sum_E != 0:
+                cent[0] = cen_sum_Pt / cen_sum_E    # scalar sum of Pt/E.
             else:
-                lep2pT[0]  = -999
-                lep2eta[0] = -9
-                lep2phi[0] = -9
-                lep2m[0]   = -999
-                mt2[0]     = -999
-                dr2[0]     = -999
-                
-        else:
-            lep1pT[0]  = -999
-            lep1eta[0] = -9
-            lep1phi[0] = -9
-            lep1m[0]   = -999
-            mt1[0]     = -999
-            dr1[0]     = -999
+                cent[0] = -9999
+            for k in xrange(btagjets):
+                for j in xrange(btagjets):
+                    if k == j: continue
+                    etasum += etabi_j(k,j)           # Finding separation between all b_jets.
+                    vec_sum_Pt = vectorsum(k,j,'Pt') # Sum of btagjets Pt.
+                    vec_sum_M  = vectorsum(k,j,'M')  # Sum of btagjets M.
+                    if vec_sum_Pt < btjmaxPt:continue
+                    # Finds max Pt and M for two btagjets.
+                    btjmaxPt = vec_sum_Pt
+                    btjmaxM  = vec_sum_M
+            if btagjets > 1:
+                etasum_N = etasum/(btagjets**2 - btagjets)  # Getting distance avg.
+            else:
+                etasum_N = -999
+
+            srap[0] = etasum_N                        # btagjets speration avg.
+       
+    ######################################################################################
+            if numlep >0:
+                lep1m[0]   = 0.0
+                lep1pT[0]  = event.leppT[0]
+                lep1eta[0] = event.lepeta[0]
+                lep1phi[0] = event.lepphi[0]
+                mt1[0]     = missingPT(0)
+                if len(dr1) >1 : dr1[0]  = min(dR1)
+                if numlep > 1:
+                    lep2m[0]   = 0.0
+                    lep2pT[0]  = event.leppT[1]
+                    lep2eta[0] = event.lepeta[1]
+                    lep2phi[0] = event.lepphi[1]
+                    mt2[0] = missingPT(1)
+                    if len(dr2) >1 : dr2[0]  = min(dR2)
+                    if numlep > 2:
+                        lep3m[0]   = 0.0
+                        lep3pT[0]  = event.leppT[2]
+                        lep3eta[0] = event.lepeta[2]
+                        lep3phi[0] = event.lepphi[2]
+                        mt3[0] = missingPT(2)
+                        if len(dr3) >1 : dr3[0]  = min(dR3)
+                    else:
+                        lep3pT[0]  = -999
+                        lep3eta[0] = -9
+                        lep3phi[0] = -9
+                        lep3m[0]   = -999
+                        mt3[0]     = -999
+                        dr3[0]     = -999
+                else:
+                    lep2pT[0]  = -999
+                    lep2eta[0] = -9
+                    lep2phi[0] = -9
+                    lep2m[0]   = -999
+                    mt2[0]     = -999
+                    dr2[0]     = -999
+                    
+            else:
+                lep1pT[0]  = -999
+                lep1eta[0] = -9
+                lep1phi[0] = -9
+                lep1m[0]   = -999
+                mt1[0]     = -999
+                dr1[0]     = -999
 
 
 
 
-        # fill new branches
-        br_lep1pT.Fill()
-        br_lep1eta.Fill()
-        br_lep1phi.Fill()
-        br_lep1m.Fill()
-        br_lep2pT.Fill()
-        br_lep2eta.Fill()
-        br_lep2phi.Fill()
-        br_lep2m.Fill()
-        br_lep3pT.Fill()
-        br_lep3eta.Fill()
-        br_lep3phi.Fill()
-        br_lep3m.Fill()
-        br_mt1.Fill()
-        br_mt2.Fill()
-        br_mt3.Fill()
-        br_dr1.Fill()
-        br_dr2.Fill()
-        br_dr3.Fill() 
-        i += 1
+            # fill new branches
+            br_lep1pT.Fill()
+            br_lep1eta.Fill()
+            br_lep1phi.Fill()
+            br_lep1m.Fill()
+            br_lep2pT.Fill()
+            br_lep2eta.Fill()
+            br_lep2phi.Fill()
+            br_lep2m.Fill()
+            br_lep3pT.Fill()
+            br_lep3eta.Fill()
+            br_lep3phi.Fill()
+            br_lep3m.Fill()
+            br_mt1.Fill()
+            br_mt2.Fill()
+            br_mt3.Fill()
+            br_dr1.Fill()
+            br_dr2.Fill()
+            br_dr3.Fill()
+            br_btag.Fill()
+            br_cent.Fill() 
+            br_srap.Fill()
+            i += 1
 
     # write augmented tree to original file
     tree.Write("", ROOT.TObject.kOverwrite)
@@ -173,7 +247,7 @@ def augment_rootfile(filepath):
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description='flatten/augment ntuples')
-    parser.add_argument('--inputfile', help='input file to skim')
+    parser.add_argument('--file', help='input file to skim')
     args = parser.parse_args()
 
     augment_rootfile(args.inputfile)
