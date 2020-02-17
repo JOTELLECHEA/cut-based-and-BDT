@@ -62,23 +62,24 @@ MyTree = f.Get('OutputTree')
 entries = MyTree.GetEntries()
 #------------------------------------------------------------------------------#
 # Create Canvas and empty Histograms hx.
-h0 = ROOT.TH1D('counter','counter',7,0,7)
-h1 = ROOT.TH1D('#eta','#eta;< #eta(b_{i},b_{j}) >;Events normalized to unit area / 0.2',20,0,4)
-h2 = ROOT.TH1D('M_{bb}','M_{bb};M_{bb} [GeV];Events normalized to unit area / 25GeV',10,0,250)
-h3 = ROOT.TH1D('Centrality','Centrality;Centrality;Events normalised to unit area / 0.1',10,0,1)
-h4 = ROOT.TH1D('H_{B}','H_{B};H_{B} [GeV];Events normalised to unit area / 150GeV',10,0,1500)
-h5 = ROOT.TH1D('jet','jet;Jet muliplicity;Events normalised to unit area',13,0,13)
-h6 = ROOT.TH1D('btag','btag;N b-tagged jets;Events normalised to unit area',10,-.5,9.5)
-h7 = ROOT.TH1D('met','met;Transverse mass (GeV);Events',100,0,300)
-h8 = ROOT.TH1D('pT of top 2 btag','pT of top 2 btag;invariant mass of two highest btag pT (GeV);Events',100,0,525)
-h9 = ROOT.TH1D('#DeltaR','#DeltaR;#DeltaR ;Events',100,-.5,9.5)
+h0  = ROOT.TH1D('counter','counter',7,0,7)
+h1  = ROOT.TH1D('#eta','#eta;< #eta(b_{i},b_{j}) >;Events normalized to unit area / 0.2',20,0,4)
+h2  = ROOT.TH1D('M_{bb}','M_{bb};M_{bb} [GeV];Events normalized to unit area / 25GeV',10,0,250)
+h3  = ROOT.TH1D('Centrality','Centrality;Centrality;Events normalised to unit area / 0.1',10,0,1)
+h4  = ROOT.TH1D('H_{B}','H_{B};H_{B} [GeV];Events normalised to unit area / 150GeV',10,0,1500)
+h5  = ROOT.TH1D('jet','jet;Jet muliplicity;Events normalised to unit area',13,0,13)
+h6  = ROOT.TH1D('btag','btag;N b-tagged jets;Events normalised to unit area',10,-.5,9.5)
+h7  = ROOT.TH1D('met','met;Transverse mass (GeV);Events',100,0,300)
+h8  = ROOT.TH1D('pT of top 2 btag','pT of top 2 btag;invariant mass of two highest btag pT (GeV);Events',100,0,525)
+h9  = ROOT.TH1D('#DeltaR','#DeltaR;#DeltaR ;Events',100,-.5,9.5)
 h10 = ROOT.TH1D('Lowest #DeltaR','Lowest #DeltaR;h10;Events',100,-.5,9.5)
 h11 = ROOT.TH1D('remaining pT','remaining pT;remaining pT;Events',100,0,250)
 h12 = ROOT.TH1D('h12','h12;lowest btagjet pT;Events',100,0,180)
 h13 = ROOT.TH1D('h13','h13;2nd lowest btagjet pT;Events',100,0,180)
 h14 = ROOT.TH1D('h14','h14;Lowest pT of charm jet;Events',100,0,1000)
 h15 = ROOT.TH1D('h15','h15;2nd Lowest pT of charm jet;Events',100,0,1000)
-h16 = ROOT.TH1D('h16','h16;Chisquare;Events',100,0,20000)
+h16 = ROOT.TH1D('h16','h16;Chisquare;Events',1000000,0,1.0e+13)
+h17 = ROOT.TH1D('h17','h17;Chisre;Events',100,0,1.0e+7)
 # #------------------------------------------------------------------------------#
 # Functions:
 # Average separation in pseudorapidity between two b-tagged jets.
@@ -104,35 +105,35 @@ for event in MyTree:
     tracker_btj = []            # Initialize empty tracking btagjets.
     tracker_non = []            # Initialize empty tracking lightjets.
     jetprime    = []            # Initialize empty tracking ctagjets.
-    btjmaxPt    = 0             # Initialize empty b-tag vecto for max .Pt().
-    btjmaxM     = 0             # Initialize empty b-tag vecto for max .M().
-    vec_sum_Pt  = 0             # Initialize empty b-tag vector for summing Pt().
-    vec_sum_M   = 0             # Initialize empty b-tag vector for summing M().
+    btjmaxPt    = 0.            # Initialize empty b-tag vecto for max .Pt().
+    btjmaxM     = 0.            # Initialize empty b-tag vecto for max .M().
+    vec_sum_Pt  = 0.            # Initialize empty b-tag vector for summing Pt().
+    vec_sum_M   = 0.            # Initialize empty b-tag vector for summing M().
     goodleptons = 0             # Initialize counter for leptons.
     goodjets    = 0             # Initialize counter for jets.
     btagjets    = 0             # Initialize counter for b-tag jets.
     ntagjets    = 0             # Initialize counter for non b-tag jets.
-    etasum      = 0             # Initialize sum for eta seperation.
-    etasum_N    = 0             # Initialize sum for eta separation average.
-    cen_sum_Pt  = 0             # Initialize sum of Pt for all jets.
-    cen_sum_E   = 0             # Initialize sum of E for all jets.
-    HB_sum_Pt   = 0             # Initialize sum of Pt for all b-tag jets.
-    rand        = 0             # Initialize random variable with value (0,1).
+    etasum      = 0.            # Initialize sum for eta seperation.
+    etasum_N    = 0.            # Initialize sum for eta separation average.
+    cen_sum_Pt  = 0.            # Initialize sum of Pt for all jets.
+    cen_sum_E   = 0.            # Initialize sum of E for all jets.
+    HB_sum_Pt   = 0.            # Initialize sum of Pt for all b-tag jets.
+    rand        = 0.            # Initialize random variable with value (0,1).
     onelep      = False
-    mt          = 0
-    pT1			= 0
-    pT2			= 0
-    pTmax		= 0
-    cone_l_Pt	= 0
-    cone_j_Pt	= 0
-    m1          = 0
-    m2          = 0
-    mv          = 0
-    chi 		= 0
+    mt          = 0.
+    pT1         = 0.
+    pT2         = 0.
+    pTmax       = 0.
+    cone_l_Pt   = 0.
+    cone_j_Pt   = 0.
+    m1          = 0.
+    m2          = 0.
+    mv          = 0.
+    chi         = 0.
     l1          = []
     l2          = []
     l3          = []
-    dR 			= []
+    dR          = []
     h0.Fill(0,w)
 #------------------------------Cuts Start--------------------------------------#
 # Events must have exactly one electron or one muon (as detailed in 3.1.1).
@@ -161,7 +162,6 @@ for event in MyTree:
         elif abs(event.lepflav[i]) == 13 and abs(event.lepeta[i]) <= 2.5:
         # Only selecting muons with |eta| <= 2.5.
             onelep = True
-        # h9.Fill(np.sqrt(event.lepeta[i]**2 + event.lepphi[i]**2),w)
     if onelep == False: continue #Trigger cut#
     h5.Fill(numjet,w)
 # Events must have >= 7 jets with pT > 30 GeV and eta <= 4.0.
@@ -181,7 +181,7 @@ for event in MyTree:
         elif rand <= 0.002:
             tracker_btj.append(i)
         else:
-        	tracker_non.append(i)
+            tracker_non.append(i)
     btagjets = len(tracker_btj)
     ntagjets = len(tracker_non)
     for i in xrange(btagjets):
@@ -198,6 +198,7 @@ for event in MyTree:
         h0.Fill(4,w)
     if not btagjets >= 6:continue
     for i in xrange(btagjets):
+        h17.Fill(jetvec[tracker_btj[i]].Pt())
         l1.append(jetvec[tracker_btj[i]].Pt())
         l2.append(jetvec[tracker_btj[i]].Pt())
     m1 = l2.index(l1.pop(l1.index(max(l1))))
@@ -212,7 +213,7 @@ for event in MyTree:
     if len(l3) > 0:
         h15.Fill(min(l3)/1000,w)
     for i in xrange(len(l1)):
-    	h11.Fill(l1[i]/1000,w)
+        h11.Fill(l1[i]/1000,w)
     for i in xrange(btagjets):
         HB_sum_Pt += jetvec[tracker_btj[i]].Pt()
         # scalar sum of pT for b-tagged jets, HB.
@@ -239,31 +240,31 @@ for event in MyTree:
         cen_sum_E  += jetvec[i].E()          # Scalar sum of E.
         cen_sum_Pt += jetvec[i].Pt()         # Scalar sum of Pt.
         for j in xrange(numlep):
-        	dR.append(np.sqrt((event.lepeta[j] - event.jeteta[i])**2 + (event.lepphi[j] - event.jetphi[i])**2))
-        	h9.Fill(np.sqrt((event.lepeta[j] - event.jeteta[i])**2 + (event.lepphi[j] - event.jetphi[i])**2),w)
-        	h10.Fill(min(dR),w)
+            dR.append(lepvec[j].DeltaR(jetvec[i]))
+            h9.Fill(lepvec[j].DeltaR(jetvec[i]),w)
+            h10.Fill(min(dR),w)
     if cen_sum_E != 0:
         h3.Fill(cen_sum_Pt/cen_sum_E,w)      # Fill h3 w/ scalar sum of Pt/E.
     for i in xrange(0,6):
-	    for j in xrange(1,6):
-			for k in xrange(2,6):
-				for l in xrange(3,6):
-					if i == j == k == l :continue
-					if i > j > k > l :continue
-					if j > k > l :continue
-					if k > l :continue
-					if i > j :continue
-					if j > k  :continue
-					if i == j == k :continue
-					if i == j :continue
-					if i == k :continue
-					if i == l :continue
-					if j == k == l:continue
-					if j == k :continue
-					if j == l :continue
-					if k == l :continue
-					chi = (vectorsum(i,j,'M') - 120000)**2 + (vectorsum(k,l,'M') - 120000)**2
-					h16.Fill(chi/1000,w)
+        for j in xrange(1,6):
+            for k in xrange(2,6):
+                for l in xrange(3,6):
+                    if i == j == k == l :continue
+                    if i > j > k > l :continue
+                    if j > k > l :continue
+                    if k > l :continue
+                    if i > j :continue
+                    if j > k  :continue
+                    if i == j == k :continue
+                    if i == j :continue
+                    if i == k :continue
+                    if i == l :continue
+                    if j == k == l:continue
+                    if j == k :continue
+                    if j == l :continue
+                    if k == l :continue
+                    chi = (vectorsum(i,j,'M') - 120000)**2 + (vectorsum(k,l,'M') - 120000)**2
+                    h16.Fill(chi/1000,w)
 #------------Histograms Display-------------------------------#
 g = ROOT.TFile('all_hist.root','update')
 if int(x) == 1:
@@ -302,6 +303,8 @@ if int(x) == 1:
     ttHH15.Write()
     ttHH16 = h16.Clone('ttHH16')
     ttHH16.Write()
+    ttHH17 = h17.Clone('ttHH17')
+    ttHH17.Write()
 elif int(x) == 2:
     ttbb0 = h0.Clone('ttbb0')
     ttbb0.Scale(5850000/ttbb0.GetBinContent(1))
@@ -338,6 +341,8 @@ elif int(x) == 2:
     ttbb15.Write()
     ttbb16 = h16.Clone('ttbb16')
     ttbb16.Write()
+    ttbb17 = h17.Clone('ttbb17')
+    ttbb17.Write()
 elif int(x) == 3:
     ttH0 = h0.Clone('ttH0')
     ttH0.Scale(612000/ttH0.GetBinContent(1))
@@ -374,6 +379,8 @@ elif int(x) == 3:
     ttH15.Write()
     ttH16 = h16.Clone('ttH16')
     ttH16.Write()
+    ttH17 = h17.Clone('ttH17')
+    ttH17.Write()
 elif int(x) == 4:
     ttZ0 = h0.Clone('ttZ0')
     ttZ0.Scale(269000/ttZ0.GetBinContent(1))
@@ -410,5 +417,7 @@ elif int(x) == 4:
     ttZ15.Write()
     ttZ16 = h16.Clone('ttZ16')
     ttZ16.Write()
+    ttZ17 = h17.Clone('ttZ17')
+    ttZ17.Write()
 prRed('****************** Finished **************\n')
 print 'Finished @:', time.asctime()

@@ -12,6 +12,7 @@ import numpy as np
 import pandas as pd 
 import matplotlib.pyplot as plt
 from ROOT import*
+from numpy import array
 from root_numpy import root2array, rec2array
 from sklearn import datasets
 from sklearn.tree import DecisionTreeClassifier
@@ -37,8 +38,8 @@ d2  = data(2)
 d3  = data(3)
 fpr = data(4)
 tpr = data(5)
-# low_high = data(6)
-low_high=(-1, 1)
+low_high = np.array([float(i) for i in str(df['var'][6])[1:-1].split(",")])
+
 bins =30
 
 roc_auc = auc(fpr, tpr)

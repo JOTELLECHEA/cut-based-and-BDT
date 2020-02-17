@@ -11,6 +11,7 @@ import argparse
 import numpy as np
 import pandas as pd 
 from ROOT import*
+from numpy import array
 from os import system
 from datetime import datetime
 import matplotlib.pyplot as plt
@@ -35,7 +36,7 @@ branch = str(args.branch)
 bn_phase1   = """njet""".split(",")
 bn_phase2   = """njet,btag,srap""".split(",")
 bn_phase3   = """njet,btag,srap,cent,m_bb,h_b""".split(",")
-bn_phase4   = """njet,btag,srap,cent,m_bb,h_b,lep3m,mt1,mt2,mt3,dr1,dr2,dr3""".split(",")
+bn_phase4   = """njet,btag,srap,cent,m_bb,h_b,chi,lep3m,mt1,mt2,mt3,dr1,dr2,dr3""".split(",")
 
 # now = datetime.now()
 # time = now.strftime("%H:%M:%S")
@@ -138,7 +139,7 @@ def compare_train_test(clf, X_train, y_train, X_test, y_test, bins=30):
     #     print decisions[0][i] 
     low = min(np.min(d) for d in decisions)
     high = max(np.max(d) for d in decisions)
-    low_high = (low,high)
+    low_high = array([low,high])
     
     r00  = ['name','var']
     r6  = ['lh',low_high]

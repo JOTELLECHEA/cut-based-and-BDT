@@ -46,6 +46,7 @@ def augment_rootfile(filepath):
     cent    = array( 'f', [ 0 ] )
     m_bb    = array( 'f', [ 0 ] )
     h_b     = array( 'f', [ 0 ] )
+    chi     = array( 'f', [ 0 ] )
 
 
 
@@ -73,6 +74,7 @@ def augment_rootfile(filepath):
     br_srap    = tree.Branch( 'srap'   , srap   , 'srap/F'    )
     br_m_bb    = tree.Branch( 'm_bb'   , m_bb   , 'm_bb/F'    )
     br_h_b     = tree.Branch( 'h_b'    , h_b    , 'h_b/F'     )
+    br_chi     = tree.Branch( 'chi'    , chi    , 'chi/F'     )
 
     # track the time
     start_time = time.clock()
@@ -99,6 +101,12 @@ def augment_rootfile(filepath):
         #####################################################################
         tracker_btj = []            # Initialize empty tracking btagjets.
         tracker_non = []            # Initialize empty tracking lightjets.
+        m1          = 0.
+        m2          = 0.
+        mv          = 0.j
+        l1          = []
+        l2          = []
+        l3          = []
         dR1         = []
         dR2         = []
         dR3         = []
@@ -174,7 +182,26 @@ def augment_rootfile(filepath):
                 etasum_N = -999
 
             srap[0] = etasum_N                        # btagjets speration avg.
-       
+            if btagjets >= 6:
+                for o in xrange(0,6):
+                    for j in xrange(1,6):
+                        for k in xrange(2,6):
+                            for l in xrange(3,6):
+                                if o == j == k == l :continue
+                                if o > j > k > l :continue
+                                if j > k > l :continue
+                                if k > l :continue
+                                if o > j :continue
+                                if j > k  :continue
+                                if o == j == k :continue
+                                if o == j :continue
+                                if o == k :continue
+                                if o == l :continue
+                                if j == k == l:continue
+                                if j == k :continue
+                                if j == l :continue
+                                if k == l :continue
+                                chi[0] = (vectorsum(o,j,'M') - 120000)**2 + (vectorsum(k,l,'M') - 120000)**2
     ######################################################################################
             if numlep >0:
                 lep1m[0]   = 0.0
@@ -246,6 +273,7 @@ def augment_rootfile(filepath):
             br_srap.Fill()
             br_m_bb.Fill()
             br_h_b.Fill()
+            br_chi.Fill()
             i += 1
 
     # write augmented tree to original file
