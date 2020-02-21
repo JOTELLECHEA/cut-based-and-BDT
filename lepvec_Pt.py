@@ -79,7 +79,7 @@ h13 = ROOT.TH1D('h13','h13;2nd lowest btagjet pT;Events',100,0,180)
 h14 = ROOT.TH1D('h14','h14;Lowest pT of charm jet;Events',100,0,1000)
 h15 = ROOT.TH1D('h15','h15;2nd Lowest pT of charm jet;Events',100,0,1000)
 h16 = ROOT.TH1D('h16','h16;Chisquare;Events',1000000,0,1.0e+13)
-h17 = ROOT.TH1D('h17','h17;Chisre;Events',100,0,1.0e+7)
+h17 = ROOT.TH1D('h17','h17;btag pt;Events',100,0,1.0e+7)
 # #------------------------------------------------------------------------------#
 # Functions:
 # Average separation in pseudorapidity between two b-tagged jets.

@@ -94,10 +94,14 @@ branch_names = [c.strip() for c in branch_names]
 branch_names = (b.replace(" ", "_") for b in branch_names)
 branch_names = list(b.replace("-", "_") for b in branch_names)
 
-signal = root2array('new_signal.root',tree, branch_names, include_weight=True)
+signal = root2array('new_signal_tthh.root',tree, branch_names, include_weight=True)
 signal = rec2array(signal)
 
-background = root2array('new_background.root', tree, branch_names, include_weight=True)
+# background_ttbb = root2array('new_background_ttbb.root', tree, branch_names, include_weight=True)
+# background_ttZ  = root2array('new_background_ttZ.root' , tree, branch_names, include_weight=True)
+# background_ttH  = root2array('new_background_ttH.root' , tree, branch_names, include_weight=True)
+# background = np.concatenate((background_ttbb,background_ttH,background_ttZ))
+background = root2array('new_background_ttZ.root', tree, branch_names, include_weight=True)
 background = rec2array(background)
 
 X = np.concatenate((signal, background)) 
@@ -191,13 +195,13 @@ def compare_train_test(clf, X_train, y_train, X_test, y_test, bins=30):
     
 compare_train_test(bdt, X_train, y_train, X_test, y_test)
 
-bdt = 'BDToutput_test' + '_' + branch  + '.root'
+BDToutput_test = 'BDToutput_test' + '_' + branch  + '.root'
 
 # BDT to TTree
 from root_numpy import array2root
 y_predicted = bdt.decision_function(X)
 y_predicted.dtype = [('y', np.float64)]
-array2root(y_predicted, bdt, 'BDT')
+array2root(y_predicted, BDToutput_test, branch)
 
 plt.show()
 
