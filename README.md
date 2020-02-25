@@ -18,11 +18,11 @@
    - chisquare.py
      >N/A
    - MVA.py
-     >`--branch=i` where i = njets,lep,...
+     >`--branch=i` where i = phase1-4
      
      >Output file is `ROC_data_file.csv'.
    - RocCurve.py
-     >`--file=i` where  i = ROC_data_njets.csv...etc.
+     >`--file=i` where  i = ROC_data_phase1-4.csv.
 
      >Output is tmp and can be save in format that is needed.
    - add_SF_branches.py
