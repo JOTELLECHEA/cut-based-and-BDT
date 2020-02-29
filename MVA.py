@@ -98,30 +98,45 @@ signal = root2array('new_signal_tthh.root',tree, branch_names, include_weight=Tr
 signal = rec2array(signal)
 
 # background_ttbb = root2array('new_background_ttbb.root', tree, branch_names, include_weight=True)
-# background_ttZ  = root2array('new_background_ttZ.root' , tree, branch_names, include_weight=True)
+background  = root2array('new_background_ttZ.root' , tree, branch_names, include_weight=True)
 # background_ttH  = root2array('new_background_ttH.root' , tree, branch_names, include_weight=True)
 # background = np.concatenate((background_ttbb,background_ttH,background_ttZ))
-background = root2array('new_background_ttZ.root', tree, branch_names, include_weight=True)
+# background = root2array('new_background_ttZ.root', tree, branch_names, include_weight=True)
 background = rec2array(background)
 
 X = np.concatenate((signal, background)) 
 y = np.concatenate((np.ones(signal.shape[0]), np.zeros(background.shape[0])))
 X_dev,X_eval, y_dev,y_eval = train_test_split(X, y, test_size = 0.10, random_state=42)
-X_train,X_test, y_train,y_test, = train_test_split(X_dev, y_dev, test_size = 0.10,random_state=42)             
+X_train,X_test, y_train,y_test, = train_test_split(X_dev, y_dev, test_size = 0.5,random_state=42)             
 
 
 dt = DecisionTreeClassifier(max_depth=3, min_samples_split=2, splitter='best')
 bdt = AdaBoostClassifier(dt, algorithm ='SAMME', n_estimators=1000, learning_rate=1.0)
-bdt.fit(X_train, y_train)
+model = bdt.fit(X_train, y_train)
 y_predicted = bdt.predict(X_test)
 print classification_report(y_test, y_predicted,target_names=["background", "signal"])
 print "Area under ROC curve: %.4f"%(roc_auc_score(y_test,bdt.decision_function(X_test)))
+#########################################################################################
 
+importances = model.feature_importances_
+
+indices = np.argsort(importances)[::-1]
+
+names = [branch_names[k] for k in indices]
+plt.subplot(313)
+# plt.figure()
+# Create plot title
+plt.title("Feature Importance")
+# Add bars
+plt.bar(range(X.shape[1]), importances[indices])
+# Add feature names as x-axis labels
+plt.xticks(range(X.shape[1]), names, rotation=90)
+#########################################################################################
 # ROC Curve
 decisions = bdt.decision_function(X_test)
 fpr, tpr, thresholds = roc_curve(y_test, decisions)
 roc_auc = auc(fpr, tpr)
-plt.subplot(211)
+plt.subplot(311)
 plt.plot(fpr, tpr, lw=1, label='ROC (area = %0.6f)'%(roc_auc))
 plt.plot([0, 1], [0, 1], '--', color=(0.6, 0.6, 0.6), label='Luck')
 plt.xlim([-0.05, 1.05])
@@ -147,7 +162,7 @@ def compare_train_test(clf, X_train, y_train, X_test, y_test, bins=30):
     
     r00  = ['name','var']
     r6  = ['lh',low_high]
-    plt.subplot(212)
+    plt.subplot(312)
     plt.hist(decisions[0],color='r', alpha=0.5, range=low_high, bins=bins,histtype='stepfilled', normed=True,label='S (train)')
     plt.hist(decisions[1],color='b', alpha=0.5, range=low_high, bins=bins,histtype='stepfilled', normed=True,label='B (train)')
 
@@ -195,6 +210,7 @@ def compare_train_test(clf, X_train, y_train, X_test, y_test, bins=30):
     
 compare_train_test(bdt, X_train, y_train, X_test, y_test)
 
+#print('Accuracy of AdaBoost algorithm: {}'.format(accuracy_score(y_test, y_pred_AdaBoost)))
 BDToutput_test = 'BDToutput_test' + '_' + branch  + '.root'
 
 # BDT to TTree
@@ -208,3 +224,35 @@ plt.show()
 
 
 
+# # Train model
+# model = clf.fit(X, y)
+
+# #If you have a test set, you can evaluate the algorithm as the following:
+# # y_pred_rf = rnd_clf.predict(X_test)
+# # from sklearn.metrics import accuracy_score
+# # print('Accuracy of Random Forest algorithm: {}'.format(accuracy_score(y_test, y_pred_rf)))
+
+# # Calculate feature importances
+# importances = model.feature_importances_
+# #array([0.09539456, 0.02274582, 0.44094962, 0.44090999])
+
+# # Sort feature importances in descending order
+# indices = np.argsort(importances)[::-1]
+
+# # Rearrange feature names so they match the sorted feature importances
+# names = [iris.feature_names[i] for i in indices]
+
+# # Create plot
+# plt.figure()
+
+# # Create plot title
+# plt.title("Feature Importance")
+
+# # Add bars
+# plt.bar(range(X.shape[1]), importances[indices])
+
+# # Add feature names as x-axis labels
+# plt.xticks(range(X.shape[1]), names, rotation=90)
+
+# # Show plot
+# plt.show()

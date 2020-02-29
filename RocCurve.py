@@ -38,7 +38,8 @@ d2  = data(2)
 d3  = data(3)
 fpr = data(4)
 tpr = data(5)
-low_high = np.array([float(i) for i in str(df['var'][6])[1:-1].split(",")])
+low_high = data(6)
+# low_high = np.array([float(i) for i in str(df['var'][6])[1:-1].split(",")])
 
 bins =30
 
