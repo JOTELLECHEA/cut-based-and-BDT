@@ -120,7 +120,7 @@ print "Area under ROC curve: %.4f"%(roc_auc_score(y_test,bdt.decision_function(X
 
 importances = model.feature_importances_
 
-indices = np.argsort(importances)[::-1]
+indices = np.argsort(importances)
 
 names = [branch_names[k] for k in indices]
 plt.subplot(313)
@@ -128,9 +128,10 @@ plt.subplot(313)
 # Create plot title
 plt.title("Feature Importance")
 # Add bars
+
 plt.bar(range(X.shape[1]), importances[indices])
 # Add feature names as x-axis labels
-plt.xticks(range(X.shape[1]), names, rotation=90)
+# plt.xticks(range(X.shape[1]), names, rotation=90)
 #########################################################################################
 # ROC Curve
 decisions = bdt.decision_function(X_test)
@@ -221,38 +222,5 @@ array2root(y_predicted, BDToutput_test, branch)
 
 plt.show()
 
-
-
-
-# # Train model
-# model = clf.fit(X, y)
-
-# #If you have a test set, you can evaluate the algorithm as the following:
-# # y_pred_rf = rnd_clf.predict(X_test)
-# # from sklearn.metrics import accuracy_score
-# # print('Accuracy of Random Forest algorithm: {}'.format(accuracy_score(y_test, y_pred_rf)))
-
-# # Calculate feature importances
-# importances = model.feature_importances_
-# #array([0.09539456, 0.02274582, 0.44094962, 0.44090999])
-
-# # Sort feature importances in descending order
-# indices = np.argsort(importances)[::-1]
-
-# # Rearrange feature names so they match the sorted feature importances
-# names = [iris.feature_names[i] for i in indices]
-
-# # Create plot
-# plt.figure()
-
-# # Create plot title
-# plt.title("Feature Importance")
-
-# # Add bars
-# plt.bar(range(X.shape[1]), importances[indices])
-
-# # Add feature names as x-axis labels
-# plt.xticks(range(X.shape[1]), names, rotation=90)
-
-# # Show plot
-# plt.show()
+for p in range(X.shape[1]):
+    print "%d. feature %d (%f)" % p + 1, indices[p], importances[indices[p]]
