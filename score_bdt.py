@@ -17,21 +17,24 @@ bdtfile = ROOT.TFile("BDToutput_test_phase2.root", "RO")
 bdttree = bdtfile.Get("phase2")
 nbins = 30
 # histograms to store our information
-h01 = ROOT.TH1D('N Jets','N Jets;',13,0,13)#Signal
-h02 = ROOT.TH1D('H2','H2;',13,0,13)#SIG w/BDT > 0.0
-h03 = ROOT.TH1D('H3','H3;',13,0,13)#BG
-h04 = ROOT.TH1D('H4','H4;',13,0,13)#BG w/BDT > 0.0
+h01 = ROOT.TH1D('N Jets','N Jets;',30,0,30)#Signal
+h02 = ROOT.TH1D('H2','H2;',30,0,30)#SIG w/BDT > 0.0
+h03 = ROOT.TH1D('H3','H3;',30,0,30)#BG
+h04 = ROOT.TH1D('H4','H4;',30,0,30)#BG w/BDT > 0.0
 h11 = ROOT.TH1D('btag','btag;',9,0,9)#Signal
 h12 = ROOT.TH1D('G2','G2;',9,0,9)#SIG w/BDT > 0.0
 h13 = ROOT.TH1D('G3','G3;',9,0,9)#BG
 h14 = ROOT.TH1D('G4','G4;',9,0,9)#BG w/BDT > 0.0
-h21 = ROOT.TH1D('Srap','Srap;',30,-10,20)#Signal
-h22 = ROOT.TH1D('F2','F2;',30,-10,20)#SIG w/BDT > 0.0
-h23 = ROOT.TH1D('F3','F3;',30,-10,20)#BG
-h24 = ROOT.TH1D('F4','F4;',30,-10,20)#BG w/BDT > 0.0
+h21 = ROOT.TH1D('Srap','Srap;',60,0,10)#Signal
+h22 = ROOT.TH1D('F2','F2;',60,0,10)#SIG w/BDT > 0.0
+h23 = ROOT.TH1D('F3','F3;',60,0,10)#BG
+h24 = ROOT.TH1D('F4','F4;',60,0,10)#BG w/BDT > 0.0
+h31 = ROOT.TH2D('2D N Jets','2D N Jets;Amount of jets;bdt score',30,0,30,10,-1,1)
+h32 = ROOT.TH2D('2D B Tags','2D B Tags;Amount of btag jets;bdt score', 9,0, 9,10,-1,1)
+h33 = ROOT.TH2D('2D Srap','2D Srap;pseudorapidity;bdt score',60,0,10,10,-1,1)
 
 c1 = ROOT.TCanvas('c1','Canvas 1',710,100,1000,500)
-c1.Divide(3,1,0.01,0.01,0)
+c1.Divide(3,2,0.01,0.01,0)
 leg = ROOT.TLegend(0.69,0.69,0.89,0.89)
 leg.SetLineColor(ROOT.kWhite)
 leg.AddEntry(h01,'SIG,ALL')
@@ -49,13 +52,22 @@ chain.AddFriend(bdttree)
 
 nsignalevents = sigtree.GetEntriesFast()
 nevents = 0
+numbers = 0
 
 bdt_threshold = 0.0
+# print nsignalevents
 for event in chain:
+    # print numbers
+    # if 1.5572 < event.srap < 1.5573:
+    #     print 'here'
+    # numbers += 1
     if nevents<nsignalevents:
         h01.Fill(event.njet[0],event.mcweight[0])# SIG ALL
+        h31.Fill(event.njet[0],chain.y,event.mcweight[0])
         h11.Fill(event.btag,event.mcweight[0])# SIG ALL
+        h32.Fill(event.btag,chain.y,event.mcweight[0])
         h21.Fill(event.srap,event.mcweight[0])# SIG ALL
+        h33.Fill(event.srap,chain.y,event.mcweight[0])
         if chain.y > bdt_threshold:
             h02.Fill(event.njet[0],event.mcweight[0])# Sig,BDT > 0.0
             h12.Fill(event.btag,event.mcweight[0])# Sig,BDT > 0.0
@@ -92,3 +104,18 @@ hplot(h22,ROOT.kRed,2)
 hplot(h23,ROOT.kBlue,1)
 hplot(h24,ROOT.kBlue,2)
 leg.Draw()
+c1.cd(4)
+h31.SetLineColor(ROOT.kRed)
+h31.SetLineStyle(1)
+h31.SetStats(0)
+h31.Draw('HIST')
+c1.cd(5)
+h32.SetLineColor(ROOT.kRed)
+h32.SetLineStyle(1)
+h32.SetStats(0)
+h32.Draw('HIST')
+c1.cd(6)
+h33.SetLineColor(ROOT.kRed)
+h33.SetLineStyle(1)
+h33.SetStats(0)
+h33.Draw('HIST')

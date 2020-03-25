@@ -117,19 +117,32 @@ y_predicted = bdt.predict(X_test)
 print classification_report(y_test, y_predicted,target_names=["background", "signal"])
 print "Area under ROC curve: %.4f"%(roc_auc_score(y_test,bdt.decision_function(X_test)))
 #########################################################################################
+def plotFeatureImportances(features, importances):
+    imps=importances[:-1]
+    y_pos=np.arange(len(features))
+    plt.clf()
+    indices = np.argsort(imps)
+    plt.barh(y_pos, np.sort(imps))
+    labels=[features[k] for k in indices]
+    plt.yticks(y_pos, labels)
+    plt.xlabel('F score')
+    plt.ylabel("Feature")
+    plt.show()
 
-importances = model.feature_importances_
+plotFeatureImportances(branch_names, model.feature_importances_)
 
-indices = np.argsort(importances)
+# importances = model.feature_importances_
 
-names = [branch_names[k] for k in indices]
-plt.subplot(313)
-# plt.figure()
-# Create plot title
-plt.title("Feature Importance")
-# Add bars
+# indices = np.argsort(importances)
 
-plt.bar(range(X.shape[1]), importances[indices])
+# names = [branch_names[k] for k in indices]
+# plt.subplot(313)
+# # plt.figure()
+# # Create plot title
+# plt.title("Feature Importance")
+# # Add bars
+
+# plt.bar(range(X.shape[1]), importances[indices])
 # Add feature names as x-axis labels
 # plt.xticks(range(X.shape[1]), names, rotation=90)
 #########################################################################################
@@ -137,7 +150,7 @@ plt.bar(range(X.shape[1]), importances[indices])
 decisions = bdt.decision_function(X_test)
 fpr, tpr, thresholds = roc_curve(y_test, decisions)
 roc_auc = auc(fpr, tpr)
-plt.subplot(311)
+plt.subplot(211)
 plt.plot(fpr, tpr, lw=1, label='ROC (area = %0.6f)'%(roc_auc))
 plt.plot([0, 1], [0, 1], '--', color=(0.6, 0.6, 0.6), label='Luck')
 plt.xlim([-0.05, 1.05])
@@ -163,7 +176,7 @@ def compare_train_test(clf, X_train, y_train, X_test, y_test, bins=30):
     
     r00  = ['name','var']
     r6  = ['lh',low_high]
-    plt.subplot(312)
+    plt.subplot(212)
     plt.hist(decisions[0],color='r', alpha=0.5, range=low_high, bins=bins,histtype='stepfilled', normed=True,label='S (train)')
     plt.hist(decisions[1],color='b', alpha=0.5, range=low_high, bins=bins,histtype='stepfilled', normed=True,label='B (train)')
 
@@ -222,5 +235,5 @@ array2root(y_predicted, BDToutput_test, branch)
 
 plt.show()
 
-for p in range(X.shape[1]):
-    print "%d. feature %d (%f)" % p + 1, indices[p], importances[indices[p]]
+# for p in range(X.shape[1]):
+#     print "%d. feature %d (%f)" % p + 1, indices[p], importances[indices[p]]
