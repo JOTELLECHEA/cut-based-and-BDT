@@ -203,78 +203,78 @@ def augment_rootfile(filepath):
                                 if k == l :continue
                                 chi[0] = (vectorsum(o,j,'M') - 120000)**2 + (vectorsum(k,l,'M') - 120000)**2
     ######################################################################################
-            if numlep >0:
-                lep1m[0]   = 0.0
-                lep1pT[0]  = event.leppT[0]
-                lep1eta[0] = event.lepeta[0]
-                lep1phi[0] = event.lepphi[0]
-                mt1[0]     = missingPT(0)
-                if len(dr1) >1 : dr1[0]  = min(dR1)
-                if numlep > 1:
-                    lep2m[0]   = 0.0
-                    lep2pT[0]  = event.leppT[1]
-                    lep2eta[0] = event.lepeta[1]
-                    lep2phi[0] = event.lepphi[1]
-                    mt2[0] = missingPT(1)
-                    if len(dr2) >1 : dr2[0]  = min(dR2)
-                    if numlep > 2:
-                        lep3m[0]   = 0.0
-                        lep3pT[0]  = event.leppT[2]
-                        lep3eta[0] = event.lepeta[2]
-                        lep3phi[0] = event.lepphi[2]
-                        mt3[0] = missingPT(2)
-                        if len(dr3) >1 : dr3[0]  = min(dR3)
-                    else:
-                        lep3pT[0]  = -999
-                        lep3eta[0] = -9
-                        lep3phi[0] = -9
-                        lep3m[0]   = -999
-                        mt3[0]     = -999
-                        dr3[0]     = -999
+        if numlep >0:
+            lep1m[0]   = 0.0
+            lep1pT[0]  = event.leppT[0]
+            lep1eta[0] = event.lepeta[0]
+            lep1phi[0] = event.lepphi[0]
+            mt1[0]     = missingPT(0)
+            if len(dr1) >1 : dr1[0]  = min(dR1)
+            if numlep > 1:
+                lep2m[0]   = 0.0
+                lep2pT[0]  = event.leppT[1]
+                lep2eta[0] = event.lepeta[1]
+                lep2phi[0] = event.lepphi[1]
+                mt2[0] = missingPT(1)
+                if len(dr2) >1 : dr2[0]  = min(dR2)
+                if numlep > 2:
+                    lep3m[0]   = 0.0
+                    lep3pT[0]  = event.leppT[2]
+                    lep3eta[0] = event.lepeta[2]
+                    lep3phi[0] = event.lepphi[2]
+                    mt3[0] = missingPT(2)
+                    if len(dr3) >1 : dr3[0]  = min(dR3)
                 else:
-                    lep2pT[0]  = -999
-                    lep2eta[0] = -9
-                    lep2phi[0] = -9
-                    lep2m[0]   = -999
-                    mt2[0]     = -999
-                    dr2[0]     = -999
+                    lep3pT[0]  = -999
+                    lep3eta[0] = -9
+                    lep3phi[0] = -9
+                    lep3m[0]   = -999
+                    mt3[0]     = -999
+                    dr3[0]     = -999
             else:
-                lep1pT[0]  = -999
-                lep1eta[0] = -9
-                lep1phi[0] = -9
-                lep1m[0]   = -999
-                mt1[0]     = -999
-                dr1[0]     = -999
+                lep2pT[0]  = -999
+                lep2eta[0] = -9
+                lep2phi[0] = -9
+                lep2m[0]   = -999
+                mt2[0]     = -999
+                dr2[0]     = -999
+        else:
+            lep1pT[0]  = -999
+            lep1eta[0] = -9
+            lep1phi[0] = -9
+            lep1m[0]   = -999
+            mt1[0]     = -999
+            dr1[0]     = -999
 
 
 
 
-            # fill new branches
-            br_lep1pT.Fill()
-            br_lep1eta.Fill()
-            br_lep1phi.Fill()
-            br_lep1m.Fill()
-            br_lep2pT.Fill()
-            br_lep2eta.Fill()
-            br_lep2phi.Fill()
-            br_lep2m.Fill()
-            br_lep3pT.Fill()
-            br_lep3eta.Fill()
-            br_lep3phi.Fill()
-            br_lep3m.Fill()
-            br_mt1.Fill()
-            br_mt2.Fill()
-            br_mt3.Fill()
-            br_dr1.Fill()
-            br_dr2.Fill()
-            br_dr3.Fill()
-            br_btag.Fill()
-            br_cent.Fill() 
-            br_srap.Fill()
-            br_m_bb.Fill()
-            br_h_b.Fill()
-            br_chi.Fill()
-            i += 1
+        # fill new branches
+        br_lep1pT.Fill()
+        br_lep1eta.Fill()
+        br_lep1phi.Fill()
+        br_lep1m.Fill()
+        br_lep2pT.Fill()
+        br_lep2eta.Fill()
+        br_lep2phi.Fill()
+        br_lep2m.Fill()
+        br_lep3pT.Fill()
+        br_lep3eta.Fill()
+        br_lep3phi.Fill()
+        br_lep3m.Fill()
+        br_mt1.Fill()
+        br_mt2.Fill()
+        br_mt3.Fill()
+        br_dr1.Fill()
+        br_dr2.Fill()
+        br_dr3.Fill()
+        br_btag.Fill()
+        br_cent.Fill() 
+        br_srap.Fill()
+        br_m_bb.Fill()
+        br_h_b.Fill()
+        br_chi.Fill()
+        i += 1
 
     # write augmented tree to original file
     tree.Write("", ROOT.TObject.kOverwrite)
