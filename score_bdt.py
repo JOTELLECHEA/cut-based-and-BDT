@@ -52,15 +52,10 @@ chain.AddFriend(bdttree)
 
 nsignalevents = sigtree.GetEntriesFast()
 nevents = 0
-numbers = 0
 
 bdt_threshold = 0.0
-# print nsignalevents
+
 for event in chain:
-    # print numbers
-    # if 1.5572 < event.srap < 1.5573:
-    #     print 'here'
-    # numbers += 1
     if nevents<nsignalevents:
         h01.Fill(event.njet[0],event.mcweight[0])# SIG ALL
         h31.Fill(event.njet[0],chain.y,event.mcweight[0])
