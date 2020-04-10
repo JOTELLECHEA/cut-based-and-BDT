@@ -19,7 +19,7 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import AdaBoostClassifier
 from sklearn.metrics import classification_report, roc_auc_score, roc_curve, auc
 from sklearn.preprocessing import StandardScaler
-#########
+################################################################################
 from scipy.interpolate import *
 from scipy.stats import *
 #################################################################################
@@ -44,7 +44,6 @@ low_high = data(6)
 bins =30
 
 roc_auc = auc(fpr, tpr)
-p2 = np.polyfit(fpr,tpr,5)
 plt.subplot(211)
 r = 0.00606061
 g = 0.0000677966
@@ -54,11 +53,10 @@ t = 0.0000764706
 x = np.linspace(0,1,1000)
 plt.title('Receiver operating characteristic')
 plt.plot(fpr, tpr, lw=.5, label='ROC (area = %0.6f)'%(roc_auc))
-# plt.plot(x,np.polyval(p2,x),label='ROC (area = %0.6f)'%(roc_auc))
-plt.plot((b,b),(0,1),'b--', label='ttH')
-plt.plot((m,m),(0,1),'m--', label='ttZ')
+#plt.plot((b,b),(0,1),'b--', label='ttH')
+#plt.plot((m,m),(0,1),'m--', label='ttZ')
 plt.plot((g,g),(0,1),'g--', label='ttbb')
-plt.plot((t,t),(0,1),'k--', label='total')
+#plt.plot((t,t),(0,1),'k--', label='total')
 plt.plot(x,r + 0*x,linestyle='--',color='r', label='ttHH')
 # plt.plot([0, 1], [0, 1], '--', color=(0.6, 0.6, 0.6), label='Luck')
 plt.xlim([-0.05, 1.05])
@@ -75,7 +73,6 @@ plt.hist(d1,color='b', alpha=0.5, range=low_high, bins=bins,histtype='stepfilled
 hist, bins = np.histogram(d2,bins=bins, range=low_high, normed=True)
 scale = len(d2) / sum(hist)
 err = np.sqrt(hist * scale) / scale
-
 width = (bins[1] - bins[0])
 center = (bins[:-1] + bins[1:]) / 2
 plt.errorbar(center, hist, yerr=err, fmt='o', c='r', label='S (test)')

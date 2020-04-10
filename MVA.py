@@ -36,10 +36,8 @@ branch = str(args.branch)
 bn_phase1   = """njet""".split(",")
 bn_phase2   = """njet,btag,srap""".split(",")
 bn_phase3   = """njet,btag,srap,cent,m_bb,h_b""".split(",")
-bn_phase4   = """njet,btag,srap,cent,m_bb,h_b,chi,lep3m,mt1,mt2,mt3,dr1,dr2,dr3""".split(",")
-
-# now = datetime.now()
-# time = now.strftime("%H:%M:%S")
+bn_phase4   = """njet,btag,srap,cent,m_bb,h_b,lep1m,lep2m,lep3m,mt1,mt2,mt3,dr1,dr2,dr3""".split(",")
+bn_phase5   = """njet,btag,srap,cent,m_bb,h_b,chi,lep1m,lep2m,lep3m,mt1,mt2,mt3,dr1,dr2,dr3""".split(",")
 
 while True:
     try:
@@ -63,27 +61,13 @@ while True:
             branch_names = bn_phase4
             name = file + '_' + branch  + '.csv'
             break
-        # elif branch == 'test':
-        #     print 'You selected option:', branch
-        #     branch_names = bn_test
-        #     name = file + '_' + branch + '.csv'
-        #     break
-        # elif branch == 'btag':
-        #     print 'You selected option:', branch
-        #     branch_names = bn_btag
-        #     name = file + '_' + branch + '.csv'
-        #     break
-        # elif branch == 'pub':
-        #     print 'You selected option:', branch
-        #     branch_names = bn_pub
-        #     name = file + '_' + branch + '.csv'
-        #     break
+        elif branch == 'phase5':
+            print 'You selected option:', branch
+            branch_names = bn_phase5
+            name = file + '_' + branch + '.csv'
+            break
         elif branch == 'wrong':
             sys.exit('Need to pass a variable, use --h for options')
-        # else :
-        #     system('clear')
-        #     prRed('****************** Invalid option **************\n')
-        #     break
     except NameError:
         system('clear')
         prRed('*******************Invalid option **************\n')
@@ -126,27 +110,11 @@ def plotFeatureImportances(features, importances):
     labels=[features[k] for k in indices]
     plt.yticks(y_pos, labels)
     plt.xlabel('F score')
-    plt.ylabel("Feature")
-    plt.show()
+    plt.ylabel('Feature')
+    plt.savefig('features_' + branch + '.pdf',dpi = 100)
 
 plotFeatureImportances(branch_names, model.feature_importances_)
 
-# importances = model.feature_importances_
-
-# indices = np.argsort(importances)
-
-# names = [branch_names[k] for k in indices]
-# plt.subplot(313)
-# # plt.figure()
-# # Create plot title
-# plt.title("Feature Importance")
-# # Add bars
-
-# plt.bar(range(X.shape[1]), importances[indices])
-# Add feature names as x-axis labels
-# plt.xticks(range(X.shape[1]), names, rotation=90)
-#########################################################################################
-# ROC Curve
 decisions = bdt.decision_function(X_test)
 fpr, tpr, thresholds = roc_curve(y_test, decisions)
 roc_auc = auc(fpr, tpr)
@@ -168,8 +136,6 @@ def compare_train_test(clf, X_train, y_train, X_test, y_test, bins=30):
         d1 = clf.decision_function(X[y>0.5]).ravel()
         d2 = clf.decision_function(X[y<0.5]).ravel()
         decisions += [d1, d2]
-    # for i in xrange(len(decisions[0])):
-    #     print decisions[0][i] 
     low = min(np.min(d) for d in decisions)
     high = max(np.max(d) for d in decisions)
     low_high = array([low,high])
@@ -234,6 +200,3 @@ y_predicted.dtype = [('y', np.float64)]
 array2root(y_predicted, BDToutput_test, branch)
 
 plt.show()
-
-# for p in range(X.shape[1]):
-#     print "%d. feature %d (%f)" % p + 1, indices[p], importances[indices[p]]

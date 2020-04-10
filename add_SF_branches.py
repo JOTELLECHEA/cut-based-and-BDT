@@ -103,13 +103,14 @@ def augment_rootfile(filepath):
         tracker_non = []            # Initialize empty tracking lightjets.
         m1          = 0.
         m2          = 0.
-        mv          = 0.j
+        mv          = 0.
         l1          = []
         l2          = []
         l3          = []
         dR1         = []
         dR2         = []
         dR3         = []
+        chisq       = []
         lepvec      = {}
         jetvec      = {}
         neutrino    = {}
@@ -201,7 +202,11 @@ def augment_rootfile(filepath):
                                 if j == k :continue
                                 if j == l :continue
                                 if k == l :continue
-                                chi[0] = (vectorsum(o,j,'M') - 120000)**2 + (vectorsum(k,l,'M') - 120000)**2
+                                chisq.append((vectorsum(o,j,'M') - 120000)**2 + (vectorsum(k,l,'M') - 120000)**2)
+            if len(chisq) > 0:
+                chi[0] = min(chisq)
+            else:
+                chi[0] = -999
     ######################################################################################
         if numlep >0:
             lep1m[0]   = 0.0
