@@ -36,8 +36,8 @@ branch = str(args.branch)
 bn_phase1   = """njet""".split(",")
 bn_phase2   = """njet,btag,srap""".split(",")
 bn_phase3   = """njet,btag,srap,cent,m_bb,h_b""".split(",")
-bn_phase4   = """njet,btag,srap,cent,m_bb,h_b,lep1m,lep2m,lep3m,mt1,mt2,mt3,dr1,dr2,dr3""".split(",")
-bn_phase5   = """njet,btag,srap,cent,m_bb,h_b,chi,lep1m,lep2m,lep3m,mt1,mt2,mt3,dr1,dr2,dr3""".split(",")
+bn_phase4   = """njet,btag,srap,cent,m_bb,h_b,mt1,mt2,mt3,dr1,dr2,dr3""".split(",")
+bn_phase5   = """njet,btag,srap,cent,m_bb,h_b,mt1,mt2,mt3,dr1,dr2,dr3,chi""".split(",")
 
 while True:
     try:
@@ -81,12 +81,11 @@ branch_names = list(b.replace("-", "_") for b in branch_names)
 signal = root2array('new_signal_tthh.root',tree, branch_names, include_weight=True)
 signal = rec2array(signal)
 
-background = root2array('new_background_ttbb.root', tree, branch_names, include_weight=True)
-# background  = root2array('new_background_ttZ.root' , tree, branch_names, include_weight=True)
-# background_ttH  = root2array('new_background_ttH.root' , tree, branch_names, include_weight=True)
-# background = np.concatenate((background_ttbb,background_ttH,background_ttZ))
-# background = root2array('new_background_ttZ.root', tree, branch_names, include_weight=True)
-background = rec2array(background)
+bg_ttbb   = root2array('new_background_ttbb.root', tree, branch_names, include_weight=True)
+bg_ttZ    = root2array('new_background_ttZ.root' , tree, branch_names, include_weight=True)
+bg_ttH    = root2array('new_background_ttH.root' , tree, branch_names, include_weight=True)
+background    = np.concatenate((bg_ttbb,bg_ttH,bg_ttZ))
+background    = rec2array(background)
 
 X = np.concatenate((signal, background)) 
 y = np.concatenate((np.ones(signal.shape[0]), np.zeros(background.shape[0])))
@@ -111,7 +110,7 @@ def plotFeatureImportances(features, importances):
     plt.yticks(y_pos, labels)
     plt.xlabel('F score')
     plt.ylabel('Feature')
-    plt.savefig('features_' + branch + '.pdf',dpi = 100)
+    plt.savefig('features_' + branch + '.png',dpi = 100)
 
 plotFeatureImportances(branch_names, model.feature_importances_)
 

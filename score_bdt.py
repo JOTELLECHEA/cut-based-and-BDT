@@ -10,8 +10,14 @@ def hplot(hist,color,style):
 sigfile = ROOT.TFile("new_signal_tthh.root","RO")
 sigtree = sigfile.Get("OutputTree")
 
-bakfile = ROOT.TFile("new_background_ttbb.root","RO")
-baktree = bakfile.Get("OutputTree")
+bgfileH = ROOT.TFile("new_background_ttH.root","RO")
+bgtreeH = bgfileH.Get("OutputTree")
+
+bgfileZ = ROOT.TFile("new_background_ttZ.root","RO")
+bgtreeZ = bgfileZ.Get("OutputTree")
+
+bgfileb = ROOT.TFile("new_background_ttbb.root","RO")
+bgtreeb = bgfileb.Get("OutputTree")
 
 bdtfile = ROOT.TFile("BDToutput_test_phase2.root", "RO")
 bdttree = bdtfile.Get("phase2")
@@ -46,14 +52,17 @@ leg.AddEntry(h04,'BG,BDT')
 chain = ROOT.TChain("OutputTree")
 chain.Add("new_signal_tthh.root")
 chain.Add("new_background_ttbb.root")
+chain.Add("new_background_ttH.root")
+chain.Add("new_background_ttZ.root")
+
 
 # this is the key line, where we associate the BDT output to the inputs.
 chain.AddFriend(bdttree)
 
 nsignalevents = sigtree.GetEntriesFast()
-nevents = -.3
+nevents = 0
 
-bdt_threshold = 0.0
+bdt_threshold = -0.3
 
 for event in chain:
     if nevents<nsignalevents:
