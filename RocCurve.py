@@ -67,17 +67,17 @@ plt.grid()
 plt.legend(loc="lower right")
 #plt.savefig('battery.png', format='png', dpi=300)
 plt.subplot(212)
-plt.hist(d0,color='r', alpha=0.5, range=low_high, bins=bins,histtype='stepfilled', normed=True,label='S (train)')
-plt.hist(d1,color='b', alpha=0.5, range=low_high, bins=bins,histtype='stepfilled', normed=True,label='B (train)')
+plt.hist(d0,color='r', alpha=0.5, range=low_high, bins=bins,histtype='stepfilled', density=True,label='S (train)')
+plt.hist(d1,color='b', alpha=0.5, range=low_high, bins=bins,histtype='stepfilled', density=True,label='B (train)')
 
-hist, bins = np.histogram(d2,bins=bins, range=low_high, normed=True)
+hist, bins = np.histogram(d2,bins=bins, range=low_high, density=True)
 scale = len(d2) / sum(hist)
 err = np.sqrt(hist * scale) / scale
 width = (bins[1] - bins[0])
 center = (bins[:-1] + bins[1:]) / 2
 plt.errorbar(center, hist, yerr=err, fmt='o', c='r', label='S (test)')
 
-hist, bins = np.histogram(d3,bins=bins, range=low_high, normed=True)
+hist, bins = np.histogram(d3,bins=bins, range=low_high, density=True)
 scale = len(d2) / sum(hist)
 err = np.sqrt(hist * scale) / scale
 plt.errorbar(center, hist, yerr=err, fmt='o', c='b', label='B (test)')

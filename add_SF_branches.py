@@ -175,8 +175,8 @@ def augment_rootfile(filepath):
                     # Finds max Pt and M for two btagjets.
                     btjmaxPt = vec_sum_Pt
                     btjmaxM  = vec_sum_M
-            m_bb[0] = btjmaxM
-            h_b[0]  = HB_sum_Pt
+            m_bb[0] = btjmaxM/1000
+            h_b[0]  = HB_sum_Pt/1000
             if btagjets > 1:
                 etasum_N = etasum/(btagjets**2 - btagjets)  # Getting distance avg.
             else:

@@ -142,10 +142,10 @@ def compare_train_test(clf, X_train, y_train, X_test, y_test, bins=30):
     r00  = ['name','var']
     r6  = ['lh',low_high]
     plt.subplot(212)
-    plt.hist(decisions[0],color='r', alpha=0.5, range=low_high, bins=bins,histtype='stepfilled', normed=True,label='S (train)')
-    plt.hist(decisions[1],color='b', alpha=0.5, range=low_high, bins=bins,histtype='stepfilled', normed=True,label='B (train)')
+    plt.hist(decisions[0],color='r', alpha=0.5, range=low_high, bins=bins,histtype='stepfilled', density=True,label='S (train)')
+    plt.hist(decisions[1],color='b', alpha=0.5, range=low_high, bins=bins,histtype='stepfilled', density=True,label='B (train)')
 
-    hist, bins = np.histogram(decisions[2],bins=bins, range=low_high, normed=True)
+    hist, bins = np.histogram(decisions[2],bins=bins, range=low_high, density=True)
     scale = len(decisions[2]) / sum(hist)
     err = np.sqrt(hist * scale) / scale
     r0  = ['d0',decisions[0]]
@@ -156,7 +156,7 @@ def compare_train_test(clf, X_train, y_train, X_test, y_test, bins=30):
     center = (bins[:-1] + bins[1:]) / 2
     plt.errorbar(center, hist, yerr=err, fmt='o', c='r', label='S (test)')
 
-    hist, bins = np.histogram(decisions[3],bins=bins, range=low_high, normed=True)
+    hist, bins = np.histogram(decisions[3],bins=bins, range=low_high, density=True)
     scale = len(decisions[2]) / sum(hist)
     err = np.sqrt(hist * scale) / scale
     r2  = ['d2',decisions[2]]
@@ -198,4 +198,5 @@ y_predicted = bdt.decision_function(X)
 y_predicted.dtype = [('y', np.float64)]
 array2root(y_predicted, BDToutput_test, branch)
 
-plt.show()
+#comment-out plt.show() to save data, if need to view just use script RocCurve.py.
+# plt.show()
