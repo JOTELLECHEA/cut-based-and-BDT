@@ -214,21 +214,21 @@ def augment_rootfile(filepath):
             lep1eta[0] = event.lepeta[0]
             lep1phi[0] = event.lepphi[0]
             mt1[0]     = missingPT(0)
-            if len(dr1) >1 : dr1[0]  = min(dR1)
+            if len(dR1) > 0 : dr1[0]  = min(dR1)
             if numlep > 1:
                 lep2m[0]   = 0.0
                 lep2pT[0]  = event.leppT[1]
                 lep2eta[0] = event.lepeta[1]
                 lep2phi[0] = event.lepphi[1]
                 mt2[0] = missingPT(1)
-                if len(dr2) >1 : dr2[0]  = min(dR2)
+                if len(dR2) > 0 : dr2[0]  = min(dR2)
                 if numlep > 2:
                     lep3m[0]   = 0.0
                     lep3pT[0]  = event.leppT[2]
                     lep3eta[0] = event.lepeta[2]
                     lep3phi[0] = event.lepphi[2]
                     mt3[0] = missingPT(2)
-                    if len(dr3) >1 : dr3[0]  = min(dR3)
+                    if len(dR3) > 0 : dr3[0]  = min(dR3)
                 else:
                     lep3pT[0]  = -999
                     lep3eta[0] = -9

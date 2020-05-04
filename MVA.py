@@ -21,6 +21,8 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import AdaBoostClassifier
 from sklearn.metrics import classification_report, roc_auc_score, roc_curve, auc
 from sklearn.preprocessing import StandardScaler
+import warnings
+warnings.filterwarnings('always')
 
 def prRed(prt): print("\033[91m {}\033[00m" .format(prt))
 np.set_printoptions(threshold=np.inf)
@@ -189,7 +191,6 @@ def compare_train_test(clf, X_train, y_train, X_test, y_test, bins=30):
     
 compare_train_test(bdt, X_train, y_train, X_test, y_test)
 
-#print('Accuracy of AdaBoost algorithm: {}'.format(accuracy_score(y_test, y_pred_AdaBoost)))
 BDToutput_test = 'BDToutput_test' + '_' + branch  + '.root'
 
 # BDT to TTree
@@ -198,5 +199,4 @@ y_predicted = bdt.decision_function(X)
 y_predicted.dtype = [('y', np.float64)]
 array2root(y_predicted, BDToutput_test, branch)
 
-#comment-out plt.show() to save data, if need to view just use script RocCurve.py.
-# plt.show()
+plt.show()
