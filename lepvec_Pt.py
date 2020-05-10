@@ -20,10 +20,10 @@ parser.add_argument("--x", default=5, type=int, help= "Use '--x=' followed by a 
 
 args = parser.parse_args()
 x = int(args.x)
-a = 'tthh_ntuple.343469.MadGraphPythia8EvtGen_A14NNPDF23_tthh_bbbb.root'
-b = 'tthh_ntuple.410246.Sherpa_NNPDF30NNLO_ttbb.root'
-c = 'tthh_ntuple.344436.Sherpa_NNPDF30NNLO_ttH_Htobb.root'
-d = 'tthh_ntuple.410247.Sherpa_NNPDF30NNLO_ttZ_Ztobb.root'
+a = 'signal_tthh.root'
+b = 'background_ttbb.root'
+c = 'background_ttH.root'
+d = 'background_ttZ.root'
 
 while True:
     try:
@@ -102,6 +102,7 @@ for event in MyTree:
     numjet = event.njet[0]      # Store number of jets in each event as num.
     lepvec      = {}            # Initialize empty lepton vector.
     jetvec      = {}            # Initialize empty jet vector.
+    neutrino    = {}
     tracker_btj = []            # Initialize empty tracking btagjets.
     tracker_non = []            # Initialize empty tracking lightjets.
     jetprime    = []            # Initialize empty tracking ctagjets.
@@ -134,13 +135,16 @@ for event in MyTree:
     l2          = []
     l3          = []
     dR          = []
+    chisq       = []
     h0.Fill(0,w)
 #------------------------------Cuts Start--------------------------------------#
 # Events must have exactly one electron or one muon (as detailed in 3.1.1).
+    neutrino[0] = ROOT.TLorentzVector()
+    neutrino[0].SetPtEtaPhiM(event.met[0],0,event.met_phi[0],0)
     for i in xrange(numlep):
         lepvec[i] = ROOT.TLorentzVector() # Cast vectors as Lorentz vectors.
         lepvec[i].SetPtEtaPhiM(event.leppT[i],event.lepeta[i],event.lepphi[i],0)
-        mt = ROOT.TMath.Sqrt(2 * event.met[0] * lepvec[i].Pt()/(10**6) * ( 1 - ROOT.TMath.Cos((lepvec[i].Phi() - event.met_phi[0]))))
+        mt = ROOT.TMath.Sqrt(2 * event.met[0] * lepvec[i].Pt()/(10**6) * ( 1 - ROOT.TMath.Cos((lepvec[i].DeltaPhi(neutrino[0])))))
         h7.Fill(mt,w)
         if event.lepflav[i] == 11 and abs(event.lepeta[i]) < 2.5 and (22000 < event.leppT[i] < 35000) and rand <= .95:
             goodleptons += 1
@@ -245,26 +249,29 @@ for event in MyTree:
             h10.Fill(min(dR),w)
     if cen_sum_E != 0:
         h3.Fill(cen_sum_Pt/cen_sum_E,w)      # Fill h3 w/ scalar sum of Pt/E.
-    for i in xrange(0,6):
-        for j in xrange(1,6):
-            for k in xrange(2,6):
-                for l in xrange(3,6):
-                    if i == j == k == l :continue
-                    if i > j > k > l :continue
-                    if j > k > l :continue
-                    if k > l :continue
-                    if i > j :continue
-                    if j > k  :continue
-                    if i == j == k :continue
-                    if i == j :continue
-                    if i == k :continue
-                    if i == l :continue
-                    if j == k == l:continue
-                    if j == k :continue
-                    if j == l :continue
-                    if k == l :continue
-                    chi = (vectorsum(i,j,'M') - 120000)**2 + (vectorsum(k,l,'M') - 120000)**2
-                    h16.Fill(chi/1000,w)
+    if btagjets >= 6:        
+        for i in xrange(0,6):
+            for j in xrange(1,6):
+                for k in xrange(2,6):
+                    for l in xrange(3,6):
+                        if i == j == k == l :continue
+                        if i > j > k > l :continue
+                        if j > k > l :continue
+                        if k > l :continue
+                        if i > j :continue
+                        if j > k  :continue
+                        if i == j == k :continue
+                        if i == j :continue
+                        if i == k :continue
+                        if i == l :continue
+                        if j == k == l:continue
+                        if j == k :continue
+                        if j == l :continue
+                        if k == l :continue
+                        chisq.append((vectorsum(i,j,'M') - 120000)**2 + (vectorsum(k,l,'M') - 120000)**2)
+    if len(chisq) > 0:
+        chi = min(chisq)
+        h16.Fill(chi/1000,w)
 #------------Histograms Display-------------------------------#
 g = ROOT.TFile('all_hist.root','update')
 if int(x) == 1:

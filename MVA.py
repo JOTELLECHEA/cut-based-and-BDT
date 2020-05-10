@@ -22,7 +22,7 @@ from sklearn.ensemble import AdaBoostClassifier
 from sklearn.metrics import classification_report, roc_auc_score, roc_curve, auc
 from sklearn.preprocessing import StandardScaler
 import warnings
-warnings.filterwarnings('always')
+warnings.filterwarnings('ignore')
 
 def prRed(prt): print("\033[91m {}\033[00m" .format(prt))
 np.set_printoptions(threshold=np.inf)
@@ -80,12 +80,12 @@ branch_names = [c.strip() for c in branch_names]
 branch_names = (b.replace(" ", "_") for b in branch_names)
 branch_names = list(b.replace("-", "_") for b in branch_names)
 
-signal = root2array('new_signal_tthh.root',tree, branch_names, include_weight=True)
+signal = root2array('new_signal_tthh.root',tree, branch_names, include_weight=True,selection='nlep[0] > 0')
 signal = rec2array(signal)
 
-bg_ttbb   = root2array('new_background_ttbb.root', tree, branch_names, include_weight=True)
-bg_ttZ    = root2array('new_background_ttZ.root' , tree, branch_names, include_weight=True)
-bg_ttH    = root2array('new_background_ttH.root' , tree, branch_names, include_weight=True)
+bg_ttbb   = root2array('new_background_ttbb.root', tree, branch_names, include_weight=True,selection='nlep[0] > 0')
+bg_ttZ    = root2array('new_background_ttZ.root' , tree, branch_names, include_weight=True,selection='nlep[0] > 0')
+bg_ttH    = root2array('new_background_ttH.root' , tree, branch_names, include_weight=True,selection='nlep[0] > 0')
 background    = np.concatenate((bg_ttbb,bg_ttH,bg_ttZ))
 background    = rec2array(background)
 
@@ -167,6 +167,7 @@ def compare_train_test(clf, X_train, y_train, X_test, y_test, bins=30):
     
     r4  = ['fpr',fpr]
     r5  = ['tpr',tpr]
+    r7  = ['thresholds',thresholds]
 
     with open(name, 'a') as csvFile:
         writer = csv.writer(csvFile)
@@ -178,6 +179,7 @@ def compare_train_test(clf, X_train, y_train, X_test, y_test, bins=30):
         writer.writerow(r4)
         writer.writerow(r5)
         writer.writerow(r6)
+        writer.writerow(r7)
 
     csvFile.close()
 ################################################################################################

@@ -6,6 +6,19 @@
 import ROOT
 import array as arr
 from tabulate import tabulate
+def hplot(hist,color):
+        hist.SetLineColor(color)
+        hist.Scale(1/(hist.Integral()))
+        hist.SetStats(0)
+        hist.SetTitle('')
+        hist.Draw('HIST SAME')
+        leg.Draw()
+def canvas(x):
+    x.cd()
+    x.SetLeftMargin(0.15)
+    x.SetRightMargin(0.15)
+    # x.SetTickx()
+    # x.SetTicky()
 #------------------------------ root file -------------------------------------#
 g = ROOT.TFile('all_hist.root')
 #---------------------------- load Histogram ----------------------------------#
@@ -102,129 +115,65 @@ total = ['Total background',t1,t2,t3,t4,t5,t6,t7]
 headers1=['Sample          ','No cuts','Trigger','One lepton',' >= 7 jets','>= 5 b-tags',' n(bi,bj)','>=6b-tags']
 headerst=['                ','       ','       ','          ','          ','           ','         ','         ']
 #-----------------------------TLegend------------------------------------------#
-leg = ROOT.TLegend(0.69,0.69,0.89,0.89)
+leg = ROOT.TLegend(0.69,0.69,0.84,0.89,'')
 leg.SetLineColor(ROOT.kWhite)
 leg.AddEntry(ttHH1,'ttHH')
 leg.AddEntry(ttH1,'ttH')
 leg.AddEntry(ttZ1,'ttZ')
 leg.AddEntry(ttbb1,'ttbb')
 table = False
+# table = True
 if(table == True):print(tabulate([xxHH,xxH,xxZ,xxbb,total],headers1, tablefmt='pipe'))
-latex = True
+latex = False
+# latex = True
 if(latex == True):print(tabulate([xxHH,xxH,xxZ,xxbb,total],headers1, tablefmt='latex'))
 thesisPlots = True
+# thesisPlots = False
+xcor = 700
+ycor = 500
 if (thesisPlots == True):
-    c00 = ROOT.TCanvas('c00','Jet multiplicity',500,500)
-    c01 = ROOT.TCanvas('c01','N b-tagged jets',500,500)
-    c02 = ROOT.TCanvas('c02','< #eta(b_{i},b_{j}) >',500,500)
-    c03 = ROOT.TCanvas('c03','M_{bb};M_{bb}',500,500)
-    c04 = ROOT.TCanvas('c04','Centrality',500,500)
-    c05 = ROOT.TCanvas('c05','H_{B};H_{B}',500,500)
-    c02.cd()##################################### Seperation between two b-tag jets.
-    ttHH1.SetLineColor(ROOT.kRed)
-    ttHH1.SetFillColorAlpha(ROOT.kRed-10,0)
-    ttHH1.SetStats(0)
-    ttHH1.Scale(1/(ttHH1.Integral()))
-    ttHH1.Draw('HIST SAME')
-    ttHH1.SetAxisRange(0.,.36,'Y')
-    ttH1.SetLineColor(ROOT.kAzure)
-    ttH1.Scale(1/(ttH1.Integral()))
-    ttH1.Draw('HIST SAME')
-    ttZ1.SetLineColor(ROOT.kMagenta)
-    ttZ1.Scale(1/(ttZ1.Integral()))
-    ttZ1.Draw('HIST SAME')
-    ttbb1.SetLineColor(ROOT.kGreen+2)
-    ttbb1.Scale(1/(ttbb1.Integral()))
-    ttbb1.Draw('HIST SAME')
-    leg.Draw()
-    c03.cd()################################################### Higgs canidate mass.
-    ttHH2.SetLineColor(ROOT.kRed)
-    ttHH2.SetFillColorAlpha(ROOT.kRed-10,0)
-    ttHH2.SetStats(0)
-    ttHH2.Scale(1/(ttHH2.Integral()))
-    ttHH2.Draw('HIST SAME')
-    ttHH2.SetAxisRange(0.,.405,'Y')
-    ttH2.SetLineColor(ROOT.kAzure)
-    ttH2.Scale(1/(ttH2.Integral()))
-    ttH2.Draw('HIST SAME')
-    ttZ2.SetLineColor(ROOT.kMagenta)
-    ttZ2.Scale(1/(ttZ2.Integral()))
-    ttZ2.Draw('HIST SAME')
-    ttbb2.SetLineColor(ROOT.kGreen+2)
-    ttbb2.Scale(1/(ttbb2.Integral()))
-    ttbb2.Draw('HIST SAME')
-    leg.Draw()
-    c04.cd()############################################################ Centrality.
-    ttHH3.SetLineColor(ROOT.kRed)
-    ttHH3.SetFillColorAlpha(ROOT.kRed-10,0)
-    ttHH3.SetStats(0)
-    ttHH3.Scale(1/(ttHH3.Integral()))
-    ttHH3.SetAxisRange(0.,.27,'Y')
-    ttHH3.Draw('HIST SAME')
-    ttH3.SetLineColor(ROOT.kAzure)
-    ttH3.Scale(1/(ttH3.Integral()))
-    ttH3.Draw('HIST SAME')
-    ttZ3.SetLineColor(ROOT.kMagenta)
-    ttZ3.Scale(1/(ttZ3.Integral()))
-    ttZ3.Draw('HIST SAME')
-    ttbb3.SetLineColor(ROOT.kGreen+2)
-    ttbb3.Scale(1/(ttbb3.Integral()))
-    ttbb3.Draw('HIST SAME')
-    leg.Draw()
-    c05.cd()################################################################### H_B.
-    ttHH4.SetLineColor(ROOT.kRed)
-    ttHH4.SetFillColorAlpha(ROOT.kRed-10,0)
-    ttHH4.SetStats(0)
-    ttHH4.Scale(1/(ttHH4.Integral()))
-    ttHH4.Draw('HIST SAME')
-    ttHH4.SetAxisRange(0.,.51,'Y')
-    ttH4.SetLineColor(ROOT.kAzure)
-    ttH4.Scale(1/(ttH4.Integral()))
-    ttH4.Draw('HIST SAME')
-    ttZ4.SetLineColor(ROOT.kMagenta)
-    ttZ4.Scale(1/(ttZ4.Integral()))
-    ttZ4.Draw('HIST SAME')
-    ttbb4.SetLineColor(ROOT.kGreen+2)
-    ttbb4.Scale(1/(ttbb4.Integral()))
-    ttbb4.Draw('HIST SAME')
-    leg.Draw()
-    c00.cd()####################################################### Jet muliplicity.
-    ttHH5.SetLineColor(ROOT.kRed)
-    ttHH5.SetFillColorAlpha(ROOT.kRed-10,0)
-    ttHH5.SetStats(0)
-    ttHH5.Scale(1/(ttHH5.Integral()))
+    c00 = ROOT.TCanvas('c00','Jet multiplicity',xcor,ycor)
+    c01 = ROOT.TCanvas('c01','N b-tagged jets',xcor,ycor)
+    c02 = ROOT.TCanvas('c02','< #eta(b_{i},b_{j}) >',xcor,ycor)
+    c03 = ROOT.TCanvas('c03','M_{bb};M_{bb}',xcor,ycor)
+    c04 = ROOT.TCanvas('c04','Centrality',xcor,ycor)
+    c05 = ROOT.TCanvas('c05','H_{B};H_{B}',xcor,ycor)
+    canvas(c00)####################################################### Jet muliplicity.
+    hplot(ttHH5,ROOT.kRed)
+    hplot(ttH5,ROOT.kAzure)
+    hplot(ttZ5,ROOT.kMagenta)
+    hplot(ttbb5,ROOT.kGreen+2)
     ttHH5.SetAxisRange(0.,.3,'Y')
-    ttHH5.Draw('HIST SAME')
-    ttH5.SetLineColor(ROOT.kAzure)
-    ttH5.Scale(1/(ttH5.Integral()))
-    ttH5.Draw('HIST SAME')
-    ttZ5.SetLineColor(ROOT.kMagenta)
-    ttZ5.Scale(1/(ttZ5.Integral()))
-    ttZ5.Draw('HIST SAME')
-    ttbb5.SetLineColor(ROOT.kGreen+2)
-    ttbb5.Scale(1/(ttbb5.Integral()))
-    ttbb5.Draw('HIST SAME')
-    leg.Draw()
-    c01.cd()############################################### Number of b-tagged jets.
-    ttHH6.SetLineColor(ROOT.kRed)
-    ttHH6.SetFillColorAlpha(ROOT.kRed-10,0)
-    ttHH6.SetStats(0)
-    ttHH6.Scale(1/(ttHH6.Integral()))
-    ttHH6.SetAxisRange(0.,.40,'Y')
-    ttHH6.Draw('HIST SAME')
-    ttH6.SetLineColor(ROOT.kAzure)
-    ttH6.Scale(1/(ttH6.Integral()))
-    ttH6.Draw('HIST SAME')
-    ttZ6.SetLineColor(ROOT.kMagenta)
-    ttZ6.Scale(1/(ttZ6.Integral()))
-    ttZ6.Draw('HIST SAME')
-    ttbb6.SetLineColor(ROOT.kGreen+2)
-    ttbb6.Scale(1/(ttbb6.Integral()))
-    ttbb6.Draw('HIST SAME')
-    leg.Draw()
-
-
-
+    canvas(c01)############################################### Number of b-tagged jets.
+    hplot(ttHH6,ROOT.kRed)
+    hplot(ttH6,ROOT.kAzure)
+    hplot(ttZ6,ROOT.kMagenta)
+    hplot(ttbb6,ROOT.kGreen+2)
+    ttHH6.SetAxisRange(0.,.4,'Y')
+    canvas(c02)##################################### Seperation between two b-tag jets.
+    hplot(ttHH1,ROOT.kRed)
+    hplot(ttH1,ROOT.kAzure)
+    hplot(ttZ1,ROOT.kMagenta)
+    hplot(ttbb1,ROOT.kGreen+2)
+    ttHH1.SetAxisRange(0.,.3,'Y')
+    canvas(c03)################################################### Higgs canidate mass.
+    hplot(ttHH2,ROOT.kRed)
+    hplot(ttH2,ROOT.kAzure)
+    hplot(ttZ2,ROOT.kMagenta)
+    hplot(ttbb2,ROOT.kGreen+2)
+    ttHH2.SetAxisRange(0.,.405,'Y')
+    canvas(c04)############################################################ Centrality.
+    hplot(ttHH3,ROOT.kRed)
+    hplot(ttH3,ROOT.kAzure)
+    hplot(ttZ3,ROOT.kMagenta)
+    hplot(ttbb3,ROOT.kGreen+2)
+    ttHH3.SetAxisRange(0.,.35,'Y')
+    canvas(c05)################################################################### H_B.
+    hplot(ttHH4,ROOT.kRed)
+    hplot(ttH4,ROOT.kAzure)
+    hplot(ttZ4,ROOT.kMagenta)
+    hplot(ttbb4,ROOT.kGreen+2)
+    ttHH4.SetAxisRange(0.,.4,'Y')
 fullCanvasPresentation = False
 if (fullCanvasPresentation == True):
     #---------------------------Canvas and THStack---------------------------------#
