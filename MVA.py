@@ -80,12 +80,12 @@ branch_names = [c.strip() for c in branch_names]
 branch_names = (b.replace(" ", "_") for b in branch_names)
 branch_names = list(b.replace("-", "_") for b in branch_names)
 
-signal = root2array('new_signal_tthh.root',tree, branch_names, include_weight=True,selection='nlep[0] > 0')
+signal = root2array('new_signal_tthh.root',tree, branch_names, include_weight=True)
 signal = rec2array(signal)
 
-bg_ttbb   = root2array('new_background_ttbb.root', tree, branch_names, include_weight=True,selection='nlep[0] > 0')
-bg_ttZ    = root2array('new_background_ttZ.root' , tree, branch_names, include_weight=True,selection='nlep[0] > 0')
-bg_ttH    = root2array('new_background_ttH.root' , tree, branch_names, include_weight=True,selection='nlep[0] > 0')
+bg_ttbb   = root2array('new_background_ttbb.root', tree, branch_names, include_weight=True)
+bg_ttZ    = root2array('new_background_ttZ.root' , tree, branch_names, include_weight=True)
+bg_ttH    = root2array('new_background_ttH.root' , tree, branch_names, include_weight=True)
 background    = np.concatenate((bg_ttbb,bg_ttH,bg_ttZ))
 background    = rec2array(background)
 
