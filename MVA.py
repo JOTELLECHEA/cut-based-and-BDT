@@ -95,7 +95,7 @@ X_dev,X_eval, y_dev,y_eval = train_test_split(X, y, test_size = 0.10, random_sta
 X_train,X_test, y_train,y_test, = train_test_split(X_dev, y_dev, test_size = 0.5,random_state=42)             
 
 
-dt = DecisionTreeClassifier(max_depth=3, min_samples_split=2, splitter='best')
+dt = DecisionTreeClassifier(max_depth=5, min_samples_split=2, splitter='best')
 bdt = AdaBoostClassifier(dt, algorithm ='SAMME', n_estimators=1000, learning_rate=1.0)
 model = bdt.fit(X_train, y_train)
 y_predicted = bdt.predict(X_test)
