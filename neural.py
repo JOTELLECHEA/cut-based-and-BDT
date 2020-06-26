@@ -8,19 +8,21 @@ import csv,sys
 import argparse
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
 from sklearn import preprocessing
 le = preprocessing.LabelEncoder()
 from sklearn.preprocessing import StandardScaler
 from sklearn.neural_network import MLPClassifier
-from sklearn.metrics import classification_report, confusion_matrix
+from sklearn.metrics import classification_report, confusion_matrix, roc_auc_score, roc_curve, auc
 from sklearn.model_selection import train_test_split
+from sklearn.linear_model import Perceptron
 import warnings
 warnings.filterwarnings('ignore')
 
 # file= 'ROC_data'
 tree = 'OutputTree'
 
-parser = argparse.ArgumentParser(description= 'BDT for ttHH and background')
+parser = argparse.ArgumentParser(description= 'Neural Networkfor ttHH and background')
 parser.add_argument("--branch", default='wrong', type=str, help= "Use '--branch=' followed by a branch_name")
 
 args = parser.parse_args()
@@ -84,13 +86,33 @@ X = np.concatenate((signal, background))
 y = np.concatenate((np.ones(signal.shape[0]), np.zeros(background.shape[0])))
 X_dev,X_eval, y_dev,y_eval = train_test_split(X, y, test_size = 0.10, random_state=42)
 X_train,X_test, y_train,y_test, = train_test_split(X_dev, y_dev, test_size = 0.5,random_state=42)  
+
+
+#solver= adam, sgd, lbfgs
+mlp = MLPClassifier(solver='adam', alpha=1e-5)
 # mlp = MLPClassifier(hidden_layer_sizes=(10, 10, 10), max_iter=1000)
-# mlp.fit(X_train, y_train.values.ravel())
-mlp = MLPClassifier(hidden_layer_sizes=(10, 10, 10), max_iter=1000)
 mlp.fit(X_train, y_train)
 
-predictions = mlp.predict(X_test)
+y_predicted = mlp.predict(X_test)
 
+#Printing the accuracy
+print 'confusion_matrix'
+print confusion_matrix(y_test,y_predicted)
+# print classification_report(y_test, y_predicted,target_names=["background", "signal"])
+print(classification_report(y_test,y_predicted))
+# print "Area under ROC curve: %.4f"%(roc_auc_score(y_test,mlp.decision_function(X_test)))
+fpr, tpr, threshold = roc_curve(y_test, mlp.predict_proba(X_test)[:,1])
+# fpr, tpr, threshold = roc_curve(y_test, mlp.predict(X_test))
+roc_auc = auc(fpr, tpr)
 
-print(confusion_matrix(y_test,predictions))
-print(classification_report(y_test,predictions))
+plt.figure()
+plt.plot(fpr, tpr, label = 'MLP AUC = %0.2f' % roc_auc)
+plt.plot([0, 1], [0, 1],'r--')
+plt.xlim([0, 1])
+plt.ylim([0, 1])
+plt.xlabel('False Positive Rate')
+plt.ylabel('True Positive Rate')
+plt.title('Receiver operating characteristic')
+plt.legend(loc="lower right")
+plt.grid()
+plt.show()
