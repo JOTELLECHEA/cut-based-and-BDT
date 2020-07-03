@@ -1,6 +1,9 @@
-FROM atlasml/ml-base:debian
+From atlasml/ml-base:debian
 
-COPY nnKeras.py /nnKeras.py
+WORKDIR /dock
+ADD . /dock
 
-CMD python3 /nnKeras.py
+RUN pip install --user lz4
+RUN pip install -r requirements.txt
 
+CMD python3
