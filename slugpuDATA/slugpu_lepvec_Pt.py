@@ -136,7 +136,8 @@ for event in MyTree:
     l3          = []
     dR          = []
     chisq       = []
-    h0.Fill(0,w)
+    # h0.Fill(0,w)
+    h0.Fill(0)
 #------------------------------Cuts Start--------------------------------------#
 # Events must have exactly one electron or one muon (as detailed in 3.1.1).
     neutrino[0] = ROOT.TLorentzVector()
@@ -155,7 +156,7 @@ for event in MyTree:
             goodleptons += 1
         elif event.lepflav[i] == 13 and abs(event.lepeta[i]) < 2.4 and event.leppT[i] > 20000 and rand <= 0.96:
             goodleptons +=1
-        if lepvec[i].Pt() <= 25000: continue
+        if event.leppT[i] <= 25000: continue
         # Only selecting leptons > 25GeV.
         if abs(event.lepflav[i]) == 11 and abs(event.lepeta[i]) <= 4.0:
             onelep = True
@@ -164,7 +165,8 @@ for event in MyTree:
         # Only selecting muons with |eta| <= 2.5.
             onelep = True
     if onelep == False: continue #Trigger cut#
-    h0.Fill(1,w)
+    # h0.Fill(1,w)
+    h0.Fill(1)
     h5.Fill(numjet,w)
 # Events must have >= 7 jets with pT > 30 GeV and eta <= 4.0.
     for i in xrange(numjet):
@@ -193,13 +195,17 @@ for event in MyTree:
         jetprime.remove(tracker_non[i])
     ctagjets = len(jetprime)
     if not goodleptons == 1:continue
-    h0.Fill(2,w)
+    # h0.Fill(2,w)
+    h0.Fill(2)
     if not goodjets  >= 7 :continue
-    h0.Fill(3,w)
+    h0.Fill(3)
+    # h0.Fill(3,w)
     h6.Fill(btagjets,w)
-    if 5 <= btagjets < 6: 
-        h0.Fill(4,w)
-    if not btagjets >= 6:continue
+    # if 5 <= btagjets < 6:
+    if not btagjets >= 5: continue
+    h0.Fill(4)
+    # h0.Fill(4,w)
+    # if not btagjets >= 6:continue
     for i in xrange(btagjets):
         h17.Fill(jetvec[tracker_btj[i]].Pt())
         l1.append(jetvec[tracker_btj[i]].Pt())
@@ -234,10 +240,12 @@ for event in MyTree:
         etasum_N = etasum/(btagjets**2 - btagjets)  # Getting distance avg.
     h1.Fill(etasum_N,w)                        # Fill h1 w/ btagjets speration avg.
     h4.Fill(HB_sum_Pt/1000,w)                  # Fill h4 w/ scalar sum of pT.
-    if etasum_N < 1.25 :
-        h0.Fill(5,w)
-        if btagjets >= 6:
-            h0.Fill(6,w)
+    if not etasum_N < 1.25: continue
+    # h0.Fill(5,w)
+    h0.Fill(5)
+    if btagjets >= 6:
+        # h0.Fill(6,w)
+        h0.Fill(6)
 #------------------------------------------------------------------------------#
     for i in xrange(numjet):
         cen_sum_E  += jetvec[i].E()          # Scalar sum of E.
@@ -272,10 +280,10 @@ for event in MyTree:
         chi = min(chisq)
         h16.Fill(chi/1000,w)
 #------------Histograms Display-------------------------------#
-g = ROOT.TFile('all_hist.root','update')
+g = ROOT.TFile('mark1.root','update')
 if int(x) == 1:
     ttHH0 = h0.Clone('ttHH0')
-    ttHH0.Scale((426908)*(990/(930000/0.609))/ttHH0.GetBinContent(1))
+    # ttHH0.Scale(990/(930000/0.609))
     ttHH0.Write()
     ttHH1 = h1.Clone('ttHH1')
     ttHH1.Write()
@@ -313,7 +321,8 @@ if int(x) == 1:
     ttHH17.Write()
 elif int(x) == 2:
     ttbb0 = h0.Clone('ttbb0')
-    ttbb0.Scale((3332932/5900000.)*5850000/ttbb0.GetBinContent(1))
+    # ttbb0.Scale((3332932/5900000.)*5850000/ttbb0.GetBinContent(1))
+    # ttbb0.Scale(5850000/5900000.)
     ttbb0.Write()
     ttbb1 = h1.Clone('ttbb1')
     ttbb1.Write()
@@ -351,7 +360,8 @@ elif int(x) == 2:
     ttbb17.Write()
 elif int(x) == 3:
     ttH0 = h0.Clone('ttH0')
-    ttH0.Scale((320752/610000.)*612000/ttH0.GetBinContent(1))
+    # ttH0.Scale((320752/610000.)*612000/ttH0.GetBinContent(1))
+    # ttH0.Scale(612000/610000.)
     ttH0.Write()
     ttH1 = h1.Clone('ttH1')
     ttH1.Write()
@@ -389,7 +399,8 @@ elif int(x) == 3:
     ttH17.Write()
 elif int(x) == 4:
     ttZ0 = h0.Clone('ttZ0')
-    ttZ0.Scale((158645/270000.)*269000/ttZ0.GetBinContent(1))
+    # ttZ0.Scale((158645/270000.)*269000/ttZ0.GetBinContent(1))
+    # ttZ0.Scale((269000/270000.))
     ttZ0.Write()
     ttZ1 = h1.Clone('ttZ1')
     ttZ1.Write()
