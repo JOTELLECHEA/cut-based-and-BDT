@@ -143,7 +143,7 @@ for event in MyTree:
     neutrino[0] = ROOT.TLorentzVector()
     neutrino[0].SetPtEtaPhiM(event.met[0],0,event.met_phi[0],0)
     for i in range(numlep):
-        rand = random.random()
+        rand = np.random.random()
         lepvec[i] = ROOT.TLorentzVector() # Cast vectors as Lorentz vectors.
         lepvec[i].SetPtEtaPhiM(event.leppT[i],event.lepeta[i],event.lepphi[i],0)
         mt = ROOT.TMath.Sqrt(2 * event.met[0] * lepvec[i].Pt()/(10**6) * ( 1 - ROOT.TMath.Cos((lepvec[i].DeltaPhi(neutrino[0])))))
@@ -178,7 +178,7 @@ for event in MyTree:
         # Only selecting jets with |eta| <= 4.0.
         goodjets += 1                                           # Count of jets.
         rand = 0.0
-        rand = random.random()
+        rand = np.random.random()
         if event.jetbhadron[i] == 1 and rand <= 0.7:
             tracker_btj.append(i)              # B-tag jets into a list.
         elif event.jetchadron[i] == 1 and rand <= 0.2:
