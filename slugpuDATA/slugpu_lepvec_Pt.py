@@ -20,27 +20,27 @@ parser.add_argument("--x", default=5, type=int, help= "Use '--x=' followed by a 
 
 args = parser.parse_args()
 x = int(args.x)
-a = 'new_TTHH.root'
-b = 'new_TTBB.root'
-c = 'new_TTH.root'
-d = 'new_TTZ.root'
+a = '/Users/jtellechea/new_TTHH.root'
+b = '/Users/jtellechea/new_TTBB.root'
+c = '/Users/jtellechea/new_TTH.root'
+d = '/Users/jtellechea/new_TTZ.root'
 
 while True:
     try:
         if x == 1:
-            print 'You selected option:', 'ttHH'
+            print('You selected option:', 'ttHH')
             f = ROOT.TFile(a)
             break
         elif x == 2:
-            print 'You selected option:', 'ttbb'
+            print('You selected option:', 'ttbb')
             f = ROOT.TFile(b)
             break
         elif x == 3:
-            print 'You selected option:', 'ttH'
+            print('You selected option:', 'ttH')
             f = ROOT.TFile(c)
             break
         elif x == 4:
-            print 'You selected option:', 'ttZ'
+            print('You selected option:', 'ttZ')
             f = ROOT.TFile(d)
             break
         elif x == 5:
@@ -142,7 +142,7 @@ for event in MyTree:
 # Events must have exactly one electron or one muon (as detailed in 3.1.1).
     neutrino[0] = ROOT.TLorentzVector()
     neutrino[0].SetPtEtaPhiM(event.met[0],0,event.met_phi[0],0)
-    for i in xrange(numlep):
+    for i in range(numlep):
         rand = random.random()
         lepvec[i] = ROOT.TLorentzVector() # Cast vectors as Lorentz vectors.
         lepvec[i].SetPtEtaPhiM(event.leppT[i],event.lepeta[i],event.lepphi[i],0)
@@ -169,7 +169,7 @@ for event in MyTree:
     h0.Fill(1)
     h5.Fill(numjet,w)
 # Events must have >= 7 jets with pT > 30 GeV and eta <= 4.0.
-    for i in xrange(numjet):
+    for i in range(numjet):
         jetprime.append(i) 
         jetvec[i] = ROOT.TLorentzVector()    # Cast vectors as Lorentz vectors.
         jetvec[i].SetPtEtaPhiM(event.jetpT[i],event.jeteta[i],event.jetphi[i],0)
@@ -189,9 +189,9 @@ for event in MyTree:
             tracker_non.append(i)
     btagjets = len(tracker_btj)
     ntagjets = len(tracker_non)
-    for i in xrange(btagjets):
+    for i in range(btagjets):
         jetprime.remove(tracker_btj[i])
-    for i in xrange(ntagjets):
+    for i in range(ntagjets):
         jetprime.remove(tracker_non[i])
     ctagjets = len(jetprime)
     if not goodleptons == 1:continue
@@ -206,7 +206,7 @@ for event in MyTree:
     h0.Fill(4)
     # h0.Fill(4,w)
     # if not btagjets >= 6:continue
-    for i in xrange(btagjets):
+    for i in range(btagjets):
         h17.Fill(jetvec[tracker_btj[i]].Pt())
         l1.append(jetvec[tracker_btj[i]].Pt())
         l2.append(jetvec[tracker_btj[i]].Pt())
@@ -215,18 +215,18 @@ for event in MyTree:
     h8.Fill((jetvec[tracker_btj[m1]]+jetvec[tracker_btj[m2]]).M()/1000,w)
     h12.Fill(l2.pop(l2.index(min(l2)))/1000,w)
     h13.Fill(min(l2)/1000,w)
-    for i in xrange(ctagjets):
+    for i in range(ctagjets):
         l3.append(jetvec[jetprime[i]].Pt())
     if ctagjets > 0:
         h14.Fill(l3.pop(l3.index(min(l3)))/1000,w)
     if len(l3) > 0:
         h15.Fill(min(l3)/1000,w)
-    for i in xrange(len(l1)):
+    for i in range(len(l1)):
         h11.Fill(l1[i]/1000,w)
-    for i in xrange(btagjets):
+    for i in range(btagjets):
         HB_sum_Pt += jetvec[tracker_btj[i]].Pt()
         # scalar sum of pT for b-tagged jets, HB.
-        for j in xrange(btagjets):
+        for j in range(btagjets):
             if i == j: continue
             etasum += etabi_j(i,j)           # Finding separation between all b_jets.
             vec_sum_Pt = vectorsum(i,j,'Pt') # Sum of btagjets Pt.
@@ -247,20 +247,20 @@ for event in MyTree:
         # h0.Fill(6,w)
         h0.Fill(6)
 #------------------------------------------------------------------------------#
-    for i in xrange(numjet):
+    for i in range(numjet):
         cen_sum_E  += jetvec[i].E()          # Scalar sum of E.
         cen_sum_Pt += jetvec[i].Pt()         # Scalar sum of Pt.
-        for j in xrange(numlep):
+        for j in range(numlep):
             dR.append(lepvec[j].DeltaR(jetvec[i]))
             h9.Fill(lepvec[j].DeltaR(jetvec[i]),w)
             h10.Fill(min(dR),w)
     if cen_sum_E != 0:
         h3.Fill(cen_sum_Pt/cen_sum_E,w)      # Fill h3 w/ scalar sum of Pt/E.
     if btagjets >= 6:        
-        for i in xrange(0,6):
-            for j in xrange(1,6):
-                for k in xrange(2,6):
-                    for l in xrange(3,6):
+        for i in range(0,6):
+            for j in range(1,6):
+                for k in range(2,6):
+                    for l in range(3,6):
                         if i == j == k == l :continue
                         if i > j > k > l :continue
                         if j > k > l :continue
@@ -437,4 +437,4 @@ elif int(x) == 4:
     ttZ17 = h17.Clone('ttZ17')
     ttZ17.Write()
 prRed('****************** Finished **************\n')
-print 'Finished @:', time.asctime()
+print('Finished @:', time.asctime())
