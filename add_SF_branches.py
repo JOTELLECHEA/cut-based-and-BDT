@@ -9,10 +9,11 @@ import os, time, sys, argparse,math
 import numpy as np
 from array import array
 import shutil
-import random
 
 
 import ROOT
+import secrets
+
 def augment_rootfile(filepath):
 
     shutil.copyfile(filepath,"new_"+filepath)
@@ -147,7 +148,7 @@ def augment_rootfile(filepath):
             for x in xrange(numjet):
                 cen_sum_E  += jetvec[x].E()          # Scalar sum of E.
                 cen_sum_Pt += jetvec[x].Pt()         # Scalar sum of Pt.
-                rand = random.random()
+                rand = secrets.SystemRandom().random()
 
                 if event.jetbhadron[x] == 1 and rand <= 0.7:
                     tracker_btj.append(x)              # B-tag jets into a list.
